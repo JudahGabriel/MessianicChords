@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Lora|Homemade+Apple' rel='stylesheet' type='text/css'>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js" type="text/javascript"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <div id="title">
+                <a href="/"><h1>Messianic Chords.com</h1></a>
+                <h2>Messiah's music. Lyrics and chords. On the opened web</h2>
+            </div>
+        </header>
+        <section id="main">
+            @RenderBody()
+        </section>
+        <footer>
+            <div>
+                <a href="/">Home</a> 
+                <span class="bar-separator">|</span>
+                <a href="/legal">About Us, Legal</a> 
+                <span class="bar-separator">|</span>
+                <a href="http://judahgabriel.blogspot.com/2012/01/introducing-messianicchordscom.html">What is this site?</a> 
+                <span class="bar-separator">|</span>
+                <a href="http://judahgabriel.blogspot.com">Author's Blog</a>
+                <span class="bar-separator">|</span>
+                <a href="http://messianicradio.com">Chavah Messianic Radio</a> 
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

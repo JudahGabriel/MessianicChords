@@ -1,0 +1,15 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script id="search-results-template" type="text/html">
+    <div class="search-result">
+        <a class="song-name" target="_blank" data-bind="text: Song, attr: { href: Address }"></a>
+        <br />
+        <label>By: </label>
+        <a class="artist" data-bind="text: Artist, click: searchForArtist, attr: { href: '#' + escape(Artist) }"></a>
+        <br />
+        <label data-bind="if: Key">Key: </label>
+        <span class="key" data-bind="if: Key, text: Key"></span>
+    </div>
+</script>
