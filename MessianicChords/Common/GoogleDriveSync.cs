@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Raven.Client;
 using Raven.Client.Linq;
+using System.Configuration;
 
 namespace MessianicChords.Common
 {
@@ -28,7 +29,7 @@ namespace MessianicChords.Common
         {
             var nextChunkUri = "https://docs.google.com/feeds/default/private/full/" + Constants.MessianicChordsFolderId + "/contents";
             var docService = new DocumentsService("MessianicChords.com");
-            docService.setUserCredentials("judahgabriel@gmail.com", "0ssafe0");
+            docService.setUserCredentials(ConfigurationManager.AppSettings["googleAccount"], ConfigurationManager.AppSettings["googlePassword"]);
 
             while (nextChunkUri != null)
             {
