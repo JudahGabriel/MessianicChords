@@ -39,6 +39,9 @@ namespace MessianicChords.Controllers
                 var recentChords = session
                     .Query<ChordSheet>()
                     .OrderByDescending(o => o.LastUpdated)
+                    .Take(10)
+                    .ToList()
+                    .Where(s => !s.Artist.StartsWith("~"))
                     .Take(3);
                 return Json(recentChords, JsonRequestBehavior.AllowGet);
             }
@@ -63,7 +66,8 @@ namespace MessianicChords.Controllers
                 ViewBag.Artist = song.Artist;
                 ViewBag.Song = song.Song;
 
-                return View("Song");
+                return Redirect(song.GoogleDocAddress);
+                //return View("Song");
             }
         }
 
@@ -85,11 +89,12 @@ namespace MessianicChords.Controllers
 
         public ActionResult Song(string url, string artist, string song)
         {
-            ViewBag.DocumentUrl = url;
-            ViewBag.Artist = artist;
-            ViewBag.Song = song;
+            //ViewBag.DocumentUrl = url;
+            //ViewBag.Artist = artist;
+            //ViewBag.Song = song;
 
-            return View();
+            return Redirect(url);
+            //return View();
         }
 
         public ActionResult About()
