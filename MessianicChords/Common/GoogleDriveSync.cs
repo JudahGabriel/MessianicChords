@@ -8,6 +8,7 @@ using System.Web;
 using Raven.Client;
 using Raven.Client.Linq;
 using System.Configuration;
+using Google.Apis.Auth.OAuth2;
 
 namespace MessianicChords.Common
 {
@@ -17,7 +18,7 @@ namespace MessianicChords.Common
     public class GoogleDriveSync
     {
         public Task StartSync()
-        {
+        {            
             var startSyncTime = DateTime.Now;
             return Task
                 .Factory
@@ -29,7 +30,8 @@ namespace MessianicChords.Common
         {
             var nextChunkUri = "https://docs.google.com/feeds/default/private/full/" + Constants.MessianicChordsFolderId + "/contents";
             var docService = new DocumentsService("MessianicChords.com");
-            docService.setUserCredentials(ConfigurationManager.AppSettings["googleAccount"], ConfigurationManager.AppSettings["googlePassword"]);
+
+            //docService.setUserCredentials(ConfigurationManager.AppSettings["googleAccount"], ConfigurationManager.AppSettings["googlePassword"]);
 
             while (nextChunkUri != null)
             {
