@@ -24,7 +24,7 @@
     <div class="site-text">
         <span>New chords: </span>
         <div style="display:inline-block;" data-bind="foreach: newChords">
-            <a href="#" data-bind="attr: { href: Address }, text: Song"></a>
+            <a href="#" data-bind="attr: { href: '/ChordSheets?id=' + $data.Id }, text: $data.Key ? $data.Song + ' - ' + $data.Key : $data.Song"></a>
             <span class="bar-separator" data-bind="if: $index() != 2">&nbsp;|&nbsp;</span>
         </div>
     </div>

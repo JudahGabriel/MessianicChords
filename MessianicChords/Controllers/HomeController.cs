@@ -1,48 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Google.GData.Documents;
-using System.IO;
-using Google.GData.Client;
+﻿using MessianicChords.Common;
 using MessianicChords.Models;
-using System.Collections.Concurrent;
+using MessianicChords.Services;
+using Raven.Client;
+using Raven.Client.Linq;
+using System;
+using System.IO;
+using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using MessianicChords.Common;
-using Raven.Client;
-using System.Configuration;
+using System.Web;
+using System.Web.Mvc;
 
 namespace MessianicChords.Controllers
 {
     public class HomeController : Controller
     {
-        private static DocumentsService docService;
-        
-
-        static HomeController()
-        {
-            HomeController.docService = new DocumentsService("MessianicChords.com");
-            docService.setUserCredentials(ConfigurationManager.AppSettings["googleAccount"], ConfigurationManager.AppSettings["googlePassword"]);
-        }
-
         public ActionResult Index()
-        {            
+        {
             return View();
         }
 
-        public JsonResult NewChords()
+        public async Task<JsonResult> NewChords()
         {
-            using (var session = RavenStore.Instance.OpenSession())
+            using (var session = RavenStore.Instance.OpenAsyncSession())
             {
-                var recentChords = session
+                var recentChords = await session
                     .Query<ChordSheet>()
                     .OrderByDescending(o => o.LastUpdated)
-                    .Take(10)
-                    .ToList()
-                    .Where(s => !s.Artist.StartsWith("~"))
-                    .Take(3);
+                    .Take(3)
+                    .ToListAsync();
+                
                 return Json(recentChords, JsonRequestBehavior.AllowGet);
             }
         }
@@ -62,11 +49,11 @@ namespace MessianicChords.Controllers
             using (var session = RavenStore.Instance.OpenSession())
             {
                 var song = session.Load<ChordSheet>(id);
-                ViewBag.DocumentUrl = song.GoogleDocAddress;
+                ViewBag.DocumentUrl = song.Address;
                 ViewBag.Artist = song.Artist;
                 ViewBag.Song = song.Song;
 
-                return Redirect(song.GoogleDocAddress);
+                return Redirect(song.Address);
                 //return View("Song");
             }
         }
@@ -79,22 +66,14 @@ namespace MessianicChords.Controllers
                     .Query<ChordSheet>()
                     .Customize(x => x.RandomOrdering())
                     .First();
-                ViewBag.DocumentUrl = chordSheet.GoogleDocAddress;
-                ViewBag.Artist = chordSheet.Artist;
-                ViewBag.Song = chordSheet.Song;
 
-                return View("Song");
+                return Redirect("/chordsheets?id=" + chordSheet.Id);
             }
         }
 
         public ActionResult Song(string url, string artist, string song)
         {
-            //ViewBag.DocumentUrl = url;
-            //ViewBag.Artist = artist;
-            //ViewBag.Song = song;
-
             return Redirect(url);
-            //return View();
         }
 
         public ActionResult About()
@@ -224,27 +203,30 @@ namespace MessianicChords.Controllers
             }
         }
 
-        public JsonResult GetMatchingDocuments(string search)
+        public async Task<JsonResult> GetMatchingDocuments(string search)
         {
-            var docQuery = new DocumentsListQuery();
-            docQuery.Uri = new Uri("https://docs.google.com/feeds/default/private/full/" + Constants.MessianicChordsFolderId + "/contents");
-            docQuery.Query = search;
-            var feed = docService.Query(docQuery);
-            var results = feed.Entries.AsParallel().Select(ChordSheet.FromGDoc);
+            var fetcher = new ChordsFetcher();
+            var chordsMeta = await fetcher.GetChords(search);
+            var chordIds = chordsMeta.Take(50).Select(c => c.GoogleDocId);
 
-            using (var session = RavenStore.Instance.OpenSession())
+            using (var session = RavenStore.Instance.OpenAsyncSession())
             {
-                var searchObj = new Search { Date = DateTime.Now, Text = search };
-                session.Store(searchObj);
-                session.Advanced.GetMetadataFor(searchObj)["Raven-Expiration-Date"] = new Raven.Json.Linq.RavenJValue(DateTime.Now.AddMonths(3));
-                session.SaveChanges();
-            }
+                var chordSheets = await session.Query<ChordSheet>()
+                    .Where(s => s.GoogleDocId.In(chordIds))
+                    .ToListAsync();
 
-            return Json(new 
+                var searchObj = new Search { Date = DateTime.Now, Text = search };
+                await session.StoreAsync(searchObj);
+                session.Advanced.GetMetadataFor(searchObj)["Raven-Expiration-Date"] = new Raven.Json.Linq.RavenJValue(DateTime.Now.AddMonths(3));
+                
+                await session.SaveChangesAsync();
+
+                return Json(new
                 {
                     Search = search,
-                    Results = results.Take(50)
+                    Results = chordSheets
                 }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         private void StoreUploadRecord(HttpPostedFileBase file)

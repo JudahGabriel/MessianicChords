@@ -29,5 +29,18 @@ namespace MessianicChords.Common
         {
             return items.Where(i => !predicate(i));
         }
+
+        /// <summary>
+        /// Adds an expiration time to the raven document for the specified object.
+        /// The database must support the expiration bundle for this to have any effect.
+        /// The object set to expire must have already been .Store'd before calling this method.
+        /// </summary>
+        /// <param name="session">The raven document session.</param>
+        /// <param name="objectToExpire">The object to expire.</param>
+        /// <param name="dateTime">The expiration date time.</param>
+        public static void AddRavenExpiration(this Raven.Client.IAsyncDocumentSession session, object objectToExpire, DateTime dateTime)
+        {
+            session.Advanced.GetMetadataFor(objectToExpire)["Raven-Expiration-Date"] = new Raven.Json.Linq.RavenJValue(dateTime);
+        }
     }
 }

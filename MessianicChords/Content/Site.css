@@ -8,7 +8,6 @@
         font-size: 100px;
         padding: 10px;
         color: brown;
-        -webkit-text-shadow: 1px 1px 1px gray;
         text-shadow: 1px 1px 1px gray;
         vertical-align: text-bottom;
     }
@@ -262,4 +261,11 @@ footer a
 .bar-separator{
     font-size: 16px;
     font-family: 'Lora', serif;
+}
+
+/*Print*/ 
+@media print {
+	h1, footer, .chord-page-options {
+		display: none;
+	}
 }
