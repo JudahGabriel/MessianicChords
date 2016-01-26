@@ -25,7 +25,8 @@
         <span>New chords: </span>
         <div style="display:inline-block;" data-bind="foreach: newChords">
             <a href="#" data-bind="attr: { href: '/ChordSheets?id=' + $data.Id }, text: $data.Key ? $data.Song + ' - ' + $data.Key : $data.Song"></a>
-            <span class="bar-separator" data-bind="if: $index() != 2">&nbsp;|&nbsp;</span>
+            <span class="bar-separator">&nbsp;|&nbsp;</span>
+            <a href="#" data-bind="if: $index() === 2, click: $root.loadMoreNewChords.bind($root)">More...</a>
         </div>
     </div>
     <div data-bind="visible: isSearching" style="text-align:center; margin: 50px;">
@@ -48,6 +49,7 @@
             searchResults: ko.observableArray(),
             fileUploadSelectionVisible: ko.observable(false),
             newChords: ko.observableArray(),
+            newChordsSkip: 0,
 
             search: function (textToSearch) {
                 textToSearch = textToSearch || viewModel.searchText();
@@ -95,6 +97,13 @@
                 if (elem.nodeType === 1) {
                     $(elem).show().fadeOut('fast');
                 }
+            },
+
+            loadMoreNewChords: function () {
+                viewModel.newChordsSkip += 3;
+                $.getJSON("/Home/NewChords?skip=" + viewModel.newChordsSkip, function (results) {
+                    viewModel.newChords(results);
+                });
             }
         };
 

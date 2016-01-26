@@ -42,26 +42,27 @@
                 var self = this;
                 results.Items.forEach(function (song) {
                     song.searchForArtist = function () { }
+                    if (song.Song) {
+                        var letter = song.Song[0].toUpperCase();
+                        var existingLetterGroup = self.chordsByLetter().filter(function (c) { return c.Letter === letter })[0];
+                        if (existingLetterGroup) {
+                            existingLetterGroup.Songs.push(song);
+                        }
+                        else {
+                            var newLetterGroup = {
+                                Letter: letter,
+                                Songs: ko.observableArray([song])
+                            };
+                            newLetterGroup.Description = ko.computed(function () {
+                                var totalSongs = newLetterGroup.Songs().length;
+                                if (totalSongs > 2) {
+                                    return newLetterGroup.Letter + '  -  "' + newLetterGroup.Songs()[0].Song + '"  through  "' + newLetterGroup.Songs()[totalSongs - 1].Song + '"';
+                                }
 
-                    var letter = song.Song[0].toUpperCase();
-                    var existingLetterGroup = self.chordsByLetter().filter(function(c) { return c.Letter === letter })[0];
-                    if (existingLetterGroup) {
-                        existingLetterGroup.Songs.push(song);
-                    }
-                    else {
-                        var newLetterGroup = {
-                            Letter: letter,
-                            Songs: ko.observableArray([song])
-                        };
-                        newLetterGroup.Description = ko.computed(function () {
-                            var totalSongs = newLetterGroup.Songs().length;
-                            if (totalSongs > 2) {
-                                return newLetterGroup.Letter + '  -  "' + newLetterGroup.Songs()[0].Song + '"  through  "' + newLetterGroup.Songs()[totalSongs - 1].Song + '"';
-                            }
-                            
-                            return newLetterGroup.Letter;
-                        });
-                        self.chordsByLetter.push(newLetterGroup);
+                                return newLetterGroup.Letter;
+                            });
+                            self.chordsByLetter.push(newLetterGroup);
+                        }
                     }
                 });
 

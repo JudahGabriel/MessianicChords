@@ -9,6 +9,7 @@ using MessianicChords.Models;
 
 namespace MessianicChords.Controllers
 {
+    [RequireHttps]
     public class AccountController : Controller
     {
 

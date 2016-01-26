@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace MessianicChords.Controllers
 {
+    [RequireHttps]
     public class LegalController : Controller
     {
         //

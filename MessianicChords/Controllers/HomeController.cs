@@ -13,6 +13,7 @@ using System.Web.Mvc;
 
 namespace MessianicChords.Controllers
 {
+    [RequireHttps]
     public class HomeController : Controller
     {
         public ActionResult Index()
@@ -20,13 +21,14 @@ namespace MessianicChords.Controllers
             return View();
         }
 
-        public async Task<JsonResult> NewChords()
+        public async Task<JsonResult> NewChords(int skip = 0)
         {
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
                 var recentChords = await session
                     .Query<ChordSheet>()
                     .OrderByDescending(o => o.LastUpdated)
+                    .Skip(skip)
                     .Take(3)
                     .ToListAsync();
                 
@@ -54,7 +56,6 @@ namespace MessianicChords.Controllers
                 ViewBag.Song = song.Song;
 
                 return Redirect(song.Address);
-                //return View("Song");
             }
         }
 

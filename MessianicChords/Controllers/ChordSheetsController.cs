@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace MessianicChords.Controllers
 {
+    [RequireHttps]
     public class ChordSheetsController : Controller
     {
         // GET: Chords
