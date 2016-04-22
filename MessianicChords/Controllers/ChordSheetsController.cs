@@ -1,5 +1,6 @@
 ﻿using MessianicChords.Common;
 using MessianicChords.Models;
+using MessianicChords.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,28 @@ namespace MessianicChords.Controllers
                 }
 
                 return View(chordSheet);
+            }
+        }
+
+        public async Task<ActionResult> Sync()
+        {
+            try
+            {
+                await new GoogleDriveSync().StartSync();
+                return Json("Completed successfully");
+            }
+            catch (Exception error)
+            {
+                using (var session = RavenStore.Instance.OpenAsyncSession())
+                {
+                    await session.StoreAsync(new Log
+                    {
+                        Message = error.ToString(),
+                        Date = DateTime.UtcNow
+                    });
+                }
+
+                return Json("Error: " + error.Message);
             }
         }
     }
