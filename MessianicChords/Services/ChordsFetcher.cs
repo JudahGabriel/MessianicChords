@@ -117,14 +117,14 @@ namespace MessianicChords.Services
                 ClientId = ConfigurationManager.AppSettings["googleClientId"],
                 ClientSecret = ConfigurationManager.AppSettings["googleClientSecret"]
             };
-            
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                secrets,
-                new[] { DriveService.Scope.Drive },
-                "TokenSession/MessianicChords", 
-                CancellationToken.None, 
-                new RavenBackedGoogleCredentialStore());
 
+            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    secrets,
+                    new[] { DriveService.Scope.Drive },
+                    "TokenSession/MessianicChords",
+                    CancellationToken.None,
+                    new RavenBackedGoogleCredentialStore());
+            
             var initializer = new BaseClientService.Initializer
             {
                 HttpClientInitializer = credential,
