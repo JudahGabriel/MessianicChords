@@ -39,25 +39,6 @@ namespace MessianicChords
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
             RavenStore.Initialize();
-
-            AddTask("SyncChords", 10);
-        }
-
-        private void AddTask(string name, int seconds)
-        {
-            HttpRuntime.Cache.Insert(name, seconds, null,
-                DateTime.Now.AddSeconds(seconds), Cache.NoSlidingExpiration,
-                CacheItemPriority.NotRemovable, CacheItemRemoved);
-        }
-
-        private void CacheItemRemoved(string taskName, object value, CacheItemRemovedReason r)
-        {
-            if (taskName == "SyncChords")
-            {
-                new GoogleDriveSync()
-                    .StartSync()
-                    .ContinueWith(_ => AddTask(taskName, (int)TimeSpan.FromHours(1).TotalSeconds));
-            }
         }
     }
 }

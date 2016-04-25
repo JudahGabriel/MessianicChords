@@ -1,4 +1,6 @@
-﻿using MessianicChords.Common;
+﻿using Google.Apis.Auth.OAuth2.Mvc;
+using Google.Apis.Services;
+using MessianicChords.Common;
 using MessianicChords.Models;
 using MessianicChords.Services;
 using Raven.Client;
@@ -7,6 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.ServiceModel.Syndication;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -206,7 +209,15 @@ namespace MessianicChords.Controllers
 
         public async Task<JsonResult> GetMatchingDocuments(string search)
         {
-            var fetcher = new ChordsFetcher();
+            var googleAuth = await new AuthorizationCodeMvcApp(this, new OAuthFlow())
+                .AuthorizeAsync(CancellationToken.None);
+            var googleAuthInit = new BaseClientService.Initializer
+            {
+                HttpClientInitializer = googleAuth.Credential,
+                ApplicationName = "Messianic Chords"
+            };
+
+            var fetcher = await ChordsFetcher.Create(this);
             var chordsMeta = await fetcher.GetChords(search);
             var chordIds = chordsMeta.Take(50).Select(c => c.GoogleDocId);
 

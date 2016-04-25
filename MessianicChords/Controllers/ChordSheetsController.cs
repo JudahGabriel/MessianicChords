@@ -42,12 +42,14 @@ namespace MessianicChords.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<ActionResult> Sync()
         {
             try
             {
-                await new GoogleDriveSync().StartSync();
-                return Json("Completed successfully");
+                var chordsFetcher = await ChordsFetcher.Create(this);
+                await new GoogleDriveSync(chordsFetcher).Start();
+                return Json("Completed successfully", JsonRequestBehavior.AllowGet);
             }
             catch (Exception error)
             {
@@ -60,7 +62,7 @@ namespace MessianicChords.Controllers
                     });
                 }
 
-                return Json("Error: " + error.Message);
+                return Json("Error: " + error.Message, JsonRequestBehavior.AllowGet);
             }
         }
     }
