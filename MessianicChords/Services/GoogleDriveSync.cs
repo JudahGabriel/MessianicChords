@@ -11,6 +11,7 @@ using Raven.Client.Linq;
 using System.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Raven.Abstractions.Data;
+using System.Diagnostics;
 
 namespace MessianicChords.Services
 {
@@ -26,14 +27,19 @@ namespace MessianicChords.Services
             this.chordsFetcher = chordsFetcher;
         }
 
-        public async Task Start()
+        public async Task<SyncRecord> Start()
         {
-            await EnsureAllGDocsAreInRaven()
-                .ContinueWith(_ => EnsureAllRavenDocsAreInGoogle())
-                .ContinueWith(_ => EnsureChordSheetsAreUpdated());
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var syncRecord = new SyncRecord();
+            await EnsureAllGDocsAreInRaven(syncRecord)
+                .ContinueWith(_ => EnsureAllRavenDocsAreInGoogle(syncRecord))
+                .ContinueWith(_ => EnsureChordSheetsAreUpdated(syncRecord));
+            syncRecord.Elapsed = stopWatch.Elapsed;
+            return syncRecord;
         }
 
-        private async Task EnsureAllGDocsAreInRaven()
+        private async Task EnsureAllGDocsAreInRaven(SyncRecord syncRecord)
         {
             var googleDriveChords = await chordsFetcher.GetChords();
             var googleDriveChordIds = googleDriveChords.Select(c => c.GoogleDocId).ToList();
@@ -65,12 +71,13 @@ namespace MessianicChords.Services
                     if (!isWordTempFile)
                     {
                         bulkInsert.Store(chordSheet);
+                        syncRecord.AddedDocs.Add(chordSheet.GetDisplayName());
                     }
                 }
             }
         }
 
-        private async Task EnsureAllRavenDocsAreInGoogle()
+        private async Task EnsureAllRavenDocsAreInGoogle(SyncRecord syncRecord)
         {
             var googleDriveChords = await chordsFetcher.GetChords();
             var googleDocIds = googleDriveChords.Select(c => c.GoogleDocId).ToList();
@@ -85,6 +92,7 @@ namespace MessianicChords.Services
                         if (!googleDocIds.Contains(currentChordSheet.GoogleDocId))
                         {
                             ravenDocIdsToDelete.Add(currentChordSheet.Id);
+                            syncRecord.RemovedDocs.Add(currentChordSheet.GetDisplayName());
                         }
                     }
                 }
@@ -99,7 +107,7 @@ namespace MessianicChords.Services
         /// update it with the version from Google Drive.
         /// </summary>
         /// <returns></returns>
-        private async Task EnsureChordSheetsAreUpdated()
+        private async Task EnsureChordSheetsAreUpdated(SyncRecord syncRecord)
         {            
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
@@ -123,6 +131,7 @@ namespace MessianicChords.Services
                         var refreshedChordSheet = await chordsFetcher.CreateChordSheet(ravenDoc.GoogleDocId);
                         ravenDoc.UpdateFrom(refreshedChordSheet);
                         bulkInsert.Store(ravenDoc);
+                        syncRecord.UpdatedDocs.Add(ravenDoc.GetDisplayName());
                     }
                 }
 

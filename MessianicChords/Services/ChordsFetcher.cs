@@ -120,10 +120,10 @@ namespace MessianicChords.Services
         {
             var driveService = new DriveService(this.googleCredentials);
             var googleDoc = await driveService.Files.Get(googleDocId).ExecuteAsync();
-
+            
             var artistTitleKey = System.IO.Path.GetFileNameWithoutExtension(googleDoc.Title.Replace('/', ','))
                 .Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
-            return new ChordSheet
+            var chordSheet = new ChordSheet
             {
                 Artist = artistTitleKey.ElementAtOrDefault(0),
                 Song = artistTitleKey.ElementAtOrDefault(1),
@@ -132,33 +132,11 @@ namespace MessianicChords.Services
                 ThumbnailUrl = googleDoc.ThumbnailLink,
                 GoogleDocId = googleDoc.Id,
                 LastUpdated = DateTime.UtcNow,
-                ETag = googleDoc.ETag
+                ETag = googleDoc.ETag,
+                Extension = googleDoc.FileExtension
             };
+
+            return chordSheet;
         }
-
-        //private async Task<BaseClientService.Initializer> GetCredentials()
-        //{
-            
-            //var secrets = new ClientSecrets
-            //{
-            //    ClientId = ConfigurationManager.AppSettings["googleClientId"],
-            //    ClientSecret = ConfigurationManager.AppSettings["googleClientSecret"]
-            //};
-
-            //var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-            //        secrets,
-            //        new[] { DriveService.Scope.Drive },
-            //        "TokenSession/MessianicChords",
-            //        CancellationToken.None,
-            //        new RavenBackedGoogleCredentialStore());
-
-            //var initializer = new BaseClientService.Initializer
-            //{
-            //    HttpClientInitializer = credential,
-            //    ApplicationName = "BitShuva-MessianicChords/1.0"
-            //};
-
-            //return initializer;
-        //}
     }
 }

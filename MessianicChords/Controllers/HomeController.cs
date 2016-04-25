@@ -212,7 +212,7 @@ namespace MessianicChords.Controllers
             var chordsAuth = await ChordsFetcher.Authorize(this);
             if (!string.IsNullOrEmpty(chordsAuth.RedirectUrl))
             {
-                return new RedirectResult(chordsAuth.RedirectUrl);
+                throw new ArgumentException("Reauthentication with Google OAuth is required.");
             }
 
             var fetcher = chordsAuth.ChordsFetcher;
@@ -225,12 +225,19 @@ namespace MessianicChords.Controllers
                     .Where(s => s.GoogleDocId.In(chordIds))
                     .ToListAsync();
 
-                var searchObj = new Search { Date = DateTime.Now, Text = search };
-                await session.StoreAsync(searchObj);
-                session.Advanced.GetMetadataFor(searchObj)["Raven-Expiration-Date"] = new Raven.Json.Linq.RavenJValue(DateTime.Now.AddMonths(3));
+                var existingSearch = await session.Query<Search>()
+                    .FirstOrDefaultAsync(s => s.Text == search);
+                if (existingSearch != null)
+                {
+                    existingSearch.Count += 1;
+                }
+                else
+                {
+                    var searchObj = new Search { Date = DateTime.Now, Text = search, Count = 1 };
+                    await session.StoreAsync(searchObj);
+                }
                 
                 await session.SaveChangesAsync();
-
                 return Json(new
                 {
                     Search = search,

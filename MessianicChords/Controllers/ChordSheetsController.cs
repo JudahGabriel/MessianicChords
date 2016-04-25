@@ -53,8 +53,14 @@ namespace MessianicChords.Controllers
                     return new RedirectResult(authorizeResults.RedirectUrl);
                 }
 
-                await new GoogleDriveSync(authorizeResults.ChordsFetcher).Start();
-                return Json("Completed successfully", JsonRequestBehavior.AllowGet);
+                var syncRecord = await new GoogleDriveSync(authorizeResults.ChordsFetcher).Start();
+                using (var session = RavenStore.Instance.OpenAsyncSession())
+                {
+                    await session.StoreAsync(syncRecord);
+                    await session.SaveChangesAsync();
+                }
+
+                return Json(syncRecord, JsonRequestBehavior.AllowGet);
             }
             catch (Exception error)
             {
@@ -67,7 +73,7 @@ namespace MessianicChords.Controllers
                     });
                 }
 
-                return Json(error.ToString(), JsonRequestBehavior.AllowGet);
+                throw;
             }
         }
     }

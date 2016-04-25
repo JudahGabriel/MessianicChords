@@ -12,18 +12,31 @@ namespace MessianicChords.Models
         public string GoogleDocId { get; set; }
         public string ETag { get; set; }
         public string Id { get; set; }
+        public string PlainTextContents { get; set; }
         public DateTime LastUpdated { get; set; }
+        public string Extension { get; set; }
 
         public void UpdateFrom(ChordSheet other)
         {
-            this.Address = other.Address;
-            this.Artist = other.Artist;
-            this.ETag = other.ETag;
-            this.GoogleDocId = other.GoogleDocId;
-            this.Key = other.Key;
-            this.LastUpdated = DateTime.UtcNow;
-            this.Song = other.Song;
-            this.ThumbnailUrl = other.ThumbnailUrl;            
+            Address = other.Address;
+            Artist = other.Artist;
+            ETag = other.ETag;
+            GoogleDocId = other.GoogleDocId;
+            Key = other.Key;
+            LastUpdated = DateTime.UtcNow;
+            PlainTextContents = other.PlainTextContents;
+            Song = other.Song;
+            ThumbnailUrl = other.ThumbnailUrl;       
+        }
+
+        public string GetDisplayName()
+        {
+            if (!string.IsNullOrWhiteSpace(Key))
+            {
+                return $"{Artist} - {Song} - {Key}";
+            }
+
+            return $"{Artist} - {Song}";
         }
     }
 }
