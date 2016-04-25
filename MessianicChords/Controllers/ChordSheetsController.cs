@@ -47,8 +47,13 @@ namespace MessianicChords.Controllers
         {
             try
             {
-                var chordsFetcher = await ChordsFetcher.Create(this);
-                await new GoogleDriveSync(chordsFetcher).Start();
+                var authorizeResults = await ChordsFetcher.Authorize(this);
+                if (!string.IsNullOrEmpty(authorizeResults.RedirectUrl))
+                {
+                    return new RedirectResult(authorizeResults.RedirectUrl);
+                }
+
+                await new GoogleDriveSync(authorizeResults.ChordsFetcher).Start();
                 return Json("Completed successfully", JsonRequestBehavior.AllowGet);
             }
             catch (Exception error)
@@ -62,7 +67,7 @@ namespace MessianicChords.Controllers
                     });
                 }
 
-                return Json("Error: " + error.Message, JsonRequestBehavior.AllowGet);
+                return Json(error.ToString(), JsonRequestBehavior.AllowGet);
             }
         }
     }

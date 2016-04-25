@@ -29,17 +29,22 @@ namespace MessianicChords.Services
             this.googleCredentials = googleCredentials;
         }
 
-        public static async Task<ChordsFetcher> Create(Controller controller)
+        public static async Task<ChordFetcherAuthResult> Authorize(Controller controller)
         {
             var googleAuth = await new AuthorizationCodeMvcApp(controller, new OAuthFlow())
                 .AuthorizeAsync(CancellationToken.None);
-            var initializer = new BaseClientService.Initializer
+            if (googleAuth.Credential != null)
             {
-                HttpClientInitializer = googleAuth.Credential,
-                ApplicationName = "Messianic Chords"
-            };
+                var initializer = new BaseClientService.Initializer
+                {
+                    HttpClientInitializer = googleAuth.Credential,
+                    ApplicationName = "Messianic Chords",
+                };
 
-            return new ChordsFetcher(initializer);
+                return new ChordFetcherAuthResult { ChordsFetcher = new ChordsFetcher(initializer) };
+            }
+
+            return new ChordFetcherAuthResult { RedirectUrl = googleAuth.RedirectUri };
         }
 
         /// <summary>

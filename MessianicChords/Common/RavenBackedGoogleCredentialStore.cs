@@ -5,6 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
+using MessianicChords.Models;
+using Raven.Client;
+using Raven.Client.Linq;
 
 namespace MessianicChords.Common
 {
@@ -23,8 +26,14 @@ namespace MessianicChords.Common
         {
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
-                session.Delete(key);
-                await session.SaveChangesAsync();
+                var obj = await session.Query<GoogleOAuthCredential>()
+                    .Where(c => c.Key == key)
+                    .FirstOrDefaultAsync();
+                if (obj != null)
+                {
+                    session.Delete(obj);
+                    await session.SaveChangesAsync();
+                }
             }
         }
 
@@ -32,15 +41,37 @@ namespace MessianicChords.Common
         {
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
-                return await session.LoadAsync<T>(key);
+                var cred = await session.Query<GoogleOAuthCredential>()
+                    .FirstOrDefaultAsync(c => c.Key == key);
+                if (cred != null)
+                {
+                    return (T)cred.Value;
+                }
             }
+
+            return default(T);
         }
 
         public async Task StoreAsync<T>(string key, T value)
         {
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
-                await session.StoreAsync(value, key);
+                var existing = await session.Query<GoogleOAuthCredential>()
+                    .FirstOrDefaultAsync(c => c.Key == key);
+                if (existing != null)
+                {
+                    existing.Value = value;
+                }
+                else
+                {
+                    var newCred = new GoogleOAuthCredential
+                    {
+                        Key = key,
+                        Value = value
+                    };
+                    await session.StoreAsync(newCred, key);
+                }
+
                 await session.SaveChangesAsync();
             }
         }

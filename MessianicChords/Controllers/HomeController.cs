@@ -207,17 +207,15 @@ namespace MessianicChords.Controllers
             }
         }
 
-        public async Task<JsonResult> GetMatchingDocuments(string search)
+        public async Task<ActionResult> GetMatchingDocuments(string search)
         {
-            var googleAuth = await new AuthorizationCodeMvcApp(this, new OAuthFlow())
-                .AuthorizeAsync(CancellationToken.None);
-            var googleAuthInit = new BaseClientService.Initializer
+            var chordsAuth = await ChordsFetcher.Authorize(this);
+            if (!string.IsNullOrEmpty(chordsAuth.RedirectUrl))
             {
-                HttpClientInitializer = googleAuth.Credential,
-                ApplicationName = "Messianic Chords"
-            };
+                return new RedirectResult(chordsAuth.RedirectUrl);
+            }
 
-            var fetcher = await ChordsFetcher.Create(this);
+            var fetcher = chordsAuth.ChordsFetcher;
             var chordsMeta = await fetcher.GetChords(search);
             var chordIds = chordsMeta.Take(50).Select(c => c.GoogleDocId);
 

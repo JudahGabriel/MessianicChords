@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace MessianicChords.Controllers
 {
-    public class AuthCallback : Google.Apis.Auth.OAuth2.Mvc.Controllers.AuthCallbackController
+    public class AuthCallbackController : Google.Apis.Auth.OAuth2.Mvc.Controllers.AuthCallbackController
     {
         protected override Google.Apis.Auth.OAuth2.Mvc.FlowMetadata FlowData
         {

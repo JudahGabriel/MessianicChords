@@ -53,6 +53,14 @@
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Elmah, Version=1.2.13605.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\elmah.corelibrary.1.2\lib\Elmah.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Elmah.Mvc, Version=2.1.2.1389, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elmah.Mvc.2.1.2\lib\net40\Elmah.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
       <Private>True</Private>
@@ -150,6 +158,10 @@
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -202,8 +214,10 @@
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Controllers\ChordSheetsController.cs" />
-    <Compile Include="Controllers\OAuthController.cs" />
+    <Compile Include="Controllers\AuthCallbackController.cs" />
     <Compile Include="Models\ChangesPoll.cs" />
+    <Compile Include="Models\ChordFetcherAuthResult.cs" />
+    <Compile Include="Models\GoogleOAuthCredential.cs" />
     <Compile Include="Services\GoogleDriveSync.cs" />
     <Compile Include="Common\RavenBackedGoogleCredentialStore.cs" />
     <Compile Include="Controllers\AccountController.cs" />
