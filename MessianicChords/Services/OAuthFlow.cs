@@ -38,14 +38,15 @@ namespace MessianicChords.Services
             // a user. You might want to use "OpenID Connect".
             // You can read more about the protocol in the following link:
             // https://developers.google.com/accounts/docs/OAuth2Login.
-            var user = controller.Session["user"];
-            if (user == null)
-            {
-                user = Guid.NewGuid();
-                controller.Session["user"] = user;
-            }
-            return user.ToString();
+            //var user = controller.Session["user"];
+            //if (user == null)
+            //{
+            //    user = Guid.NewGuid();
+            //    controller.Session["user"] = user;
+            //}
+            //return user.ToString();
 
+            return "judahgabriel@gmail.com";
         }
 
         public override IAuthorizationCodeFlow Flow

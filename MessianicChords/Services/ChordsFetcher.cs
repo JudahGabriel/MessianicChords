@@ -31,8 +31,10 @@ namespace MessianicChords.Services
 
         public static async Task<ChordFetcherAuthResult> Authorize(Controller controller)
         {
-            var googleAuth = await new AuthorizationCodeMvcApp(controller, new OAuthFlow())
+            var flow = new OAuthFlow();
+            var googleAuth = await new AuthorizationCodeMvcApp(controller, flow)
                 .AuthorizeAsync(CancellationToken.None);
+
             if (googleAuth.Credential != null)
             {
                 var initializer = new BaseClientService.Initializer
