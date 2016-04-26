@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Auth.OAuth2.Mvc;
 using Google.Apis.Services;
 using MessianicChords.Common;
+using MessianicChords.Data;
 using MessianicChords.Models;
 using MessianicChords.Services;
 using Raven.Client;
@@ -17,7 +18,7 @@ using System.Web.Mvc;
 namespace MessianicChords.Controllers
 {
     [RequireHttps]
-    public class HomeController : Controller
+    public class HomeController : RavenSessionController
     {
         public ActionResult Index()
         {
@@ -26,17 +27,14 @@ namespace MessianicChords.Controllers
 
         public async Task<JsonResult> NewChords(int skip = 0)
         {
-            using (var session = RavenStore.Instance.OpenAsyncSession())
-            {
-                var recentChords = await session
-                    .Query<ChordSheet>()
-                    .OrderByDescending(o => o.LastUpdated)
-                    .Skip(skip)
-                    .Take(3)
-                    .ToListAsync();
+            var recentChords = await DbSession
+                .Query<ChordSheet>()
+                .OrderByDescending(o => o.LastUpdated)
+                .Skip(skip)
+                .Take(3)
+                .ToListAsync();
                 
-                return Json(recentChords, JsonRequestBehavior.AllowGet);
-            }
+            return Json(recentChords, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Artists()
@@ -49,30 +47,24 @@ namespace MessianicChords.Controllers
             return View("SongBrowse");
         }
 
-        public ActionResult SongById(string id)
+        public async Task<ActionResult> SongById(string id)
         {
-            using (var session = RavenStore.Instance.OpenSession())
-            {
-                var song = session.Load<ChordSheet>(id);
-                ViewBag.DocumentUrl = song.Address;
-                ViewBag.Artist = song.Artist;
-                ViewBag.Song = song.Song;
+            var song = await DbSession.LoadAsync<ChordSheet>(id);
+            ViewBag.DocumentUrl = song.Address;
+            ViewBag.Artist = song.Artist;
+            ViewBag.Song = song.Song;
 
-                return Redirect(song.Address);
-            }
+            return Redirect(song.Address);
         }
 
-        public ActionResult Random()
+        public async Task<ActionResult> Random()
         {
-            using (var session = RavenStore.Instance.OpenSession())
-            {
-                var chordSheet = session
-                    .Query<ChordSheet>()
-                    .Customize(x => x.RandomOrdering())
-                    .First();
+            var chordSheet = await DbSession
+                .Query<ChordSheet>()
+                .Customize(x => x.RandomOrdering())
+                .FirstAsync();
 
-                return Redirect("/chordsheets?id=" + chordSheet.Id);
-            }
+            return Redirect("/chordsheets?id=" + chordSheet.Id);
         }
 
         public ActionResult Song(string url, string artist, string song)
@@ -91,7 +83,7 @@ namespace MessianicChords.Controllers
         }
 
         [HttpPost]
-        public ActionResult Upload()
+        public async Task<ActionResult> Upload()
         {
             var uploadsDirectory = this.HttpContext.Server.MapPath("~/App_Data/Uploads");
             if (!Directory.Exists(uploadsDirectory))
@@ -105,56 +97,57 @@ namespace MessianicChords.Controllers
                 if (file.ContentLength > 0)
                 {
                     file.SaveAs(Path.Combine(uploadsDirectory, file.FileName));
-                    StoreUploadRecord(file);
+                    await StoreUploadRecord(file);
                 }
             }
 
             return RedirectToAction("UploadFinished");
         }
 
-        public ActionResult UploadFeed()
+        public async Task<ActionResult> UploadFeed()
         {
             var monthAgo = DateTime.Now.Subtract(TimeSpan.FromDays(30));
-            using (var session = RavenStore.Instance.OpenSession())
-            {
-                var postItems = session.Query<UploadRecord>()
-                    .Where(d => d.Date >= monthAgo)
-                    .OrderByDescending(p => p.Date)
-                    .Take(25)
-                    .ToArray()
-                    .Select(p => new SyndicationItem(string.Format("Guitar chords for '{0}' is now on MessianicChords.com", p.FileName), p.FileName, new Uri("http://messianicchords.com/#" + Uri.EscapeDataString(Path.GetFileNameWithoutExtension(p.FileName.Replace('-', ' '))))));
 
-                var feed = new SyndicationFeed("Messianic Chords Uploads", "Feed for user-submitted chords sheets", new Uri("http://messianicchords.com"), postItems)
-                {
-                    Language = "en-US"
-                };
-                return new RssResult(new Rss20FeedFormatter(feed));
-            }
+            var posts = await DbSession.Query<UploadRecord>()
+                .Where(d => d.Date >= monthAgo)
+                .OrderByDescending(p => p.Date)
+                .Take(25)
+                .ToListAsync();
+
+            var postItems = posts
+                .Select(
+                    p => new SyndicationItem($"Guitar chords for '{p.FileName}' is now on MessianicChords.com", p.FileName, new Uri("http://messianicchords.com/#" + Uri.EscapeDataString(Path.GetFileNameWithoutExtension(p.FileName.Replace('-', ' '))))));
+
+            var feed = new SyndicationFeed("Messianic Chords Uploads", "Feed for user-submitted chords sheets", new Uri("http://messianicchords.com"), postItems)
+            {
+                Language = "en-US"
+            };
+            return new RssResult(new Rss20FeedFormatter(feed));
         }
 
-        public ActionResult RecentSongsFeed()
+        public async Task<ActionResult> RecentSongsFeed()
         {
             var monthAgo = DateTime.Now.Subtract(TimeSpan.FromDays(30));
-            using (var session = RavenStore.Instance.OpenSession())
-            {
-                var chordFeedItems = session
-                    .Query<ChordSheet>()
-                    .OrderByDescending(o => o.LastUpdated)
-                    .Take(10)
-                    .AsEnumerable()
-                    .Where(c => !c.Artist.Contains("~") && !c.Artist.Contains("$")) // Skip the Word temporary files.
-                    .Select(c => new SyndicationItem(
-                        string.Format("\"{0}\" by {1}, lyrics and chords are now on MessianicChords", c.Song, c.Artist),
-                        string.Format("{0} - {1} has been added to or updated on MessianicChords.com", c.Artist, c.Song),
-                        new Uri("http://messianicchords.com/home/songbyid/?id=" + c.Id)
-                        ));
+            var chords = await DbSession
+                .Query<ChordSheet>()
+                .OrderByDescending(o => o.LastUpdated)
+                .Take(10)
+                .ToListAsync();
+
+            var chordFeedItems = chords
+                .Where(c => !c.Artist.Contains("~") && !c.Artist.Contains("$")) // Skip the Word temporary files.
+                .Select(c => new SyndicationItem(
+                    string.Format("\"{0}\" by {1}, lyrics and chords are now on MessianicChords", c.Song, c.Artist),
+                    string.Format("{0} - {1} has been added to or updated on MessianicChords.com", c.Artist, c.Song),
+                    new Uri("http://messianicchords.com/chordsheets/?id=" + c.Id)
+                    ));
                     
-                var feed = new SyndicationFeed("Messianic Chords Uploads", "Feed for user-submitted chords sheets", new Uri("http://messianicchords.com"), chordFeedItems)
-                {
-                    Language = "en-US"
-                };
-                return new RssResult(new Rss20FeedFormatter(feed));
-            }
+            var feed = new SyndicationFeed("Messianic Chords Uploads", "Feed for user-submitted chords sheets", new Uri("http://messianicchords.com"), chordFeedItems)
+            {
+                Language = "en-US"
+            };
+
+            return new RssResult(new Rss20FeedFormatter(feed));
         }
 
         public ActionResult StartUpload()
@@ -167,86 +160,45 @@ namespace MessianicChords.Controllers
             return PartialView();
         }
 
-        public JsonResult GetSongsByArtist(int skip, int take)
+        public async Task<JsonResult> GetSongsByArtist(int skip, int take)
         {
-            using (var session = RavenStore.Instance.OpenSession())
+            var stats = default(RavenQueryStatistics);
+            var results = await DbSession
+                .Query<ChordSheet>()
+                .Statistics(out stats)
+                .OrderBy(c => c.Artist)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            var pagedResults = new
             {
-                var stats = default(RavenQueryStatistics);
-                var results = session
-                    .Query<ChordSheet>()
-                    .Statistics(out stats)
-                    .OrderBy(c => c.Artist)
-                    .Skip(skip)
-                    .Take(take);
-                var pagedResults = new
-                {
-                    Items = results.ToArray(),
-                    Total = stats.TotalResults
-                };
-                return Json(pagedResults, JsonRequestBehavior.AllowGet);
-            }
+                Items = results,
+                Total = stats.TotalResults
+            };
+            
+            return Json(pagedResults, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetSongsByName(int skip, int take)
+        public async Task<JsonResult> GetSongsByName(int skip, int take)
         {
-            using (var session = RavenStore.Instance.OpenSession())
+            var stats = default(RavenQueryStatistics);
+            var results = await DbSession
+                .Query<ChordSheet>()
+                .Statistics(out stats)
+                .OrderBy(c => c.Song)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            var pagedResults = new
             {
-                var stats = default(RavenQueryStatistics);
-                var results = session
-                    .Query<ChordSheet>()
-                    .Statistics(out stats)
-                    .OrderBy(c => c.Song)
-                    .Skip(skip)
-                    .Take(take);
-                var pagedResults = new
-                {
-                    Items = results.ToArray(),
-                    Total = stats.TotalResults
-                };
-                return Json(pagedResults, JsonRequestBehavior.AllowGet);
-            }
+                Items = results,
+                Total = stats.TotalResults
+            };
+
+            return Json(pagedResults, JsonRequestBehavior.AllowGet);
         }
-
-        public async Task<ActionResult> GetMatchingDocuments(string search)
-        {
-            var chordsAuth = await ChordsFetcher.Authorize(this);
-            if (!string.IsNullOrEmpty(chordsAuth.RedirectUrl))
-            {
-                throw new ArgumentException("Reauthentication with Google OAuth is required.");
-            }
-
-            var fetcher = chordsAuth.ChordsFetcher;
-            var chordsMeta = await fetcher.GetChords(search);
-            var chordIds = chordsMeta.Take(50).Select(c => c.GoogleDocId);
-
-            using (var session = RavenStore.Instance.OpenAsyncSession())
-            {
-                var chordSheets = await session.Query<ChordSheet>()
-                    .Where(s => s.GoogleDocId.In(chordIds))
-                    .ToListAsync();
-
-                var existingSearch = await session.Query<Search>()
-                    .FirstOrDefaultAsync(s => s.Text == search);
-                if (existingSearch != null)
-                {
-                    existingSearch.Count += 1;
-                }
-                else
-                {
-                    var searchObj = new Search { Date = DateTime.Now, Text = search, Count = 1 };
-                    await session.StoreAsync(searchObj);
-                }
-                
-                await session.SaveChangesAsync();
-                return Json(new
-                {
-                    Search = search,
-                    Results = chordSheets
-                }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        private void StoreUploadRecord(HttpPostedFileBase file)
+        
+        private async Task StoreUploadRecord(HttpPostedFileBase file)
         {
             var uploadRecord = new UploadRecord 
             { 
@@ -254,11 +206,9 @@ namespace MessianicChords.Controllers
                 FileName = file.FileName,
                 Date = DateTime.Now
             };
-            using (var session = RavenStore.Instance.OpenSession())
-            {
-                session.Store(uploadRecord);
-                session.SaveChanges();
-            }
+
+            await DbSession.StoreAsync(uploadRecord);
+            await DbSession.SaveChangesAsync();
         }
     }
 }

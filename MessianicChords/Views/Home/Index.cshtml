@@ -8,7 +8,7 @@
         value: searchText,
         valueUpdate: 'afterkeydown',
         css: { 'prompt-text': isShowingPromptText, 'search-text': !isShowingPromptText() },
-        event: { focus: clearPromptTextIfNecessary, blur: showPromptTextIfNecessary } " />
+        event: { focus: clearPromptTextIfNecessary, blur: showPromptTextIfNecessary } "/>
     <span class="search-box-brace">}</span>
     <div class="upload-container" data-bind="visible: !fileUploadSelectionVisible()">Got chords to share? <a href="#" data-bind="click: showFileUploadSelection">Upload them now</a></div>
     <div class="upload-container" data-bind="visible: fileUploadSelectionVisible">
@@ -55,11 +55,11 @@
                 textToSearch = textToSearch || viewModel.searchText();
                 viewModel.searchResults.removeAll();
                 viewModel.isSearching(true);
-                $.getJSON("/Home/GetMatchingDocuments?search=" + escape(textToSearch), function (searchResults) {
+                $.getJSON("/chordsheets/search?term=" + encodeURIComponent(textToSearch), function (searchResults) {
                     // These are the search results we're looking for.
                     var isSearchResultsWeAreLookingFor = searchResults.Search === viewModel.searchText();
                     if (isSearchResultsWeAreLookingFor) {
-                        window.location.hash = escape(textToSearch);
+                        window.location.hash = encodeURIComponent(textToSearch);
                         $.each(searchResults.Results, function (index, item) {
                             item.searchForArtist = function () { viewModel.searchText(item.Artist); }
                             viewModel.searchResults.push(item);
@@ -116,7 +116,7 @@
         });
 
         viewModel.isShowingSearchResults = ko.computed(function () { return !viewModel.isSearching() && !viewModel.isShowingPromptTextOrEmpty() });
-        viewModel.searchTextThrottled = ko.computed(viewModel.searchText).extend({ throttle: 250 });
+        viewModel.searchTextThrottled = ko.computed(viewModel.searchText).extend({ throttle: 500 });
         viewModel.searchTextThrottled.subscribe(function (newVal) {
             viewModel.searchResults.removeAll();
             var isShowingPromptText = newVal === promptText;

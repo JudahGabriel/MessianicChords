@@ -24,9 +24,12 @@ namespace MessianicChords.Services
     {
         private readonly BaseClientService.Initializer googleCredentials;
 
+        public static BaseClientService.Initializer lastInitializer;
+
         public ChordsFetcher(BaseClientService.Initializer googleCredentials)
         {
             this.googleCredentials = googleCredentials;
+            lastInitializer = googleCredentials;
         }
 
         public static async Task<ChordFetcherAuthResult> Authorize(Controller controller)
@@ -34,7 +37,6 @@ namespace MessianicChords.Services
             var flow = new OAuthFlow();
             var googleAuth = await new AuthorizationCodeMvcApp(controller, flow)
                 .AuthorizeAsync(CancellationToken.None);
-
             if (googleAuth.Credential != null)
             {
                 var initializer = new BaseClientService.Initializer
@@ -57,7 +59,7 @@ namespace MessianicChords.Services
         public async Task<IList<ChordSheetMetadata>> GetChords(string search = null)
         {
             var driveService = new DriveService(this.googleCredentials);
-            var chordsFolderId = Constants.MessianicChordsFolderId;
+            var chordsFolderId = ConfigurationManager.AppSettings["messianicChordsFolderId"];
             var pageToken = default(string);
             var hasMore = true;
             var initialCapacity = string.IsNullOrEmpty(search) ? 1500 : 50;
@@ -95,7 +97,7 @@ namespace MessianicChords.Services
         public async Task<List<Change>> Changes(long? startChangeId)
         {
             var driveService = new DriveService(this.googleCredentials);
-            var chordsFolderId = Constants.MessianicChordsFolderId;
+            var chordsFolderId = ConfigurationManager.AppSettings["messianicChordsFolderId"];
             var changesList = driveService.Changes.List();
             var pageToken = default(string);
             changesList.IncludeDeleted = false;
@@ -133,7 +135,8 @@ namespace MessianicChords.Services
                 GoogleDocId = googleDoc.Id,
                 LastUpdated = DateTime.UtcNow,
                 ETag = googleDoc.ETag,
-                Extension = googleDoc.FileExtension
+                Extension = googleDoc.FileExtension,
+                PlainTextContents = ""
             };
 
             return chordSheet;

@@ -26,7 +26,7 @@ namespace MessianicChords.Models
             LastUpdated = DateTime.UtcNow;
             PlainTextContents = other.PlainTextContents;
             Song = other.Song;
-            ThumbnailUrl = other.ThumbnailUrl;       
+            ThumbnailUrl = other.ThumbnailUrl;
         }
 
         public string GetDisplayName()

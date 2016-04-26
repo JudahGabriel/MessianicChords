@@ -9,7 +9,7 @@ using MessianicChords.Models;
 using Raven.Client;
 using Raven.Client.Linq;
 
-namespace MessianicChords.Common
+namespace MessianicChords.Data
 {
     public class RavenBackedGoogleCredentialStore : IDataStore
     {
@@ -17,7 +17,12 @@ namespace MessianicChords.Common
         {
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
-                session.Delete("TokenSession/MessianicChords");
+                var indexQuery = new IndexQuery { Query = "Tag:" + nameof(GoogleOAuthCredential) };
+                session.Advanced.DocumentStore.DatabaseCommands.DeleteByIndex(
+                    "Raven/DocumentsByEntityName",
+                    indexQuery, 
+                    new BulkOperationOptions() { AllowStale = true });
+
                 await session.SaveChangesAsync();
             }
         }
@@ -69,7 +74,7 @@ namespace MessianicChords.Common
                         Key = key,
                         Value = value
                     };
-                    await session.StoreAsync(newCred, key);
+                    await session.StoreAsync(newCred);
                 }
 
                 await session.SaveChangesAsync();

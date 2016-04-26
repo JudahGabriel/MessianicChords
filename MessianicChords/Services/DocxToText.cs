@@ -25,13 +25,19 @@ namespace MessianicChords.Services
 
         private const string BodyXPath = "/w:document/w:body";
 
-        private string docxFile;
-        private string docxFileLocation = "";
+        private Stream docxFileStream;
+        private string docxFileEntry = "";
+        public StringBuilder log = new StringBuilder();
 
 
-        public DocxToText(string filePath)
+        public DocxToText(Stream stream)
         {
-            docxFile = filePath;
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            docxFileStream = stream;
         }
 
 
@@ -41,15 +47,15 @@ namespace MessianicChords.Services
         /// <returns>Extracted text.</returns>
         public string ExtractText()
         {
-            if (string.IsNullOrEmpty(docxFile))
-                throw new Exception("Input file not specified.");
-
             // Usually it is "/word/document.xml"
 
-            docxFileLocation = FindDocumentXmlLocation();
+            docxFileEntry = FindDocumentXmlLocation();
+            log.AppendLine("Found docxFileEntry to be " + docxFileEntry);
 
-            if (string.IsNullOrEmpty(docxFileLocation))
-                throw new Exception("It is not a valid Docx file.");
+            if (string.IsNullOrEmpty(docxFileEntry))
+            {
+                throw new Exception("It is not a valid .docx file.");
+            }
 
             return ReadDocumentXml();
         }
@@ -60,39 +66,41 @@ namespace MessianicChords.Services
         /// <returns>Location of the "document.xml".</returns>
         private string FindDocumentXmlLocation()
         {
-            ZipFile zip = new ZipFile(docxFile);
-            foreach (ZipEntry entry in zip)
+            using (var zip = new ZipFile(docxFileStream))
             {
-                // Find "[Content_Types].xml" zip entry
-
-                if (string.Compare(entry.Name, "[Content_Types].xml", true) == 0)
+                foreach (ZipEntry entry in zip)
                 {
-                    Stream contentTypes = zip.GetInputStream(entry);
+                    // Find "[Content_Types].xml" zip entry
 
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.PreserveWhitespace = true;
-                    xmlDoc.Load(contentTypes);
-                    contentTypes.Close();
-
-                    //Create an XmlNamespaceManager for resolving namespaces
-
-                    XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
-                    nsmgr.AddNamespace("t", ContentTypeNamespace);
-
-                    // Find location of "document.xml"
-
-                    XmlNode node = xmlDoc.DocumentElement.SelectSingleNode(DocumentXmlXPath, nsmgr);
-
-                    if (node != null)
+                    if (string.Compare(entry.Name, "[Content_Types].xml", true) == 0)
                     {
-                        string location = ((XmlElement)node).GetAttribute("PartName");
-                        return location.TrimStart(new char[] { '/' });
+                        Stream contentTypes = zip.GetInputStream(entry);
+
+                        XmlDocument xmlDoc = new XmlDocument();
+                        xmlDoc.PreserveWhitespace = true;
+                        xmlDoc.Load(contentTypes);
+                        contentTypes.Close();
+
+                        //Create an XmlNamespaceManager for resolving namespaces
+
+                        XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+                        nsmgr.AddNamespace("t", ContentTypeNamespace);
+
+                        // Find location of "document.xml"
+
+                        XmlNode node = xmlDoc.DocumentElement.SelectSingleNode(DocumentXmlXPath, nsmgr);
+
+                        if (node != null)
+                        {
+                            string location = ((XmlElement)node).GetAttribute("PartName");
+                            return location.TrimStart('/');
+                        }
+                        break;
                     }
-                    break;
                 }
+                
+                return null;
             }
-            zip.Close();
-            return null;
         }
 
         /// <summary>
@@ -103,33 +111,41 @@ namespace MessianicChords.Services
         {
             StringBuilder sb = new StringBuilder();
 
-            ZipFile zip = new ZipFile(docxFile);
-            foreach (ZipEntry entry in zip)
+            using (var zip = new ZipFile(docxFileStream))
             {
-                if (string.Compare(entry.Name, docxFileLocation, true) == 0)
+                foreach (ZipEntry entry in zip)
                 {
-                    Stream documentXml = zip.GetInputStream(entry);
+                    if (entry.Name != null && entry.Name.EndsWith(docxFileEntry, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        log.AppendLine("Found matching zip entry " + entry.Name);
+                        using (var documentXml = zip.GetInputStream(entry))
+                        {
+                            var xmlDoc = new XmlDocument();
+                            xmlDoc.PreserveWhitespace = true;
+                            xmlDoc.Load(documentXml);
+                            documentXml.Close();
 
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.PreserveWhitespace = true;
-                    xmlDoc.Load(documentXml);
-                    documentXml.Close();
+                            var nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+                            nsmgr.AddNamespace("w", WordprocessingMlNamespace);
 
-                    XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
-                    nsmgr.AddNamespace("w", WordprocessingMlNamespace);
+                            var node = xmlDoc.DocumentElement.SelectSingleNode(BodyXPath, nsmgr);
+                            if (node == null)
+                            {
+                                return string.Empty;
+                            }
 
-                    XmlNode node = xmlDoc.DocumentElement.SelectSingleNode(BodyXPath, nsmgr);
+                            sb.Append(ReadNode(node));
 
-                    if (node == null)
-                        return string.Empty;
+                            break;
+                        }
+                    }
+                    else { log.AppendLine("Skipping zip entry " + entry.Name); }
 
-                    sb.Append(ReadNode(node));
-
-                    break;
                 }
+
+                zip.Close();
+                return sb.ToString();
             }
-            zip.Close();
-            return sb.ToString();
         }
 
         /// <summary>

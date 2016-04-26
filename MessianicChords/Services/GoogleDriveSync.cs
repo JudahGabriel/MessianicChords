@@ -12,6 +12,7 @@ using System.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Raven.Abstractions.Data;
 using System.Diagnostics;
+using MessianicChords.Data;
 
 namespace MessianicChords.Services
 {
@@ -21,6 +22,8 @@ namespace MessianicChords.Services
     public class GoogleDriveSync
     {
         private readonly ChordsFetcher chordsFetcher;
+        private readonly Stopwatch stopwatch = new Stopwatch();
+        private readonly SyncRecord syncRecord = new SyncRecord();
 
         public GoogleDriveSync(ChordsFetcher chordsFetcher)
         {
@@ -29,17 +32,18 @@ namespace MessianicChords.Services
 
         public async Task<SyncRecord> Start()
         {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var syncRecord = new SyncRecord();
-            await EnsureAllGDocsAreInRaven(syncRecord)
-                .ContinueWith(_ => EnsureAllRavenDocsAreInGoogle(syncRecord))
-                .ContinueWith(_ => EnsureChordSheetsAreUpdated(syncRecord));
-            syncRecord.Elapsed = stopWatch.Elapsed;
+            stopwatch.Start();
+
+            await EnsureAllGDocsAreInRaven()
+                .ContinueWith(_ => EnsureAllRavenDocsAreInGoogle())
+                .ContinueWith(_ => EnsureChordSheetsAreUpdated());
+
+            syncRecord.Elapsed = stopwatch.Elapsed;
+
             return syncRecord;
         }
 
-        private async Task EnsureAllGDocsAreInRaven(SyncRecord syncRecord)
+        private async Task EnsureAllGDocsAreInRaven()
         {
             var googleDriveChords = await chordsFetcher.GetChords();
             var googleDriveChordIds = googleDriveChords.Select(c => c.GoogleDocId).ToList();
@@ -54,11 +58,11 @@ namespace MessianicChords.Services
                         var currentChordSheet = enumerator.Current.Document;
                         googleChordIdsInRaven.Add(currentChordSheet.GoogleDocId);
                     }
-                }                
+                }
             }
 
             var docIdsMissingFromRaven = googleDriveChordIds
-                    .Where(id => !googleChordIdsInRaven.Contains(id));
+                .Where(id => !googleChordIdsInRaven.Contains(id));
 
             using (var bulkInsert = RavenStore.Instance.BulkInsert())
             {
@@ -77,7 +81,7 @@ namespace MessianicChords.Services
             }
         }
 
-        private async Task EnsureAllRavenDocsAreInGoogle(SyncRecord syncRecord)
+        private async Task EnsureAllRavenDocsAreInGoogle()
         {
             var googleDriveChords = await chordsFetcher.GetChords();
             var googleDocIds = googleDriveChords.Select(c => c.GoogleDocId).ToList();
@@ -107,7 +111,7 @@ namespace MessianicChords.Services
         /// update it with the version from Google Drive.
         /// </summary>
         /// <returns></returns>
-        private async Task EnsureChordSheetsAreUpdated(SyncRecord syncRecord)
+        private async Task EnsureChordSheetsAreUpdated()
         {            
             using (var session = RavenStore.Instance.OpenAsyncSession())
             {
@@ -121,7 +125,7 @@ namespace MessianicChords.Services
                 var changedGDocIds = changes
                     .Select(c => c.FileId)
                     .ToList();
-                var changedRavenDocs = await this.GetMatchingChordSheets(session, c => changedGDocIds.Contains(c.GoogleDocId));
+                var changedRavenDocs = await GetMatchingChordSheets(session, c => changedGDocIds.Contains(c.GoogleDocId));
 
                 // Get the changed Raven docs. Because they are streamed in, they're untracked by the session, so we'll need to insert them via bulk insert.
                 using (var bulkInsert = RavenStore.Instance.BulkInsert(null, new BulkInsertOptions { OverwriteExisting = true }))
@@ -143,16 +147,7 @@ namespace MessianicChords.Services
                     LastChangeId = changes.Select(c => c.Id).LastOrDefault() ?? lastPolledChangeId ?? 0
                 };
                 await session.StoreAsync(changePollRecord);
-                session.AddRavenExpiration(changePollRecord, DateTime.UtcNow.AddDays(7));
-                await session.SaveChangesAsync();
-            }
-        }
-
-        private async Task LogIt(string message)
-        {
-            using (var session = RavenStore.Instance.OpenAsyncSession())
-            {
-                await session.StoreAsync(new Log { Date = DateTime.UtcNow, Message = message });
+                session.AddRavenExpiration(changePollRecord, DateTime.UtcNow.AddDays(30));
                 await session.SaveChangesAsync();
             }
         }
