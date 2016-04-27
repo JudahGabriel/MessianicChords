@@ -25,6 +25,10 @@ namespace MessianicChords.Services
             this.driveService = new DriveService(initializer);
         }
 
+        public Task<List<ChildReference>> GetFolderContents(string folderId)
+        {
+            return SearchFolder(folderId, null);
+        }
 
         /// <summary>
         /// Searches a folder on Google Drive for documents containing the specified search text.
@@ -89,17 +93,20 @@ namespace MessianicChords.Services
             var changesList = driveService.Changes.List();
             var pageToken = default(string);
             changesList.IncludeDeleted = false;
-            changesList.IncludeSubscribed = true;
+            changesList.IncludeSubscribed = false;
             changesList.StartChangeId = startChangeId;
+            changesList.MaxResults = 100;
+            changesList.Spaces = "drive";
+            changesList.Fields = "etag,items,largestChangeId,nextPageToken";
             var results = new List<Change>();
             do
             {
                 changesList.PageToken = pageToken;
                 var changes = await changesList.ExecuteAsync();
-                var changesInMessianicChords = changes.Items
-                    .Where(c => c.File != null && c.File.Parents != null && c.File.Parents.Any(p => p.Id == chordsFolderId));
-                results.AddRange(changesInMessianicChords);
-
+                var changesInFolder = changes.Items
+                    .Where(c => c.File != null && c.File.Parents != null && c.File.Parents.Any(p => p.Id == chordsFolderId))
+                    .ToList();
+                results.AddRange(changesInFolder);
                 pageToken = changes.NextPageToken;
             } while (pageToken != null);
 

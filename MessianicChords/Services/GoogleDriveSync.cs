@@ -20,46 +20,37 @@ namespace MessianicChords.Services
         private readonly ChordsFetcher chordsFetcher;
         private readonly Stopwatch stopwatch = new Stopwatch();
         private readonly SyncRecord syncRecord = new SyncRecord();
+        private readonly long lastChangeId;
 
-        public GoogleDriveSync(ChordsFetcher chordsFetcher)
+        public GoogleDriveSync(ChordsFetcher chordsFetcher, long lastChangeId)
         {
             this.chordsFetcher = chordsFetcher;
+            this.lastChangeId = lastChangeId;
+            this.syncRecord.LastChangeId = lastChangeId;
         }
 
-        public async Task<SyncRecord> Start()
+        public async Task<SyncRecord> Start(IAsyncDocumentSession session)
         {
             stopwatch.Start();
 
-            await EnsureAllGDocsAreInRaven()
-                .ContinueWith(_ => EnsureAllRavenDocsAreInGoogle())
-                .ContinueWith(_ => EnsureChordSheetsAreUpdated());
-
+            var allChordSheets = await this.GetMatchingChordSheets(session, c => true);
+            var allGDocs = await chordsFetcher.GetChords();
+            await EnsureAllGDocsAreInRaven(allChordSheets, allGDocs);
+            EnsureAllRavenDocsAreInGoogle(session, allChordSheets, allGDocs);
+            await EnsureChordSheetsAreUpdated(session, allChordSheets, allGDocs);
+            
             syncRecord.Elapsed = stopwatch.Elapsed;
 
             return syncRecord;
         }
 
-        private async Task EnsureAllGDocsAreInRaven()
+        private async Task EnsureAllGDocsAreInRaven(List<ChordSheet> allChordSheets, List<ChordSheetMetadata> allGDocs)
         {
-            var googleDriveChords = await chordsFetcher.GetChords();
-            var googleDriveChordIds = googleDriveChords.Select(c => c.GoogleDocId).ToList();
-            var googleChordIdsInRaven = new List<string>(googleDriveChordIds.Count);
-
-            using (var session = RavenStore.Instance.OpenAsyncSession())
-            {
-                using (var enumerator = await session.Advanced.StreamAsync<ChordSheet>("ChordSheets/"))
-                {
-                    while (await enumerator.MoveNextAsync())
-                    {
-                        var currentChordSheet = enumerator.Current.Document;
-                        googleChordIdsInRaven.Add(currentChordSheet.GoogleDocId);
-                    }
-                }
-            }
-
-            var docIdsMissingFromRaven = googleDriveChordIds
-                .Where(id => !googleChordIdsInRaven.Contains(id));
-
+            syncRecord.Log.Add($"Looking for new chords in Google Drive.");
+            var googleDriveChordIds = allGDocs.Select(c => c.GoogleDocId).ToList();
+            var googleChordIdsInRaven = allChordSheets.Select(c => c.GoogleDocId).ToList();
+            
+            var docIdsMissingFromRaven = googleDriveChordIds.Except(googleChordIdsInRaven);
             using (var bulkInsert = RavenStore.Instance.BulkInsert())
             {
                 foreach (var docId in docIdsMissingFromRaven)
@@ -67,39 +58,29 @@ namespace MessianicChords.Services
                     var chordSheet = await chordsFetcher.CreateChordSheet(docId);
 
                     // Make sure it's not one of those temporary files created by Word.
-                    var isWordTempFile = IsTempFile(chordSheet.Artist);
-                    if (!isWordTempFile)
+                    var isWordTempFile = IsTempFile(chordSheet);
+                    var isConflictFile = IsConflict(chordSheet);
+                    if (!isWordTempFile && !isConflictFile)
                     {
                         bulkInsert.Store(chordSheet);
+                        syncRecord.Log.Add($"Google doc {docId} was missing from Raven. Added it as {chordSheet.Id}, {chordSheet.GetDisplayName()}.");
                         syncRecord.AddedDocs.Add(chordSheet.GetDisplayName());
                     }
                 }
             }
         }
 
-        private async Task EnsureAllRavenDocsAreInGoogle()
+        private void EnsureAllRavenDocsAreInGoogle(IAsyncDocumentSession session, List<ChordSheet> allChordSheets, List<ChordSheetMetadata> allGDocs)
         {
-            var googleDriveChords = await chordsFetcher.GetChords();
-            var googleDocIds = googleDriveChords.Select(c => c.GoogleDocId).ToList();
-            var ravenDocIdsToDelete = new List<string>();
-            using (var session = RavenStore.Instance.OpenAsyncSession())
-            {
-                using (var enumerator = await session.Advanced.StreamAsync<ChordSheet>("ChordSheets/"))
-                {
-                    while (await enumerator.MoveNextAsync())
-                    {
-                        var currentChordSheet = enumerator.Current.Document;
-                        if (!googleDocIds.Contains(currentChordSheet.GoogleDocId))
-                        {
-                            ravenDocIdsToDelete.Add(currentChordSheet.Id);
-                            syncRecord.RemovedDocs.Add(currentChordSheet.GetDisplayName());
-                        }
-                    }
-                }
+            syncRecord.Log.Add($"Looking for deleted chords from Google Drive.");
+            var googleDocIds = allGDocs.Select(c => c.GoogleDocId).ToList();
 
-                ravenDocIdsToDelete.ForEach(session.Delete);
-                await session.SaveChangesAsync();
-            }
+            var ravenDocIdsToDelete = allChordSheets
+                .Where(ravenDoc => !googleDocIds.Contains(ravenDoc.GoogleDocId))
+                .ToList();
+            ravenDocIdsToDelete.ForEach(d => syncRecord.RemovedDocs.Add(d.GetDisplayName()));
+            ravenDocIdsToDelete.ForEach(session.Delete);
+            syncRecord.Log.Add($"Found {ravenDocIdsToDelete.Count} docs to delete.");
         }
 
         /// <summary>
@@ -107,57 +88,53 @@ namespace MessianicChords.Services
         /// update it with the version from Google Drive.
         /// </summary>
         /// <returns></returns>
-        private async Task EnsureChordSheetsAreUpdated()
-        {            
-            using (var session = RavenStore.Instance.OpenAsyncSession())
+        private async Task EnsureChordSheetsAreUpdated(IAsyncDocumentSession session, List<ChordSheet> allChords, List<ChordSheetMetadata> allGDocs)
+        {
+            syncRecord.Log.Add($"Looking for updated chords in Google Drive.");
+            var changes = await chordsFetcher.Changes(lastChangeId + 1);
+            var changedGDocIds = changes
+                .Select(c => c.FileId)
+                .ToList();
+            var changedRavenDocs = allChords
+                .Where(c => changedGDocIds.Contains(c.GoogleDocId))
+                .ToList();
+
+            syncRecord.Log.Add($"Found {changedGDocIds.Count} changed Google docs. Matched these up with {changedRavenDocs.Count} changed Raven docs.");
+
+            // Get the changed Raven docs. Because they are streamed in, they're untracked by the session, so we'll need to insert them via bulk insert.
+            using (var bulkInsert = RavenStore.Instance.BulkInsert(null, new BulkInsertOptions { OverwriteExisting = true }))
             {
-                var lastPolledChangeId = await session
-                    .Query<ChangesPoll>()
-                    .OrderByDescending(p => p.Date)
-                    .Select(c => c.LastChangeId)
-                    .FirstOrDefaultAsync();
-
-                var changes = await chordsFetcher.Changes(lastPolledChangeId.HasValue ? lastPolledChangeId + 1 : null);
-                var changedGDocIds = changes
-                    .Select(c => c.FileId)
-                    .ToList();
-                var changedRavenDocs = await GetMatchingChordSheets(session, c => changedGDocIds.Contains(c.GoogleDocId));
-
-                // Get the changed Raven docs. Because they are streamed in, they're untracked by the session, so we'll need to insert them via bulk insert.
-                using (var bulkInsert = RavenStore.Instance.BulkInsert(null, new BulkInsertOptions { OverwriteExisting = true }))
+                foreach (var ravenDoc in changedRavenDocs)
                 {
-                    foreach (var ravenDoc in changedRavenDocs)
-                    {
-                        var refreshedChordSheet = await chordsFetcher.CreateChordSheet(ravenDoc.GoogleDocId);
-                        ravenDoc.UpdateFrom(refreshedChordSheet);
-                        ravenDoc.HasFetchedPlainTextContents = false; // So that it will be fetched again in the near future.
-                        bulkInsert.Store(ravenDoc);
-                        syncRecord.UpdatedDocs.Add(ravenDoc.GetDisplayName());
-                    }
+                    var refreshedChordSheet = await chordsFetcher.CreateChordSheet(ravenDoc.GoogleDocId);
+                    ravenDoc.UpdateFrom(refreshedChordSheet);
+                    ravenDoc.HasFetchedPlainTextContents = false; // So that it will be fetched again in the near future.
+                    bulkInsert.Store(ravenDoc);
+                    syncRecord.Log.Add($"Updated {ravenDoc.Id}, {ravenDoc.GetDisplayName()}");
+                    syncRecord.UpdatedDocs.Add(ravenDoc.GetDisplayName());
                 }
-
-                // Store a ChangesPoll record, indicating the last change ID we polled for.
-                // This is done so that next time we check for changes, we can skip all the changes we've already processed.
-                var changePollRecord = new ChangesPoll
-                {
-                    Date = DateTime.UtcNow,
-                    LastChangeId = changes.Select(c => c.Id).LastOrDefault() ?? lastPolledChangeId ?? 0
-                };
-                await session.StoreAsync(changePollRecord);
-                session.AddRavenExpiration(changePollRecord, DateTime.UtcNow.AddDays(30));
-                await session.SaveChangesAsync();
             }
+
+            syncRecord.LastChangeId = changes.Select(c => c.Id).LastOrDefault() ?? lastChangeId;
+            syncRecord.Log.Add($"Updated changed record to {syncRecord.LastChangeId}");
         }
 
-        private bool IsTempFile(string artist)
+        private bool IsTempFile(ChordSheet sheet)
         {
-            return artist.Contains("$") && artist.Contains("~");
+            return sheet.Artist != null && sheet.Artist.Contains("$") && sheet.Artist.Contains("~");
+        }
+
+        private bool IsConflict(ChordSheet sheet)
+        {
+            return (sheet.Song != null && sheet.Song.Contains("[Conflict]"))
+                ||
+                (sheet.Key != null && sheet.Key.Contains("[Conflict]"));
         }
 
         private async Task<List<ChordSheet>> GetMatchingChordSheets(IAsyncDocumentSession session, Func<ChordSheet, bool> filter)
         {
             // Would be really useful if C# supported async iterators.
-            var list = new List<ChordSheet>(500);
+            var list = new List<ChordSheet>(1000);
             using (var enumerator = await session.Advanced.StreamAsync<ChordSheet>("ChordSheets/"))
             {
                 while (await enumerator.MoveNextAsync())

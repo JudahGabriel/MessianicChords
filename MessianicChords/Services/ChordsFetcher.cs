@@ -35,9 +35,9 @@ namespace MessianicChords.Services
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
-        public async Task<List<ChordSheetMetadata>> GetChords(string search = null)
+        public async Task<List<ChordSheetMetadata>> GetChords()
         {
-            var searchResults = await this.driveApi.SearchFolder(chordsFolderId, search);
+            var searchResults = await this.driveApi.GetFolderContents(chordsFolderId);
             return searchResults
                 .Select(i => new ChordSheetMetadata
                 {
@@ -64,11 +64,12 @@ namespace MessianicChords.Services
                 Song = artistTitleKey.ElementAtOrDefault(1),
                 Key = artistTitleKey.ElementAtOrDefault(2),
                 Address = googleDoc.AlternateLink,
+                Created = googleDoc.CreatedDate ?? DateTime.UtcNow,
                 ThumbnailUrl = googleDoc.ThumbnailLink,
                 GoogleDocId = googleDoc.Id,
-                LastUpdated = DateTime.UtcNow,
+                LastUpdated = googleDoc.ModifiedDate ?? DateTime.UtcNow,
                 ETag = googleDoc.ETag,
-                Extension = googleDoc.FileExtension,
+                Extension = !string.IsNullOrEmpty(googleDoc.FileExtension) ? googleDoc.FileExtension : googleDoc.FullFileExtension,
                 PlainTextContents = "",
                 HasFetchedPlainTextContents = false,
                 DownloadUrl = $"https://docs.google.com/uc?id={googleDocId}&export=download"

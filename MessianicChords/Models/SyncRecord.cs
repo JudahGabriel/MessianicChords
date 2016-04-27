@@ -7,11 +7,13 @@ namespace MessianicChords.Models
 {
     public class SyncRecord
     {
-        public string Id { get; set; }
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
         public List<string> AddedDocs { get; set; } = new List<string>();
         public List<string> RemovedDocs { get; set; } = new List<string>();
         public List<string> UpdatedDocs { get; set; } = new List<string>();
         public TimeSpan Elapsed { get; set; }
+        public long LastChangeId { get; set; }
+        public List<string> Log { get; set; } = new List<string>();
+        public string Id { get; set; }
+        public DateTime DateTime { get; set; } = DateTime.UtcNow;
     }
 }

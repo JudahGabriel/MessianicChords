@@ -15,6 +15,7 @@ namespace MessianicChords.Models
         public string Id { get; set; }
         public string PlainTextContents { get; set; }
         public DateTime LastUpdated { get; set; }
+        public DateTime Created { get; set; }
         public string Extension { get; set; }
         public bool HasFetchedPlainTextContents { get; set; }
 
@@ -22,12 +23,14 @@ namespace MessianicChords.Models
         {
             Address = other.Address;
             Artist = other.Artist;
+            Created = other.Created;
             DownloadUrl = other.DownloadUrl;
             ETag = other.ETag;
+            Extension = other.Extension;
             GoogleDocId = other.GoogleDocId;
             HasFetchedPlainTextContents = other.HasFetchedPlainTextContents;
             Key = other.Key;
-            LastUpdated = DateTime.UtcNow;
+            LastUpdated = other.LastUpdated;
             PlainTextContents = other.PlainTextContents;
             Song = other.Song;
             ThumbnailUrl = other.ThumbnailUrl;

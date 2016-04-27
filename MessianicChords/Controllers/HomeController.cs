@@ -130,7 +130,7 @@ namespace MessianicChords.Controllers
             var monthAgo = DateTime.Now.Subtract(TimeSpan.FromDays(30));
             var chords = await DbSession
                 .Query<ChordSheet>()
-                .OrderByDescending(o => o.LastUpdated)
+                .OrderByDescending(o => o.Created)
                 .Take(10)
                 .ToListAsync();
 

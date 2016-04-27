@@ -233,7 +233,6 @@
     <Compile Include="Controllers\AuthCallbackController.cs" />
     <Compile Include="Controllers\RavenSessionController.cs" />
     <Compile Include="Data\ChordSheetSearch.cs" />
-    <Compile Include="Models\ChangesPoll.cs" />
     <Compile Include="Models\ChordFetcherAuthResult.cs" />
     <Compile Include="Models\DocumentTextFetchRecord.cs" />
     <Compile Include="Models\GDriveAuthorizeResult.cs" />

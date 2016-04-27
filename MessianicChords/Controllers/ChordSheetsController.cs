@@ -72,7 +72,12 @@ namespace MessianicChords.Controllers
                 }
 
                 var chordsFetcher = new ChordsFetcher(new GoogleDriveApi(authorizeResults.Initializer));
-                var syncRecord = await new GoogleDriveSync(chordsFetcher).Start();
+                var lastChangeId = await DbSession.Query<SyncRecord>()
+                    .OrderByDescending(s => s.DateTime)
+                    .Select(s => s.LastChangeId)
+                    .FirstOrDefaultAsync();
+                var syncRecord = await new GoogleDriveSync(chordsFetcher, lastChangeId)
+                    .Start(DbSession);
                 await DbSession.StoreAsync(syncRecord);
 
                 return Json(syncRecord, JsonRequestBehavior.AllowGet);
