@@ -9,19 +9,23 @@ namespace MessianicChords.Models
         public string Key { get; set; }
         public string Address { get; set; }
         public string ThumbnailUrl { get; set; }
+        public string DownloadUrl { get; set; }
         public string GoogleDocId { get; set; }
         public string ETag { get; set; }
         public string Id { get; set; }
         public string PlainTextContents { get; set; }
         public DateTime LastUpdated { get; set; }
         public string Extension { get; set; }
+        public bool HasFetchedPlainTextContents { get; set; }
 
         public void UpdateFrom(ChordSheet other)
         {
             Address = other.Address;
             Artist = other.Artist;
+            DownloadUrl = other.DownloadUrl;
             ETag = other.ETag;
             GoogleDocId = other.GoogleDocId;
+            HasFetchedPlainTextContents = other.HasFetchedPlainTextContents;
             Key = other.Key;
             LastUpdated = DateTime.UtcNow;
             PlainTextContents = other.PlainTextContents;

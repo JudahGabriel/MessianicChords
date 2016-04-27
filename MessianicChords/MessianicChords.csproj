@@ -235,10 +235,13 @@
     <Compile Include="Data\ChordSheetSearch.cs" />
     <Compile Include="Models\ChangesPoll.cs" />
     <Compile Include="Models\ChordFetcherAuthResult.cs" />
+    <Compile Include="Models\DocumentTextFetchRecord.cs" />
+    <Compile Include="Models\GDriveAuthorizeResult.cs" />
     <Compile Include="Models\SyncRecord.cs" />
     <Compile Include="Models\GoogleOAuthCredential.cs" />
     <Compile Include="Services\DocumentTextFetcher.cs" />
     <Compile Include="Services\DocxToText.cs" />
+    <Compile Include="Services\GoogleDriveApi.cs" />
     <Compile Include="Services\GoogleDriveSync.cs" />
     <Compile Include="Data\RavenBackedGoogleCredentialStore.cs" />
     <Compile Include="Controllers\AccountController.cs" />

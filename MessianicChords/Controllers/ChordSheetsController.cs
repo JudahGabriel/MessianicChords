@@ -65,13 +65,14 @@ namespace MessianicChords.Controllers
 
             try
             {
-                var authorizeResults = await ChordsFetcher.Authorize(this);
-                if (!string.IsNullOrEmpty(authorizeResults.RedirectUrl))
+                var authorizeResults = await GoogleDriveApi.Authorize(this);
+                if (!string.IsNullOrEmpty(authorizeResults.RedirectUri))
                 {
-                    return new RedirectResult(authorizeResults.RedirectUrl);
+                    return new RedirectResult(authorizeResults.RedirectUri);
                 }
 
-                var syncRecord = await new GoogleDriveSync(authorizeResults.ChordsFetcher).Start();
+                var chordsFetcher = new ChordsFetcher(new GoogleDriveApi(authorizeResults.Initializer));
+                var syncRecord = await new GoogleDriveSync(chordsFetcher).Start();
                 await DbSession.StoreAsync(syncRecord);
 
                 return Json(syncRecord, JsonRequestBehavior.AllowGet);
@@ -87,6 +88,63 @@ namespace MessianicChords.Controllers
 
                 throw;
             }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> TempTouchDocx()
+        {
+            var authorizeResults = await GoogleDriveApi.Authorize(this);
+            var driveApi = new GoogleDriveApi(authorizeResults.Initializer);
+            var docXFiles = await driveApi.SearchFolder(System.Configuration.ConfigurationManager.AppSettings["messianicChordsFolderId"], "docx");
+            var docxFileIds = docXFiles.Select(d => d.Id).ToList();
+            var docsToBulkInsert = new List<ChordSheet>(docxFileIds.Count);
+            using (var enumerator = await DbSession.Advanced.StreamAsync<ChordSheet>("ChordSheets/"))
+            {
+                while (await enumerator.MoveNextAsync())
+                {
+                    var currentChordSheet = enumerator.Current.Document;
+                    docsToBulkInsert.Add(currentChordSheet);
+                }
+            }
+
+            using (var bulkInsert = RavenStore.Instance.BulkInsert())
+            {
+                foreach (var chord in docsToBulkInsert)
+                {
+                    if (docxFileIds.Contains(chord.GoogleDocId) && chord.Id != "ChordSheets/1000")
+                    {
+                        chord.Extension = "docx";
+                        bulkInsert.Store(chord);
+                    }
+                }
+            }
+
+            return Json($"A total of {docsToBulkInsert.Count} chord sheets updated", JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Finds ChordSheets that need their plain text contents fetched, downloads them, 
+        /// extracts the plain text from the .docx file, and stores that in the ChordSheet.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ActionResult> SyncDocxPlainText()
+        {
+            var needsPlainTextFetch = await DbSession
+                .Query<ChordSheet>()
+                .Where(x => !x.HasFetchedPlainTextContents && x.Extension == "docx") // We only know how to extract plain text from .docx.
+                .OrderByDescending(x => x.LastUpdated)
+                .Take(20)
+                .ToListAsync();
+
+            var authorizeResults = await GoogleDriveApi.Authorize(this);
+            var driveApi = new GoogleDriveApi(authorizeResults.Initializer);
+            var docTextFetcher = new DocumentTextFetcher(needsPlainTextFetch, driveApi);
+            var fetchRecord = await docTextFetcher.Fetch();
+            await DbSession.StoreAsync(fetchRecord);
+            DbSession.AddRavenExpiration(fetchRecord, DateTime.UtcNow.AddDays(30));
+
+            return Json(fetchRecord, JsonRequestBehavior.AllowGet);
         }
     }
 }

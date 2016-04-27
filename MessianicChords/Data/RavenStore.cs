@@ -9,6 +9,7 @@ using MessianicChords.Models;
 using System.Reactive.Linq;
 using MessianicChords.Services;
 using System.Web.Hosting;
+using Raven.Abstractions.Data;
 
 namespace MessianicChords.Data
 {
@@ -23,9 +24,14 @@ namespace MessianicChords.Data
             IndexCreation.CreateIndexes(typeof(RavenStore).Assembly, store);
 
             // When a chord sheet is added or updated, try to fetch its plain text.
-            //store.Changes().ForDocumentsInCollection<ChordSheet>()
-            //    .Where(c => c.Type == Raven.Abstractions.Data.DocumentChangeTypes.BulkInsertEnded || c.Type == Raven.Abstractions.Data.DocumentChangeTypes.Put)
-            //    .Subscribe(n => HostingEnvironment.QueueBackgroundWorkItem(_ => new DocumentTextFetcher(n.Id).Fetch()));
+            //store.Changes()
+            //    .ForDocumentsOfType<ChordSheet>()
+            //    .Where(x => x.Type == DocumentChangeTypes.Put || x.Type == DocumentChangeTypes.BulkInsertEnded)
+            //    .GroupByUntil(x => 1, x => Observable.Timer(TimeSpan.FromSeconds(5)))
+            //    .SelectMany(x => x.ToList())
+            //    .Select(changes => changes.Select(c => c.Id))
+            //    .Subscribe(results => new DocumentTextFetcher(results));
+
             return store;
         }
     }

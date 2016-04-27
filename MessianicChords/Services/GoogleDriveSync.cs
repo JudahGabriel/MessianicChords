@@ -1,18 +1,14 @@
-﻿using Google.GData.Documents;
+﻿using MessianicChords.Common;
+using MessianicChords.Data;
 using MessianicChords.Models;
-using MessianicChords.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+using Raven.Abstractions.Data;
 using Raven.Client;
 using Raven.Client.Linq;
-using System.Configuration;
-using Google.Apis.Auth.OAuth2;
-using Raven.Abstractions.Data;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using MessianicChords.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MessianicChords.Services
 {
@@ -134,6 +130,7 @@ namespace MessianicChords.Services
                     {
                         var refreshedChordSheet = await chordsFetcher.CreateChordSheet(ravenDoc.GoogleDocId);
                         ravenDoc.UpdateFrom(refreshedChordSheet);
+                        ravenDoc.HasFetchedPlainTextContents = false; // So that it will be fetched again in the near future.
                         bulkInsert.Store(ravenDoc);
                         syncRecord.UpdatedDocs.Add(ravenDoc.GetDisplayName());
                     }

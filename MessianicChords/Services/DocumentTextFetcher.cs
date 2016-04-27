@@ -17,78 +17,82 @@ namespace MessianicChords.Services
     /// </summary>
     public class DocumentTextFetcher
     {
-        private readonly string chordSheetId;
+        private readonly List<ChordSheet> chordSheets;
+        private readonly DocumentTextFetchRecord fetchRecord;
+        private readonly GoogleDriveApi driveApi;
 
-        public DocumentTextFetcher(string chordSheetId)
+        public DocumentTextFetcher(IList<ChordSheet> chordSheets, GoogleDriveApi driveApi)
         {
-            this.chordSheetId = chordSheetId;
+            this.driveApi = driveApi;
+            this.chordSheets = chordSheets
+                .Where(c => c.Extension == "docx")
+                .ToList();
+            this.fetchRecord = new DocumentTextFetchRecord
+            {
+                ChordIds = chordSheets
+                    .Select(c => c.Id)
+                    .ToList(),
+                ChordDescriptions = chordSheets
+                    .Select(c => c.GetDisplayName())
+                    .ToList()
+            };
         }
 
-        public async Task Fetch()
+        public async Task<DocumentTextFetchRecord> Fetch()
         {
-            using (var session = RavenStore.Instance.OpenAsyncSession())
+            foreach (var chord in chordSheets)
             {
-                var log = new Log { Message = "Attempting to fetch plain text for " + this.chordSheetId + Environment.NewLine };
-                try
+                fetchRecord.Log.Add($"Attempting plain text extraction for {chord.Id}, {chord.GetDisplayName()}");
+                var plainText = await FetchPlainTextForChord(chord);
+                if (!string.IsNullOrEmpty(plainText))
                 {
-                    var fetchSuccessful = await FetchRaw(session);
-                    if (fetchSuccessful.Item1)
-                    {
-                        log.Message += "Successfully fetched plain text";
-                    }
-                    else
-                    {
-                        log.Message += "Couldn't fetch plain text. " + fetchSuccessful.Item2;
-                    }
-                }
-                catch (Exception error)
-                {
-                    log.Message += "Error fetching plain text: " + error.ToString();
-                }
-                finally
-                {
-                    await session.StoreAsync(log);
-                    await session.SaveChangesAsync();
-                }
-            }
-        }
-
-        private async Task<Tuple<bool, string>> FetchRaw(IAsyncDocumentSession session)
-        {
-            var chordSheet = await session.LoadAsync<ChordSheet>(this.chordSheetId);
-            if (chordSheet != null && chordSheet.Extension == "docx")
-            {
-                var initializer = ChordsFetcher.lastInitializer;
-                if (initializer != null)
-                {
-                    var driveService = new DriveService(initializer);
-                    var gDoc = await driveService.Files.Get(chordSheet.GoogleDocId).ExecuteAsync();
-                    if (gDoc != null && !string.IsNullOrEmpty(gDoc.DownloadUrl))
-                    {
-                        using (var webClient = new WebClient())
-                        {
-                            var docBytes = await webClient.DownloadDataTaskAsync(gDoc.DownloadUrl);
-                            using (var docByteStream = new MemoryStream(docBytes))
-                            {
-                                var converter = new DocxToText(docByteStream);
-                                var docText = converter.ExtractText();
-                                if (!string.IsNullOrWhiteSpace(docText))
-                                {
-                                    chordSheet.PlainTextContents = docText;
-                                    await session.SaveChangesAsync();
-                                    return Tuple.Create(true, "");
-                                }
-                                else
-                                {
-                                    return Tuple.Create(false, converter.log.ToString());
-                                }
-                            }
-                        }
-                    }
+                    chord.PlainTextContents = plainText;
+                    chord.HasFetchedPlainTextContents = true;
+                    fetchRecord.Log.Add("Successfully extracted plain text. Length is " + plainText.Length);
                 }
             }
 
-            return Tuple.Create(false, "Got to the bottom. :-(");
+            return this.fetchRecord;
+        }
+
+        private async Task<string> FetchPlainTextForChord(ChordSheet chord)
+        {
+            var gDoc = await driveApi.GetFile(chord.GoogleDocId);
+            if (gDoc == null)
+            {
+                fetchRecord.Log.Add($"{chord.Id} points to Google doc {chord.GoogleDocId}, but it couldn't be found.");
+                return string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(gDoc.DownloadUrl))
+            {
+                fetchRecord.Log.Add($"{chord.Id} points to Google doc {chord.GoogleDocId}, but there was no download URL.");
+                return string.Empty;
+            }
+            
+            // We have a .docx on Google Drive.
+            // Download it, crack it open, extract plain text.
+            var memoryStream = default(MemoryStream);
+            try
+            {
+                memoryStream = await driveApi.DownloadFile(gDoc);
+            }
+            catch (Exception error)
+            {
+                fetchRecord.Log.Add($"Failed to download Google doc from {gDoc.DownloadUrl}. {error.ToString()}");
+                return string.Empty;
+            }
+
+            var converter = new DocxToText(memoryStream, fetchRecord);
+            try
+            {
+                return converter.ExtractText();
+            }
+            catch (Exception error)
+            {
+                fetchRecord.Log.Add($"Error extracting plain text. {error.ToString()}");
+                return string.Empty;
+            }
         }
     }
 }

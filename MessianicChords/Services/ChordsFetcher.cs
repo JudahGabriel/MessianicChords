@@ -22,33 +22,12 @@ namespace MessianicChords.Services
     /// </summary>
     public class ChordsFetcher
     {
-        private readonly BaseClientService.Initializer googleCredentials;
+        private readonly GoogleDriveApi driveApi;
+        private static readonly string chordsFolderId = ConfigurationManager.AppSettings["messianicChordsFolderId"];
 
-        public static BaseClientService.Initializer lastInitializer;
-
-        public ChordsFetcher(BaseClientService.Initializer googleCredentials)
+        public ChordsFetcher(GoogleDriveApi driveApi)
         {
-            this.googleCredentials = googleCredentials;
-            lastInitializer = googleCredentials;
-        }
-
-        public static async Task<ChordFetcherAuthResult> Authorize(Controller controller)
-        {
-            var flow = new OAuthFlow();
-            var googleAuth = await new AuthorizationCodeMvcApp(controller, flow)
-                .AuthorizeAsync(CancellationToken.None);
-            if (googleAuth.Credential != null)
-            {
-                var initializer = new BaseClientService.Initializer
-                {
-                    HttpClientInitializer = googleAuth.Credential,
-                    ApplicationName = "Messianic Chords",
-                };
-
-                return new ChordFetcherAuthResult { ChordsFetcher = new ChordsFetcher(initializer) };
-            }
-
-            return new ChordFetcherAuthResult { RedirectUrl = googleAuth.RedirectUri };
+            this.driveApi = driveApi;
         }
 
         /// <summary>
@@ -56,72 +35,26 @@ namespace MessianicChords.Services
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
-        public async Task<IList<ChordSheetMetadata>> GetChords(string search = null)
+        public async Task<List<ChordSheetMetadata>> GetChords(string search = null)
         {
-            var driveService = new DriveService(this.googleCredentials);
-            var chordsFolderId = ConfigurationManager.AppSettings["messianicChordsFolderId"];
-            var pageToken = default(string);
-            var hasMore = true;
-            var initialCapacity = string.IsNullOrEmpty(search) ? 1500 : 50;
-            var ids = new List<ChordSheetMetadata>(initialCapacity);
-            do
-            {
-                var chordsFolderContentsQuery = driveService.Children
-                    .List(chordsFolderId);
-
-                chordsFolderContentsQuery.PageToken = pageToken;
-                if (string.IsNullOrEmpty(search))
-                {
-                    chordsFolderContentsQuery.Q = "trashed=false";
-                }
-                else
-                {
-                    chordsFolderContentsQuery.Q = string.Format("trashed=false and fullText contains '{0}'", search.Replace("'", "\\'"));
-                }
-
-                var chordsFolderContents = await chordsFolderContentsQuery.ExecuteAsync();
-                var chordSheets = chordsFolderContents.Items.Select(i => new ChordSheetMetadata
+            var searchResults = await this.driveApi.SearchFolder(chordsFolderId, search);
+            return searchResults
+                .Select(i => new ChordSheetMetadata
                 {
                     ETag = i.ETag,
                     GoogleDocId = i.Id
-                });
-                ids.AddRange(chordSheets);
-
-                pageToken = chordsFolderContents.NextPageToken;
-                hasMore = !string.IsNullOrEmpty(pageToken);
-            } while (hasMore);
-
-            return ids;
+                })
+                .ToList();
         }
 
-        public async Task<List<Change>> Changes(long? startChangeId)
+        public Task<List<Change>> Changes(long? startChangeId)
         {
-            var driveService = new DriveService(this.googleCredentials);
-            var chordsFolderId = ConfigurationManager.AppSettings["messianicChordsFolderId"];
-            var changesList = driveService.Changes.List();
-            var pageToken = default(string);
-            changesList.IncludeDeleted = false;
-            changesList.IncludeSubscribed = true;
-            changesList.StartChangeId = startChangeId;
-            var results = new List<Change>();
-            do
-            {
-                changesList.PageToken = pageToken;
-                var changes = await changesList.ExecuteAsync();
-                var changesInMessianicChords = changes.Items
-                    .Where(c => c.File != null && c.File.Parents != null && c.File.Parents.Any(p => p.Id == chordsFolderId));
-                results.AddRange(changesInMessianicChords);
-
-                pageToken = changes.NextPageToken;
-            } while (pageToken != null);            
-            
-            return results;
+            return driveApi.GetChangesInFolder(chordsFolderId, startChangeId);
         }
 
         public async Task<ChordSheet> CreateChordSheet(string googleDocId)
         {
-            var driveService = new DriveService(this.googleCredentials);
-            var googleDoc = await driveService.Files.Get(googleDocId).ExecuteAsync();
+            var googleDoc = await driveApi.GetFile(googleDocId);
             
             var artistTitleKey = System.IO.Path.GetFileNameWithoutExtension(googleDoc.Title.Replace('/', ','))
                 .Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
@@ -136,7 +69,9 @@ namespace MessianicChords.Services
                 LastUpdated = DateTime.UtcNow,
                 ETag = googleDoc.ETag,
                 Extension = googleDoc.FileExtension,
-                PlainTextContents = ""
+                PlainTextContents = "",
+                HasFetchedPlainTextContents = false,
+                DownloadUrl = $"https://docs.google.com/uc?id={googleDocId}&export=download"
             };
 
             return chordSheet;
