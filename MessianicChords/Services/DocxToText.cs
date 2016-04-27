@@ -118,7 +118,6 @@ namespace MessianicChords.Services
             {
                 if (entry.Name != null && entry.Name.EndsWith(docxFileEntry, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    record.Log.Add("Found matching zip entry " + entry.Name);
                     using (var documentXml = zip.GetInputStream(entry))
                     {
                         var xmlDoc = new XmlDocument();
@@ -140,7 +139,6 @@ namespace MessianicChords.Services
                         break;
                     }
                 }
-                else { record.Log.Add("Skipping zip entry " + entry.Name); }
 
             }
             

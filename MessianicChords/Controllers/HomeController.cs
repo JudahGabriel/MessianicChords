@@ -29,7 +29,7 @@ namespace MessianicChords.Controllers
         {
             var recentChords = await DbSession
                 .Query<ChordSheet>()
-                .OrderByDescending(o => o.LastUpdated)
+                .OrderByDescending(o => o.Created)
                 .Skip(skip)
                 .Take(3)
                 .ToListAsync();
