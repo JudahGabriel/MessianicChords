@@ -89,39 +89,7 @@ namespace MessianicChords.Controllers
                 throw;
             }
         }
-
-        [HttpGet]
-        public async Task<ActionResult> TempTouchDocx()
-        {
-            var authorizeResults = await GoogleDriveApi.Authorize(this);
-            var driveApi = new GoogleDriveApi(authorizeResults.Initializer);
-            var docXFiles = await driveApi.SearchFolder(System.Configuration.ConfigurationManager.AppSettings["messianicChordsFolderId"], "docx");
-            var docxFileIds = docXFiles.Select(d => d.Id).ToList();
-            var docsToBulkInsert = new List<ChordSheet>(docxFileIds.Count);
-            using (var enumerator = await DbSession.Advanced.StreamAsync<ChordSheet>("ChordSheets/"))
-            {
-                while (await enumerator.MoveNextAsync())
-                {
-                    var currentChordSheet = enumerator.Current.Document;
-                    docsToBulkInsert.Add(currentChordSheet);
-                }
-            }
-
-            using (var bulkInsert = RavenStore.Instance.BulkInsert())
-            {
-                foreach (var chord in docsToBulkInsert)
-                {
-                    if (docxFileIds.Contains(chord.GoogleDocId) && chord.Id != "ChordSheets/1000")
-                    {
-                        chord.Extension = "docx";
-                        bulkInsert.Store(chord);
-                    }
-                }
-            }
-
-            return Json($"A total of {docsToBulkInsert.Count} chord sheets updated", JsonRequestBehavior.AllowGet);
-        }
-
+        
         /// <summary>
         /// Finds ChordSheets that need their plain text contents fetched, downloads them, 
         /// extracts the plain text from the .docx file, and stores that in the ChordSheet.
