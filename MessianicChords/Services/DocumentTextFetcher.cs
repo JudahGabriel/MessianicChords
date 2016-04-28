@@ -43,12 +43,19 @@ namespace MessianicChords.Services
             foreach (var chord in chordSheets)
             {
                 fetchRecord.Log.Add($"Attempting plain text extraction for {chord.Id}, {chord.GetDisplayName()}");
-                var plainText = await FetchPlainTextForChord(chord);
-                if (!string.IsNullOrEmpty(plainText))
+                try
                 {
+                    var plainText = await FetchPlainTextForChord(chord);
                     chord.PlainTextContents = plainText;
-                    chord.HasFetchedPlainTextContents = true;
                     fetchRecord.Log.Add("Successfully extracted plain text. Length is " + plainText.Length);
+                }
+                catch (Exception error)
+                {
+                    fetchRecord.Log.Add("Unable to fetch plain text due to exception. " + error.ToString());
+                }
+                finally
+                {
+                    chord.HasFetchedPlainTextContents = true;
                 }
             }
 
