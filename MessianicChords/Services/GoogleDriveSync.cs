@@ -79,7 +79,7 @@ namespace MessianicChords.Services
                 .Where(ravenDoc => !googleDocIds.Contains(ravenDoc.GoogleDocId))
                 .ToList();
             ravenDocIdsToDelete.ForEach(d => syncRecord.RemovedDocs.Add(d.GetDisplayName()));
-            ravenDocIdsToDelete.ForEach(session.Delete);
+            ravenDocIdsToDelete.ForEach(d => session.Delete(d.Id)); // Must delete by ID, as these docs don't belong to the session.
             syncRecord.Log.Add($"Found {ravenDocIdsToDelete.Count} docs to delete.");
         }
 
