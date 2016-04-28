@@ -79,6 +79,7 @@ namespace MessianicChords.Controllers
                 var syncRecord = await new GoogleDriveSync(chordsFetcher, lastChangeId)
                     .Start(DbSession);
                 await DbSession.StoreAsync(syncRecord);
+                DbSession.AddRavenExpiration(syncRecord, DateTime.UtcNow.AddMonths(1));
 
                 return Json(syncRecord, JsonRequestBehavior.AllowGet);
             }
