@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = string.Format("{0} by {1} on MessianicChords.com", Model.Song, Model.Artist);
 }
+<meta name="description" content="Guitar chords for @Model.Song by @Model.Artist " />
 
 <div style="text-align: center;">
     <h1>
@@ -19,4 +20,7 @@
     </div>
 </div>
 
-
+@*Put the raw text in the page too for search engines.*@
+<div style="display: none">
+    @Model.PlainTextContents
+</div>
