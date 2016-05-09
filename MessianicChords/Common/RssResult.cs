@@ -8,7 +8,7 @@ using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Diagnostics.Contracts;
 
-namespace MessianicChords.Models
+namespace MessianicChords.Common
 {
     public class RssResult : ActionResult
     {

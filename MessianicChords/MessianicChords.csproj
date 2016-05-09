@@ -221,6 +221,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
@@ -229,13 +230,18 @@
   <ItemGroup>
     <Compile Include="AllowCrossSiteJsonAttribute.cs" />
     <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\SitemapGenerator.cs" />
+    <Compile Include="Common\SitemapResult.cs" />
     <Compile Include="Controllers\ChordSheetsController.cs" />
     <Compile Include="Controllers\AuthCallbackController.cs" />
     <Compile Include="Controllers\RavenSessionController.cs" />
+    <Compile Include="Controllers\SitemapController.cs" />
     <Compile Include="Data\ChordSheetSearch.cs" />
     <Compile Include="Models\ChordFetcherAuthResult.cs" />
     <Compile Include="Models\DocumentTextFetchRecord.cs" />
     <Compile Include="Models\GDriveAuthorizeResult.cs" />
+    <Compile Include="Models\SitemapChangeFrequency.cs" />
+    <Compile Include="Models\SitemapItem.cs" />
     <Compile Include="Models\SyncRecord.cs" />
     <Compile Include="Models\GoogleOAuthCredential.cs" />
     <Compile Include="Services\DocumentTextFetcher.cs" />
@@ -254,7 +260,7 @@
     <Compile Include="Data\RavenStore.cs" />
     <Compile Include="Models\ChordSheetMetadata.cs" />
     <Compile Include="Models\Log.cs" />
-    <Compile Include="Models\RssResult.cs" />
+    <Compile Include="Common\RssResult.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Models\UploadRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -267,6 +273,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="FavIcon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="robots.txt" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <Content Include="Scripts\knockout-2.1.0.debug.js" />
     <Content Include="Scripts\knockout-2.1.0.js" />
@@ -299,6 +306,7 @@
     <Folder Include="App_Data\Raven\" />
     <Folder Include="Views\OAuth\" />
     <Folder Include="Views\RavenSession\" />
+    <Folder Include="Views\Sitemap\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
