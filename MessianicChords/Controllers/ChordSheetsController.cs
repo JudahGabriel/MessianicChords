@@ -38,6 +38,8 @@ namespace MessianicChords.Controllers
                 .Search(x => x.Artist, termWildcardEnd, boost: 2, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
                 .Search(x => x.PlainTextContents, termWildcardEnd, boost: 1, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
                 .ToListAsync();
+
+            System.Web.Hosting.HostingEnvironment.QueueBackgroundWorkItem(_ => AddOrIncrementSearch(term));
             
             return Json(new
             {
@@ -119,6 +121,31 @@ namespace MessianicChords.Controllers
             DbSession.AddRavenExpiration(fetchRecord, DateTime.UtcNow.AddDays(30));
 
             return Json(fetchRecord, JsonRequestBehavior.AllowGet);
+        }
+
+        static void AddOrIncrementSearch(string term)
+        {
+            using (var session = RavenStore.Instance.OpenSession())
+            {
+                var existing = session.Query<Search>()
+                    .Where(t => t.Text == term)
+                    .FirstOrDefault();
+                if (existing != null)
+                {
+                    existing.Count = existing.Count + 1;
+                }
+                else
+                {
+                    session.Store(new Search
+                    {
+                        Count = 1,
+                        Date = DateTime.UtcNow,
+                        Text = term
+                    });
+                }
+
+                session.SaveChanges();
+            }
         }
     }
 }
