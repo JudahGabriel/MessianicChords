@@ -31,27 +31,28 @@ namespace MessianicChords.Controllers
         [HttpGet]
         public async Task<ActionResult> Search(string term)
         {
-            var queryForTerm = new Func<string, IRavenQueryable<ChordSheet>>(query =>
-            {
-                return DbSession
-                    .Query<ChordSheet, ChordSheetSearch>()
-                    .Search(x => x.Song, query, boost: 3, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
-                    .Search(x => x.Artist, query, boost: 2, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
-                    .Search(x => x.PlainTextContents, query, boost: 1, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard);
-            });
-
             var termWildcardEnd = term + "*";
-            var matchingChordsQuery = queryForTerm(termWildcardEnd);
-            var matchingChords = await queryForTerm(termWildcardEnd).ToListAsync();
-            
+            var matchingChords = await DbSession.Query<ChordSheet, ChordSheetSearch>()
+                    .Search(x => x.Song, termWildcardEnd, boost: 3, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                    .Search(x => x.Artist, termWildcardEnd, boost: 2, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                    .Search(x => x.PlainTextContents, termWildcardEnd, boost: 1, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                    .ToListAsync();
+                        
             // No results? See if we can suggest some.
             if (!matchingChords.Any() && term.Length > 2)
             {
-                var suggestions = await matchingChordsQuery.SuggestAsync();
-                var firstSuggestion = suggestions.Suggestions.FirstOrDefault();
+                var suggestionResults = await DbSession.Query<ChordSheet, ChordSheetSearch>()
+                        .Search(x => x.Song, termWildcardEnd, boost: 3, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                        .Search(x => x.Artist, termWildcardEnd, boost: 2, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                        .SuggestAsync();
+                
+                var firstSuggestion = suggestionResults.Suggestions.FirstOrDefault();
                 if (firstSuggestion != null)
                 {
-                    matchingChords = await queryForTerm(firstSuggestion).ToListAsync();
+                    matchingChords = await DbSession.Query<ChordSheet, ChordSheetSearch>()
+                            .Search(x => x.Song, firstSuggestion, boost: 3, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                            .Search(x => x.Artist, firstSuggestion, boost: 2, escapeQueryOptions: EscapeQueryOptions.AllowPostfixWildcard)
+                            .ToListAsync();
                 }
             }
 
