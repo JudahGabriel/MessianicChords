@@ -26,6 +26,9 @@ namespace MessianicChords.Data
             Indexes.Add(x => x.Song, FieldIndexing.Analyzed);
             Indexes.Add(x => x.Artist, FieldIndexing.Analyzed);
             Indexes.Add(x => x.PlainTextContents, FieldIndexing.Analyzed);
+
+            Suggestion(x => x.Song);
+            Suggestion(x => x.Artist);
         }
     }
 }
