@@ -107,8 +107,10 @@ namespace MessianicChords.Services
                 foreach (var ravenDoc in changedRavenDocs)
                 {
                     var refreshedChordSheet = await chordsFetcher.CreateChordSheet(ravenDoc.GoogleDocId);
+                    var existingPlainTextContents = ravenDoc.PlainTextContents;
                     ravenDoc.UpdateFrom(refreshedChordSheet);
                     ravenDoc.HasFetchedPlainTextContents = false; // So that it will be fetched again in the near future.
+                    ravenDoc.PlainTextContents = existingPlainTextContents; // Use existing PlainTextContents until we can refetch them later from the updated doc.
                     bulkInsert.Store(ravenDoc);
                     syncRecord.Log.Add($"Updated {ravenDoc.Id}, {ravenDoc.GetDisplayName()}");
                     syncRecord.UpdatedDocs.Add(ravenDoc.GetDisplayName());
