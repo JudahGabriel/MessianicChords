@@ -58,23 +58,12 @@ namespace MessianicChords.Services
             
             var artistTitleKey = System.IO.Path.GetFileNameWithoutExtension(googleDoc.Title.Replace('/', ','))
                 .Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
-            var artist = artistTitleKey.ElementAtOrDefault(0);
-            var song = artistTitleKey.ElementAtOrDefault(1);
-            var key = artistTitleKey.ElementAtOrDefault(2);
-
-            // Song can be null when there is no dash in the file name, e.g. "A King Without a Crown"
-            // In such cases, use the file name as the song and use "Unknown Artist" as the artist.
-            if (song == null)
-            {
-                song = artistTitleKey.ElementAtOrDefault(0);
-                artist = "Unknown Artist";
-            }
 
             var chordSheet = new ChordSheet
             {
-                Artist = artist,
-                Song = song,
-                Key = song,
+                Artist = artistTitleKey.ElementAtOrDefault(0),
+                Song = artistTitleKey.ElementAtOrDefault(1),
+                Key = artistTitleKey.ElementAtOrDefault(2),
                 Address = googleDoc.AlternateLink,
                 Created = googleDoc.CreatedDate ?? DateTime.UtcNow,
                 ThumbnailUrl = googleDoc.ThumbnailLink,
@@ -86,6 +75,12 @@ namespace MessianicChords.Services
                 HasFetchedPlainTextContents = false,
                 DownloadUrl = $"https://docs.google.com/uc?id={googleDocId}&export=download"
             };
+
+            if (string.IsNullOrWhiteSpace(chordSheet.Song))
+            {
+                chordSheet.Song = chordSheet.Artist;
+                chordSheet.Artist = "Unknown Artist";
+            }
 
             return chordSheet;
         }
