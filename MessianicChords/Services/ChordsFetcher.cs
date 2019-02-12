@@ -74,7 +74,7 @@ namespace MessianicChords.Services
             {
                 Artist = artist,
                 Song = song,
-                Key = song,
+                Key = key,
                 Address = googleDoc.AlternateLink,
                 Created = googleDoc.CreatedDate ?? DateTime.UtcNow,
                 ThumbnailUrl = googleDoc.ThumbnailLink,

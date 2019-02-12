@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "Messianic Chords: Messiah's music. Lyrics and chords. On the opened web.";
+}
+
+<div id="search-container">
+    <span class="search-box-brace">{</span>
+    <input id="search-box" type="text" placeholder="Type a song, artist, or partial lyric" data-bind="
+        value: searchText,
+        valueUpdate: 'afterkeydown',
+        css: { 'prompt-text': isShowingPromptText, 'search-text': !isShowingPromptText() },
+        event: { focus: clearPromptTextIfNecessary, blur: showPromptTextIfNecessary } "/>
+    <span class="search-box-brace">}</span>
+    <div class="upload-container" data-bind="visible: !fileUploadSelectionVisible()">Got chords to share? <a href="#" data-bind="click: showFileUploadSelection">Upload them now</a></div>
+    <div class="upload-container" data-bind="visible: fileUploadSelectionVisible">
+        <iframe src="/Home/StartUpload"></iframe>
+    </div>
+    <div>
+        <a href="/home/songs">Browse by song</a>
+        <span class="bar-separator">|</span>
+        <a href="/home/artists">Browse by artist</a>
+        <span class="bar-separator">|</span>
+        <a href="/home/random">Random</a>
+    </div>
+    <div class="site-text">
+        <span>New chords: </span>
+        <div style="display:inline-block;" data-bind="foreach: newChords">
+            <a href="#" data-bind="attr: { href: '/ChordSheets?id=' + $data.Id }, text: $data.Key ? $data.Song + ' - ' + $data.Key : $data.Song"></a>
+            <span class="bar-separator">&nbsp;|&nbsp;</span>
+            <a href="#" data-bind="if: $index() === 2, click: $root.loadMoreNewChords.bind($root)">More...</a>
+        </div>
+    </div>
+    <div data-bind="visible: isSearching" style="text-align:center; margin: 50px;">
+        <img src="/Content/loading.gif" />
+        <span class="site-text">Searching, one moment...</span>
+    </div>
+    <div class="search-results-container" data-bind="template: { name: 'search-results-template', foreach: searchResults, afterAdd: fadeInSearchResult, beforeRemove: fadeOutSearchResult }">
+        
+    </div>
+    <div style="clear:both" />
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var promptText = "Type a song, artist, or partial lyric";
+        var viewModel = {
+            isSearching: ko.observable(false),
+            searchText: ko.observable(""),
+            searchResults: ko.observableArray(),
+            fileUploadSelectionVisible: ko.observable(false),
+            newChords: ko.observableArray(),
+            newChordsSkip: 0,
+
+            search: function (textToSearch) {
+                textToSearch = textToSearch || viewModel.searchText();
+                viewModel.searchResults.removeAll();
+                viewModel.isSearching(true);
+                $.getJSON("/chordsheets/search?term=" + encodeURIComponent(textToSearch), function (searchResults) {
+                    // These are the search results we're looking for.
+                    var isSearchResultsWeAreLookingFor = searchResults.Search === viewModel.searchText();
+                    if (isSearchResultsWeAreLookingFor) {
+                        window.location.hash = encodeURIComponent(textToSearch);
+                        $.each(searchResults.Results, function (index, item) {
+                            item.searchForArtist = function () { viewModel.searchText(item.Artist); }
+                            viewModel.searchResults.push(item);
+                        });
+                    }
+
+                    var isDoneSearching = isSearchResultsWeAreLookingFor || viewModel.isShowingPromptTextOrEmpty();
+                    if (isDoneSearching) {
+                        viewModel.isSearching(false);
+                    }
+                });
+            },
+
+            showFileUploadSelection: function () {
+                viewModel.fileUploadSelectionVisible(true)
+            },
+
+            clearPromptTextIfNecessary: function () {
+                if (viewModel.isShowingPromptText()) {
+                    viewModel.searchText('');
+                }
+            },
+
+            showPromptTextIfNecessary: function () {
+                //if (viewModel.searchText() === '') viewModel.searchText(promptText);
+            },
+
+            fadeInSearchResult: function (elem) {
+                if (elem.nodeType === 1) {
+                    $(elem).hide().fadeIn('slow');
+                }
+            },
+
+            fadeOutSearchResult: function (elem) {
+                if (elem.nodeType === 1) {
+                    $(elem).show().fadeOut('fast');
+                }
+            },
+
+            loadMoreNewChords: function () {
+                viewModel.newChordsSkip += 3;
+                $.getJSON("/Home/NewChords?skip=" + viewModel.newChordsSkip, function (results) {
+                    viewModel.newChords(results);
+                });
+            }
+        };
+
+        viewModel.isShowingPromptText = ko.computed(function () {
+            return viewModel.searchText() === promptText || viewModel.searchText() === "";
+        });
+
+        viewModel.isShowingPromptTextOrEmpty = ko.computed(function () {
+            return viewModel.isShowingPromptText() || viewModel.searchText() === '';
+        });
+
+        viewModel.isShowingSearchResults = ko.computed(function () { return !viewModel.isSearching() && !viewModel.isShowingPromptTextOrEmpty() });
+        viewModel.searchTextThrottled = ko.computed(viewModel.searchText).extend({ throttle: 500 });
+        viewModel.searchTextThrottled.subscribe(function (newVal) {
+            viewModel.searchResults.removeAll();
+            var isShowingPromptText = newVal === promptText;
+            if (!isShowingPromptText && newVal) {
+                viewModel.search(newVal);
+            }
+            else {
+                window.location.hash = '';
+            }
+        });
+
+        ko.applyBindings(viewModel);
+
+        var urlHash = window.location.hash;
+        if (urlHash) {
+            var searchToPerform = unescape(urlHash.substr(1));
+            viewModel.searchText(searchToPerform);
+        }
+
+        $.getJSON("/Home/NewChords", function (results) {
+            viewModel.newChords(results);
+        });
+    });
+
+</script>

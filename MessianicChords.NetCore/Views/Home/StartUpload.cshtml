@@ -1,0 +1,27 @@
+﻿<div class="upload-container">
+    @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="file" multiple="multiple" name="theFile" data-bind="visible: !isLoading()" />
+        @*<input type="file" multiple="multiple" name="theFile" id="theFile" />*@
+        <input type="submit" value="Upload" data-bind="visible: !isLoading()" />
+        
+    }
+    <div data-bind="visible: isLoading">
+        <span>Uploading your chords. Just a sec...</span>
+        <img src="../../Content/loading.gif" />
+    </div>
+</div>
+
+<link href='https://fonts.googleapis.com/css?family=Lora|Homemade+Apple' rel='stylesheet' type='text/css' />
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("https://code.jquery.com/jquery-1.12.3.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    var vm = {
+        isLoading: ko.observable(false),
+        onSubmit: function () { vm.isLoading(true); return true; }
+    }
+    ko.applyBindings(vm, $(".upload-container")[0]);
+
+</script>

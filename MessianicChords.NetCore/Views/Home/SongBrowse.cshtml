@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "Chords by song";
+}
+
+<div style="text-align:center; margin: 50px;">
+    <img data-bind="visible: isLoading" src="/Content/loading.gif" />
+</div>
+<div data-bind="foreach: chordsByLetter">
+    <br />
+    <span class="grouped-results-header" data-bind="text: Description"></span>
+    <div class="search-results-container" data-bind="template: { name: 'search-results-template', foreach: Songs }">
+        
+    </div>
+    <div style="clear: both;"></div>
+    <br />
+    <br />
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var viewModel = {
+            skip: 0,
+            take: 100,
+            chordsByLetter: ko.observableArray(),
+            isLoading: ko.observable(true),
+
+            fetchSongs: function () {
+                var args = {
+                    skip: this.skip,
+                    take: this.take
+                };
+
+                self = this;
+                $.getJSON("/Home/GetSongsByName", args, function (results) { self.songsChunkFetched(results) });
+            },
+
+            songsChunkFetched: function (results) {
+                this.skip += results.Items.length;
+
+                // Process each song that comes back; put it into the right letter group.
+                var self = this;
+                results.Items.forEach(function (song) {
+                    song.searchForArtist = function () { }
+                    if (song.Song) {
+                        var letter = song.Song[0].toUpperCase();
+                        var existingLetterGroup = self.chordsByLetter().filter(function (c) { return c.Letter === letter })[0];
+                        if (existingLetterGroup) {
+                            existingLetterGroup.Songs.push(song);
+                        }
+                        else {
+                            var newLetterGroup = {
+                                Letter: letter,
+                                Songs: ko.observableArray([song])
+                            };
+                            newLetterGroup.Description = ko.computed(function () {
+                                var totalSongs = newLetterGroup.Songs().length;
+                                if (totalSongs > 2) {
+                                    return newLetterGroup.Letter + '  -  "' + newLetterGroup.Songs()[0].Song + '"  through  "' + newLetterGroup.Songs()[totalSongs - 1].Song + '"';
+                                }
+
+                                return newLetterGroup.Letter;
+                            });
+                            self.chordsByLetter.push(newLetterGroup);
+                        }
+                    }
+                });
+
+                // If there are more available, fetch 'em.
+                var areMoreSongsAvailable = this.skip < results.Total;
+                viewModel.isLoading(areMoreSongsAvailable);
+                if (areMoreSongsAvailable) {
+                    this.fetchSongs();
+                }
+            }
+        };
+
+        ko.applyBindings(viewModel);
+        viewModel.fetchSongs();
+    });
+
+</script>

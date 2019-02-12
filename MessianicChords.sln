@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessianicChords", "MessianicChords\MessianicChords.csproj", "{A587D182-CDBE-4EDF-B612-BA22A737057C}"
 EndProject
@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04B949
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessianicChords.NetCore", "MessianicChords.NetCore\MessianicChords.NetCore.csproj", "{2ACB1897-9B23-4A90-8144-359A31DB81D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,8 +22,15 @@ Global
 		{A587D182-CDBE-4EDF-B612-BA22A737057C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A587D182-CDBE-4EDF-B612-BA22A737057C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A587D182-CDBE-4EDF-B612-BA22A737057C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ACB1897-9B23-4A90-8144-359A31DB81D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ACB1897-9B23-4A90-8144-359A31DB81D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ACB1897-9B23-4A90-8144-359A31DB81D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ACB1897-9B23-4A90-8144-359A31DB81D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFDF1228-B99F-4CAB-8E7C-941024DB71A3}
 	EndGlobalSection
 EndGlobal
