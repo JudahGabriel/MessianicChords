@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace MessianicChords.Models
+{
+    public class AppSettings
+    {
+        public string GDriveApiKey { get; set; } = string.Empty;
+        public string GDriveFolderId { get; set; } = string.Empty;
+        public string GoogleUserName { get; set; } = string.Empty;
+        public string GoogleClientId { get; set; } = string.Empty;
+        public string GoogleClientSecret { get; set; } = string.Empty;
+        public string SendGridKey { get; set; } = string.Empty;
+        public string UploadedAttachmentEmailRecipient { get; set; } = string.Empty;
+        public string EmailSender { get; set; } = string.Empty;
+    }
+}

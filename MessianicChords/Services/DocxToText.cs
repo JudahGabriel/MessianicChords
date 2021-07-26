@@ -1,8 +1,8 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using MessianicChords.Models;
+﻿using MessianicChords.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -15,29 +15,20 @@ namespace MessianicChords.Services
     /// </summary>
     public class DocxToText
     {
-        private const string ContentTypeNamespace =
-            @"http://schemas.openxmlformats.org/package/2006/content-types";
-
-        private const string WordprocessingMlNamespace =
-            @"http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+        private const string ContentTypeNamespace = "http://schemas.openxmlformats.org/package/2006/content-types";
+        private const string WordprocessingMlNamespace = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
         private const string DocumentXmlXPath =
             "/t:Types/t:Override[@ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"]";
 
         private const string BodyXPath = "/w:document/w:body";
 
-        private Stream docxFileStream;
-        private string docxFileEntry = "";
-        private DocumentTextFetchRecord record;
+        private readonly Stream docxFileStream;
+        private readonly DocumentTextFetchRecord record;
 
 
         public DocxToText(Stream stream, DocumentTextFetchRecord record)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
             this.docxFileStream = stream;
             this.record = record;
         }
@@ -51,49 +42,42 @@ namespace MessianicChords.Services
         {
             // Usually it is "/word/document.xml"
 
-            using (var zipFile = new ZipFile(docxFileStream))
+            var zipFile = new ZipArchive(docxFileStream);
+            var docxFileEntry = FindDocumentXmlLocation(zipFile);
+            if (string.IsNullOrEmpty(docxFileEntry))
             {
-                docxFileEntry = FindDocumentXmlLocation(zipFile);
-                record.Log.Add("Found docxFileEntry to be " + docxFileEntry);
-
-                if (string.IsNullOrEmpty(docxFileEntry))
-                {
-                    record.Log.Add("Couldn't find docx entry. Returning empty string.");
-                    return string.Empty;
-                }
-
-                return ReadDocumentXml(zipFile);
+                record.Log.Add("Couldn't find docx entry. Returning empty string.");
+                return string.Empty;
             }
+
+            record.Log.Add($"Found docxFileEntry to be {docxFileEntry}");
+            return ReadDocumentXml(zipFile, docxFileEntry);
         }
 
         /// <summary>
         /// Gets location of the "document.xml" zip entry.
         /// </summary>
         /// <returns>Location of the "document.xml".</returns>
-        private string FindDocumentXmlLocation(ZipFile zip)
+        private string? FindDocumentXmlLocation(ZipArchive zip)
         {
-            foreach (ZipEntry entry in zip)
+            foreach (var entry in zip.Entries)
             {
                 // Find "[Content_Types].xml" zip entry
-
-                if (string.Compare(entry.Name, "[Content_Types].xml", true) == 0)
+                if (string.Equals(entry.Name, "[Content_Types].xml", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Stream contentTypes = zip.GetInputStream(entry);
-
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.PreserveWhitespace = true;
+                    using var contentTypes = entry.Open();
+                    var xmlDoc = new XmlDocument
+                    {
+                        PreserveWhitespace = true
+                    };
                     xmlDoc.Load(contentTypes);
-                    contentTypes.Close();
 
-                    //Create an XmlNamespaceManager for resolving namespaces
-
-                    XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+                    // Create an XmlNamespaceManager for resolving namespaces
+                    var nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
                     nsmgr.AddNamespace("t", ContentTypeNamespace);
 
                     // Find location of "document.xml"
-
-                    XmlNode node = xmlDoc.DocumentElement.SelectSingleNode(DocumentXmlXPath, nsmgr);
-
+                    var node = xmlDoc.DocumentElement?.SelectSingleNode(DocumentXmlXPath, nsmgr);
                     if (node != null)
                     {
                         string location = ((XmlElement)node).GetAttribute("PartName");
@@ -110,36 +94,33 @@ namespace MessianicChords.Services
         /// Reads "document.xml" zip entry.
         /// </summary>
         /// <returns>Text containing in the document.</returns>
-        private string ReadDocumentXml(ZipFile zip)
+        private string ReadDocumentXml(ZipArchive zip, string docxFileEntry)
         {
-            StringBuilder sb = new StringBuilder();
-            
-            foreach (ZipEntry entry in zip)
+            var sb = new StringBuilder();
+            foreach (var entry in zip.Entries)
             {
-                if (entry.Name != null && entry.Name.EndsWith(docxFileEntry, StringComparison.InvariantCultureIgnoreCase))
+                if (entry.Name != null && docxFileEntry.EndsWith(entry.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    using (var documentXml = zip.GetInputStream(entry))
+                    using var documentXml = entry.Open();
+                    var xmlDoc = new XmlDocument
                     {
-                        var xmlDoc = new XmlDocument();
-                        xmlDoc.PreserveWhitespace = true;
-                        xmlDoc.Load(documentXml);
-                        documentXml.Close();
+                        PreserveWhitespace = true
+                    };
+                    xmlDoc.Load(documentXml);
 
-                        var nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
-                        nsmgr.AddNamespace("w", WordprocessingMlNamespace);
+                    var nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+                    nsmgr.AddNamespace("w", WordprocessingMlNamespace);
 
-                        var node = xmlDoc.DocumentElement.SelectSingleNode(BodyXPath, nsmgr);
-                        if (node == null)
-                        {
-                            return string.Empty;
-                        }
-
-                        sb.Append(ReadNode(node));
-
-                        break;
+                    var node = xmlDoc.DocumentElement?.SelectSingleNode(BodyXPath, nsmgr);
+                    if (node == null)
+                    {
+                        return string.Empty;
                     }
-                }
 
+                    sb.Append(ReadNode(node));
+
+                    break;
+                }
             }
             
             return sb.ToString();
@@ -153,7 +134,9 @@ namespace MessianicChords.Services
         private string ReadNode(XmlNode node)
         {
             if (node == null || node.NodeType != XmlNodeType.Element)
+            {
                 return string.Empty;
+            }
 
             StringBuilder sb = new StringBuilder();
             foreach (XmlNode child in node.ChildNodes)

@@ -1,0 +1,30 @@
+﻿@inject NavigationManager NavigationManager
+
+<div class="card search-result align-self-stretch">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a class="song-name" target="_blank" href="@("/" + ChordSheet.Id)">
+                @ChordSheet.Song
+            </a>
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+            <a class="artist" @onclick="SearchForArtist" href="@($"/?search={Uri.EscapeDataString(ChordSheet.Artist)}")">
+                @ChordSheet.Artist
+            </a>
+        </h6>
+        <h6 class="card-subtitle mb-2 text-muted key" style="display: @(string.IsNullOrEmpty(ChordSheet.Key) ? "none" : "block")">
+            <span>Key of</span>
+            @ChordSheet.Key
+        </h6>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ChordSheet ChordSheet { get; set; }
+
+    void SearchForArtist()
+    {
+        NavigationManager.NavigateTo($"/?search={Uri.EscapeDataString(ChordSheet.Artist)}");
+    }
+}

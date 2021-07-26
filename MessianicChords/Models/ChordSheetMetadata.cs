@@ -8,6 +8,6 @@ namespace MessianicChords.Models
     public class ChordSheetMetadata
     {
         public string GoogleDocId { get; set; }
-        public string ETag { get; set; }
+        public DateTime LastModified { get; set; }
     }
 }

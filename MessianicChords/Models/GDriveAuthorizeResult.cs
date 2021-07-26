@@ -1,4 +1,4 @@
-﻿using Google.Apis.Services;
+﻿//using Google.Apis.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace MessianicChords.Models
 {
     public class GDriveAuthorizeResult
     {
-        public BaseClientService.Initializer Initializer { get; set; }
+        //public BaseClientService.Initializer Initializer { get; set; }
         public string RedirectUri { get; set; }
     }
 }

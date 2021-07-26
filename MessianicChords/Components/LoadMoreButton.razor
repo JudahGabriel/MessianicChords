@@ -1,0 +1,19 @@
+﻿<button class="btn btn-secondary @(this.List.IsLoading ? "disabled" : string.Empty) @(this.List.HasMoreItems ? string.Empty : "d-none")" type="button" @onclick="() => this.List.GetNextChunk()">
+    @if (!this.List.IsLoading)
+    {
+        <span>Load more...</span>
+    }
+    else
+    {
+        <span class="spinner-border" role="status">
+            <span class="visually-hidden"></span>
+        </span>
+        <span>Loading...</span>
+    }
+</button>
+
+@typeparam TItem
+@code {
+    [Parameter]
+    public PagedList<TItem> List { get; set; }
+}

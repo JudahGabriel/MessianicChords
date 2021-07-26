@@ -1,0 +1,163 @@
+﻿@page "/" 
+@using System.Reactive.Subjects 
+@using System.Reactive.Linq
+@inject MessianicChords.Services.ChordSheetService chordsService
+@inject NavigationManager navManager 
+@inject MessianicChords.Services.EmailService emailService 
+
+<section class="home-page">
+
+    <div class="search-container">
+        <span class="search-box-brace">{</span>
+        <input id="search-box" class="form-control" type="text" placeholder="Type a song, artist, or partial lyric" @bind="@SearchText" @bind:event="oninput" autofocus />
+        <span class="search-box-brace">}</span>
+    </div>
+    <div class="text-center">
+        Browse:
+        <br class="d-block d-sm-none" />
+        <a class="fw-bold" href="/browse/newest">Newest</a>
+        <span class="bar-separator">|</span>
+        <a class="fw-bold" href="/browse/songs">By song</a>
+        <span class="bar-separator">|</span>
+        <a class="fw-bold" href="/browse/artists">By artist</a>
+        <span class="bar-separator">|</span>
+        <a class="fw-bold" href="/browse/random">Random</a>
+    </div>
+    <div class="new-chords text-center mt-2 d-flex">
+        <span>New chords:</span>
+        @foreach (var newChordSheet in newChords)
+        {
+            <div class="d-inline-block">
+                <a class="fw-bold" href="/@newChordSheet.Id">
+                    @if (!string.IsNullOrEmpty(newChordSheet.Key))
+                    {
+                        @($"{newChordSheet.Song} - {newChordSheet.Key}")
+                    }
+                    else
+                    {
+                        @newChordSheet.Song
+                    }
+                </a>
+                @if (newChords.IndexOf(newChordSheet) != (newChords.Count - 1))
+                {
+                    <span class="bar-separator d-none d-sm-inline">&nbsp;|&nbsp;</span>
+                }
+            </div>
+        }
+        <button class="btn btn-light ms-2" @onclick="FetchNextNewChords">Load more...</button>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <div class="site-text">
+            <span class="@(attachmentStatus == "none" ? string.Empty : "d-none")">Got chords to share?</span>
+            <button class="btn btn-light ml-2 @(attachmentStatus == "none" ? string.Empty : "d-none")" onclick="document.querySelector('#upload-chords-input').click()">Upload</button>
+            <InputFile id="upload-chords-input" class="d-none" accept=".doc, .docx, .gdoc, .pdf, .gif, .png, .tif" OnChange="@LoadFiles" multiple />
+            <div class="alert alert-info @(attachmentStatus == "uploading" ? "d-block" : "d-none")" role="alert">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                Uploading, please wait...
+            </div>
+            <div class="alert alert-success @(attachmentStatus == "success" ? "d-block" : "d-none")" role="alert">
+                ✔ Chord sheets uploaded. We'll review them and get them on the site soon.
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin: 50px; display: @(isLoading ? "block" : "none")">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="site-text">Searching, one moment...</span>
+    </div>
+    <div class="search-results-container flex-wrap">
+        @foreach (var chordSheet in searchResults)
+        {
+            <ChordCard ChordSheet="@chordSheet"></ChordCard>
+        }
+    </div>
+</section>
+
+@code {
+    private bool isLoading = false;
+    private string attachmentStatus = "none";
+    private string searchText = "";
+    private Subject<string> searchTextSubject = new Subject<string>();
+    private List<ChordSheet> searchResults = new List<ChordSheet>();
+    private List<ChordSheet> newChords = new List<ChordSheet>();
+    private int newChordsSkip = 0;
+
+    // When SearchText is updated, push it into our searchTextThrottled
+    public string SearchText
+    {
+        get => searchText;
+        set
+        {
+            searchText = value;
+            searchTextSubject.OnNext(value);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        // Listen for throttled search text updated.
+        Observable
+            .Throttle(searchTextSubject, TimeSpan.FromMilliseconds(250))
+            .Subscribe(async search => await InvokeAsync(() => SearchTextChanged(search)));
+
+        // Is there a query string? If so, search for that.
+        var queryString = navManager.ToAbsoluteUri(navManager.Uri).Query;
+        if (queryString.StartsWith("?search=", StringComparison.OrdinalIgnoreCase))
+        {
+            this.SearchText = Uri.UnescapeDataString(queryString.Substring(8));
+        }
+
+        await FetchNextNewChords();
+    }
+
+    async Task FetchNextNewChords()
+    {
+        int take = 3;
+        var pagedResult = await this.chordsService.GetNew(newChordsSkip, take);
+        this.newChords = pagedResult.Results;
+        newChordsSkip += take;
+    }
+
+    async Task SearchTextChanged(string search)
+    {
+        if (string.IsNullOrEmpty(search))
+        {
+            isLoading = false;
+            this.searchResults = new List<ChordSheet>(0);
+            StateHasChanged();
+            return;
+        }
+
+        isLoading = true;
+        var results = await chordsService.Search(search);
+
+        // See if the user is still waiting for these results, and if so, show them.
+        if (search == this.searchText)
+        {
+            searchResults = results;
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        attachmentStatus = "uploading";
+        try
+        {
+            await emailService.SendEmailWithUploadedChords(e.GetMultipleFiles());
+            attachmentStatus = "success";
+        }
+        catch (Exception)
+        {
+            attachmentStatus = "error";
+        }
+    }
+}

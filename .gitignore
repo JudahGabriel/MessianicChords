@@ -185,3 +185,6 @@ FakesAssemblies/
 
 *.config.ignore
 .vs
+
+appsettings.Development.json
+appsettings.Production.json

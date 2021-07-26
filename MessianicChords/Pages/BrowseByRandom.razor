@@ -1,0 +1,53 @@
+﻿@page "/browse/random"
+@inject MessianicChords.Services.ChordSheetService chordsService
+
+<div class="d-flex flex-wrap justify-content-center">
+    @foreach (var chordSheet in chords)
+    {
+        <ChordCard ChordSheet="@chordSheet"></ChordCard>
+    }
+</div>
+
+<div class="d-grid mt-4 mb-5 col-lg-3 col-md-4 mx-auto">
+    <button class="btn btn-secondary @(isLoadingNewRandomBatch ? "disabled" : string.Empty)" type="button" @onclick="LoadRandomBatch">
+        @if (!isLoadingNewRandomBatch)
+        {
+            <span>Reload</span>
+        }
+        else
+        {
+            <span class="spinner-border" role="status">
+                <span class="visually-hidden"></span>
+            </span>
+            <span>Loading...</span>
+        }
+    </button>
+</div>
+
+
+@code {
+    private List<ChordSheet> chords = new List<ChordSheet>();
+    private bool isLoadingNewRandomBatch = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await this.LoadRandomBatch();
+    }
+
+    private async Task LoadRandomBatch()
+    {
+        if (!this.isLoadingNewRandomBatch)
+        {
+            this.isLoadingNewRandomBatch = true;
+            try
+            {
+                this.chords = await this.chordsService.GetByRandom(7);
+            }
+            finally
+            {
+                this.isLoadingNewRandomBatch = false;
+            }
+        }
+    }
+}

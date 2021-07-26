@@ -1,0 +1,30 @@
+{
+  "lang": "en-US",
+  "dir": "ltr",
+  "name": "Messianic Chords",
+  "short_name": "Messianic Chords",
+  "description": "Guitar chord and lyrics for Messianic Jewish music",
+  "display": "minimal-ui",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#0b0974",
+  "orientation": "any",
+  "categories": [
+    "music",
+    "entertainment",
+    "religion",
+    "reference"
+  ],
+  "url_handlers": [
+    {
+      "origin": "messianicchords.com"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/images/512x512.png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}

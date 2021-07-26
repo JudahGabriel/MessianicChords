@@ -1,0 +1,54 @@
+﻿@* 
+    Note: anything we add here must be added to _Host.cshtml, the master page for Blazor pages 
+*@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "Messianic Chords - guitar chords and lyrics for Messianic Jewish music")</title>
+    <meta name="description" content="Guitar chords, lyrics, and sheet music for Messianic Jewish and Hebrew Roots music" />
+    <meta name="keywords" content="chords, guitar chords, messianic, messianic jewish, messianic jewish music, messianic jewish guitar chords, messianic jewish lyrics, hebrew roots music, hebrew roots guitar chords, hebrew roots lyrics">
+    <base href="~/" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Lora&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="css/site.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/images/favicon.ico" />
+    <link rel="icon" href="~/images/512x512.png" sizes="512x512" />
+    <link rel="manifest" href="~/manifest.json" />
+</head>
+<body>
+    <app>
+        <div class="page">
+            <header>
+                <div id="title">
+                    <a href="/"><h1>Messianic Chords</h1></a>
+                    <h2>Messiah's music. Guitar chords, lyrics, sheet music, and more</h2>
+                </div>
+            </header>
+            <section class="container">
+                @RenderBody()
+            </section>
+
+            <footer class="pb-5 mt-3 mb-2">
+                <div class="text-center">
+                    <a href="/">Home</a>
+                    <span class="bar-separator">|</span>
+                    <a href="/legal">About us, legal</a>
+                    <span class="bar-separator">|</span>
+                    <a href="https://blog.judahgabriel.com/2012/01/introducing-messianicchordscom.html">What is this site?</a>
+                    <span class="bar-separator">|</span>
+                    <a href="https://blog.judahgabriel.com">Author's Blog</a>
+                    <span class="bar-separator">|</span>
+                    <a href="https://messianicradio.com">Chavah Messianic Radio</a>
+                </div>
+            </footer>
+        </div>
+    </app>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous" async></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
