@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\images\raw-creatives\**" />
+    <Content Remove="wwwroot\images\raw-creatives\**" />
+    <EmbeddedResource Remove="wwwroot\images\raw-creatives\**" />
+    <None Remove="wwwroot\images\raw-creatives\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="FavIcon.ico" />
   </ItemGroup>
 
@@ -14,6 +21,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web.Extensions" Version="5.0.0-preview9.20513.1" />
     <PackageReference Include="RavenDB.Client" Version="5.0.5" />
     <PackageReference Include="RavenDB.DependencyInjection" Version="4.0.2" />
+    <PackageReference Include="RavenDB.StructuredLogger" Version="6.0.1" />
+    <PackageReference Include="RavenMigrations" Version="5.0.0" />
     <PackageReference Include="SendGrid" Version="9.24.1" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>

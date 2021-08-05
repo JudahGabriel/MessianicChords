@@ -94,6 +94,25 @@ namespace MessianicChords.Services
             };
         }
 
+        public async Task<PagedResults<ChordSheet>> GetByArtistName(string artist, int skip, int take)
+        {
+            using var dbSession = db.OpenAsyncSession();
+            var chordSheets = await dbSession.Query<ChordSheet>()
+                .Statistics(out var stats)
+                .Where(a => a.Artist == artist)
+                .OrderBy(a => a.Song)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            return new PagedResults<ChordSheet>
+            {
+                Results = chordSheets,
+                Skip = skip,
+                Take = take,
+                TotalCount = stats.TotalResults
+            };
+        }
+
         public async Task<List<ChordSheet>> GetByRandom(int take)
         {
             using var dbSession = db.OpenAsyncSession();

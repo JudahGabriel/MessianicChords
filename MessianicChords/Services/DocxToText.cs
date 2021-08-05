@@ -1,4 +1,5 @@
 ﻿using MessianicChords.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,13 +25,10 @@ namespace MessianicChords.Services
         private const string BodyXPath = "/w:document/w:body";
 
         private readonly Stream docxFileStream;
-        private readonly DocumentTextFetchRecord record;
 
-
-        public DocxToText(Stream stream, DocumentTextFetchRecord record)
+        public DocxToText(Stream stream)
         {
             this.docxFileStream = stream;
-            this.record = record;
         }
 
 
@@ -46,11 +44,9 @@ namespace MessianicChords.Services
             var docxFileEntry = FindDocumentXmlLocation(zipFile);
             if (string.IsNullOrEmpty(docxFileEntry))
             {
-                record.Log.Add("Couldn't find docx entry. Returning empty string.");
                 return string.Empty;
             }
 
-            record.Log.Add($"Found docxFileEntry to be {docxFileEntry}");
             return ReadDocumentXml(zipFile, docxFileEntry);
         }
 

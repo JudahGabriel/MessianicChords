@@ -3,7 +3,7 @@
   "dir": "ltr",
   "name": "Messianic Chords",
   "short_name": "Messianic Chords",
-  "description": "Guitar chord and lyrics for Messianic Jewish music",
+  "description": "Guitar chords and lyrics for Messianic Jewish music",
   "display": "minimal-ui",
   "start_url": "/",
   "background_color": "#ffffff",
@@ -15,16 +15,144 @@
     "religion",
     "reference"
   ],
+  "capture_links": "existing_client_event",
   "url_handlers": [
     {
-      "origin": "messianicchords.com"
+      "origin": "https://messianicchords.com"
     }
   ],
   "icons": [
     {
+      "src": "/images/16x16.png",
+      "sizes": "16x16",
+      "purpose": "any",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/images/16x16.ico",
+      "sizes": "16x16",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/32x32.png",
+      "sizes": "32x32",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/32x32.ico",
+      "sizes": "32x32",
+      "purpose": "any",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/images/64x64.png",
+      "sizes": "64x64",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/120x120.png",
+      "sizes": "120x120",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/120x120-maskable.png",
+      "sizes": "120x120",
+      "purpose": "maskable",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/128x128.png",
+      "sizes": "128x128",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/152x152.png",
+      "sizes": "152x152",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/152x152-maskable.png",
+      "sizes": "152x152",
+      "purpose": "maskable",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/167x167.png",
+      "sizes": "167x167",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/167x167-maskable.png",
+      "sizes": "167x167",
+      "purpose": "maskable",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/180x180.png",
+      "sizes": "180x180",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/180x180-maskable.png",
+      "sizes": "180x180",
+      "purpose": "maskable",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/196x196.png",
+      "sizes": "196x196",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/256x256.png",
+      "sizes": "256x256",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
       "src": "/images/512x512.png",
       "sizes": "512x512",
-      "purpose": "any"
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/512x512-maskable.png",
+      "sizes": "512x512",
+      "purpose": "maskable",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/512x512-monochrome.png",
+      "sizes": "512x512",
+      "purpose": "monochrome",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/600x600.png",
+      "sizes": "600x600",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/1024x1024.png",
+      "sizes": "1024x1024",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/1024x1024-maskable.png",
+      "sizes": "1024x1024",
+      "purpose": "maskable",
+      "type": "image/png"
     }
   ]
 }

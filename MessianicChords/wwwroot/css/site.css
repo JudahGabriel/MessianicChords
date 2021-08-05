@@ -113,13 +113,19 @@ body {
         text-decoration: none;
     }
 
-    .search-result .song-name {
+    .search-result .song-name,
+    .search-result .hebrew-song-name {
         font-size: 26px;
         color: Brown;
         text-decoration: none;
         text-shadow: 1px 1px 1px silver;
         font-family: 'Homemade Apple', cursive;
     }
+
+        .search-result .hebrew-song-name {
+            direction: rtl;
+            text-align: right;
+        }
 
     .search-result label {
         color: black;

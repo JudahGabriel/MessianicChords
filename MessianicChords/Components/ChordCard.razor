@@ -2,13 +2,20 @@
 
 <div class="card search-result align-self-stretch">
     <div class="card-body">
-        <h5 class="card-title">
+        <div class="card-title d-flex">
             <a class="song-name" target="_blank" href="@("/" + ChordSheet.Id)">
                 @ChordSheet.Song
             </a>
-        </h5>
+            @if (!string.IsNullOrWhiteSpace(ChordSheet.HebrewSongName))
+            {
+                <a class="hebrew-song-name" target="_blank" href="@("/" + ChordSheet.Id)">
+                    @ChordSheet.HebrewSongName
+                </a>
+            }
+            <a class="hebrew-song-name"></a>
+        </div>
         <h6 class="card-subtitle mb-2 text-muted">
-            <a class="artist" @onclick="SearchForArtist" href="@($"/?search={Uri.EscapeDataString(ChordSheet.Artist)}")">
+            <a class="artist" href="@($"/artist/{Uri.EscapeDataString(ChordSheet.Artist)}")">
                 @ChordSheet.Artist
             </a>
         </h6>
@@ -22,9 +29,4 @@
 @code {
     [Parameter]
     public ChordSheet ChordSheet { get; set; }
-
-    void SearchForArtist()
-    {
-        NavigationManager.NavigateTo($"/?search={Uri.EscapeDataString(ChordSheet.Artist)}");
-    }
 }

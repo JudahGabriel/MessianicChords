@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
+using MessianicChords.Common;
 using MessianicChords.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -127,13 +128,22 @@ namespace MessianicChords.Services
             var artistTitleKey = System.IO.Path.GetFileNameWithoutExtension(googleDoc.Name.Replace('/', ','))
                 .Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
             var artist = artistTitleKey.ElementAtOrDefault(0) ?? "Unknown Artist";
-            var song = artistTitleKey.ElementAtOrDefault(1) ?? string.Empty; // handled below
+            var songName = artistTitleKey.ElementAtOrDefault(1) ?? string.Empty; // handled below
             var key = artistTitleKey.ElementAtOrDefault(2);
+
+            if (string.IsNullOrWhiteSpace(songName))
+            {
+                songName = artist;
+                artist = "Unknown Artist";
+            }
+
+            (var englishName, var hebrewName) = songName.GetEnglishAndHebrew();
 
             var chordSheet = new ChordSheet
             {
                 Artist = artist,
-                Song = song,
+                Song = englishName,
+                HebrewSongName = hebrewName,
                 Key = key,
                 Address = googleDoc.WebViewLink,
                 Created = googleDoc.CreatedTime ?? DateTime.UtcNow,
@@ -149,13 +159,7 @@ namespace MessianicChords.Services
                 PagesCount = 1,
                 PublishUri = null
             };
-
-            if (string.IsNullOrWhiteSpace(chordSheet.Song))
-            {
-                chordSheet.Song = chordSheet.Artist;
-                chordSheet.Artist = "Unknown Artist";
-            }
-
+            
             return chordSheet;
         }
 

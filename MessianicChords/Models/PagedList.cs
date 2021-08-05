@@ -12,6 +12,17 @@ namespace MessianicChords.Models
         private readonly Func<int, int, Task<PagedResults<T>>> nextChunkFetcher;
         private readonly Action? stateHasChanged;
 
+        public PagedList()
+        {
+            this.nextChunkFetcher = (skip, take) => Task.FromResult(new PagedResults<T>
+            {
+                Results = new List<T>(0),
+                Skip = skip, 
+                Take = take, 
+                TotalCount = 0 
+            });
+        }
+
         public PagedList(Func<int, int, Task<PagedResults<T>>> nextChunkFetcher, Action stateHasChanged = null)
         {
             this.nextChunkFetcher = nextChunkFetcher;

@@ -8,8 +8,13 @@
 <section class="chord-details-page">
     <div class="text-center">
         <h1 class="p-5">
-            @Model.ChordSheet.Song <small class="site-text" style="font-size: 0.4em;">by</small>
-            <a href="/?search=@Uri.EscapeUriString(Model.ChordSheet.Artist)" style="font-family: 'Homemade Apple', cursive; margin-left: 10px;">@Model.ChordSheet.Artist</a>
+            @Model.ChordSheet.Song 
+            @if (!string.IsNullOrWhiteSpace(Model.ChordSheet.HebrewSongName))
+            {
+                @Model.ChordSheet.HebrewSongName
+            }
+            <small class="site-text" style="font-size: 0.4em;">by</small>
+            <a href="/artist/@Uri.EscapeUriString(Model.ChordSheet.Artist)" style="font-family: 'Homemade Apple', cursive; margin-left: 10px;">@Model.ChordSheet.Artist</a>
         </h1>
 
         <iframe id="g-doc-frame" src="@Model.IFrameUri" title="@Model.ChordSheet.Song by @Model.ChordSheet.Artist" allowfullscreen frameborder="0" style="min-height: @(Model.IFrameHeight)px;"></iframe>
@@ -21,7 +26,7 @@
                     </button>*@
                 <a target="_blank" href="@Model.PrintUri">Print</a>
                 |
-                <a href="/?search=@Uri.EscapeDataString(Model.ChordSheet.Artist)">More chords from @Model.ChordSheet.Artist</a> |
+                <a href="/artist/@Uri.EscapeDataString(Model.ChordSheet.Artist)">More chords from @Model.ChordSheet.Artist</a> |
                 <a href="http://messianicradio.com?artist=@Uri.EscapeDataString(Model.ChordSheet.Artist)" target="_blank">Listen to songs from @Model.ChordSheet.Artist on Chavah Messianic Radio</a>
             </p>
         </div>

@@ -4,15 +4,16 @@ namespace MessianicChords.Models
 {
     public class ChordSheet
     {
-        public string Song { get; set; }
-        public string Artist { get; set; }
+        public string Song { get; set; } = string.Empty;
+        public string? HebrewSongName { get; set; }
+        public string Artist { get; set; } = string.Empty;
         public string? Key { get; set; }
-        public string Address { get; set; }
-        public string ThumbnailUrl { get; set; }
-        public string DownloadUrl { get; set; }
-        public string GoogleDocId { get; set; }
-        public string ETag { get; set; }
-        public string Id { get; set; }
+        public string Address { get; set; } = string.Empty;
+        public string? ThumbnailUrl { get; set; }
+        public string? DownloadUrl { get; set; }
+        public string GoogleDocId { get; set; } = string.Empty;
+        public string? ETag { get; set; }
+        public string? Id { get; set; }
         public string? PlainTextContents { get; set; }
         public DateTime LastUpdated { get; set; }
         public DateTime Created { get; set; }
@@ -35,6 +36,7 @@ namespace MessianicChords.Models
             Key = other.Key;
             LastUpdated = other.LastUpdated;
             PlainTextContents = other.PlainTextContents;
+            HebrewSongName = other.HebrewSongName;
             Song = other.Song;
             ThumbnailUrl = other.ThumbnailUrl;
             PublishUri = other.PublishUri;
@@ -44,12 +46,19 @@ namespace MessianicChords.Models
 
         public string GetDisplayName()
         {
+            // Do we have a Hebrew song name as well? Then use "EnglishSongName HebrewSongName" as the format.
+            var songName = this.HebrewSongName switch
+            {
+                var val when string.IsNullOrWhiteSpace(val) => this.Song,
+                _ => $"{this.Song} {this.HebrewSongName}"
+            };
+
             if (!string.IsNullOrWhiteSpace(Key))
             {
-                return $"{Artist} - {Song} - {Key}";
+                return $"{Artist} - {songName} - {Key}";
             }
 
-            return $"{Artist} - {Song}";
+            return $"{Artist} - {songName}";
         }
 
         public bool IsTempFile()

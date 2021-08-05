@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Raven.Client.Documents;
 using Raven.DependencyInjection;
+using Raven.Migrations;
+using Raven.StructuredLog;
 
 namespace MessianicChords
 {
@@ -28,6 +30,8 @@ namespace MessianicChords
             services.AddServerSideBlazor();
 
             services.AddRavenDbDocStore();
+            services.AddRavenDbMigrations();
+            services.AddRavenStructuredLogger();
             services.AddTransient<ChordSheetService>();
             services.AddTransient<GoogleDriveChordsFetcher>();
             services.AddTransient<GoogleDriveSync>();
@@ -66,6 +70,10 @@ namespace MessianicChords
             // Install RavenDB indexes
             var db = app.ApplicationServices.GetRequiredService<IDocumentStore>();
             Raven.Client.Documents.Indexes.IndexCreation.CreateIndexes(typeof(Startup).Assembly, db);
+
+            // Run pending Raven migrations.
+            var migrationService = app.ApplicationServices.GetRequiredService<MigrationRunner>();
+            migrationService.Run();
         }
     }
 }
