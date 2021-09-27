@@ -29,8 +29,6 @@ namespace MessianicChords.Pages
         {
             this.ChordSheet = await chordsService.Get($"chordsheets/{chordId}");
 
-            var test = await gDriveDocFetcher.CreateChordSheet(ChordSheet.GoogleDocId);
-
             var keyText = string.IsNullOrWhiteSpace(this.ChordSheet.Key) ? string.Empty : $", in the key of {this.ChordSheet.Key}";
             this.Title = $"{this.ChordSheet.Song} by {this.ChordSheet.Artist}{keyText} - guitar chords and lyrics";
 

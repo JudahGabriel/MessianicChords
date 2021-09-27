@@ -47,10 +47,11 @@ namespace MessianicChords.Services
             timer?.Dispose();
         }
 
-        private async Task SyncGDocs()
+        private Task SyncGDocs()
         {
-            await driveSync.Start();
-            await plainTextFetcher.Start();
+            //await driveSync.Start();
+            //await plainTextFetcher.Start();
+            return Task.CompletedTask;
         }
     }
 }

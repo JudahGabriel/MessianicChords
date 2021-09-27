@@ -3,12 +3,12 @@
 <div class="card search-result align-self-stretch">
     <div class="card-body">
         <div class="card-title d-flex">
-            <a class="song-name" target="_blank" href="@("/" + ChordSheet.Id)">
+            <a class="song-name" href="@("/" + ChordSheet.Id)">
                 @ChordSheet.Song
             </a>
             @if (!string.IsNullOrWhiteSpace(ChordSheet.HebrewSongName))
             {
-                <a class="hebrew-song-name" target="_blank" href="@("/" + ChordSheet.Id)">
+                <a class="hebrew-song-name" href="@("/" + ChordSheet.Id)">
                     @ChordSheet.HebrewSongName
                 </a>
             }

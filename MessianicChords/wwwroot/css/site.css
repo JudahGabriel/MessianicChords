@@ -28,6 +28,14 @@ body {
     font-family: 'Lora', serif;
 }
 
+    /* On phones and tablets, make the search container margin cancel out the parent's padding */
+    @media (max-width: 767px) {
+        .search-container {
+            margin-left: -20px;
+            margin-right: -20px;
+        }
+    }
+
     .search-container .search-box-brace {
         font-size: 100px;
         padding: 10px;
@@ -47,11 +55,11 @@ body {
     margin-top: 20px;
 }
 
-@media (max-width: 575px) {
-    #search-box {
-        width: 90%;
+    @media (max-width: 575px) {
+        #search-box {
+            width: 90%;
+        }
     }
-}
 
 ::placeholder {
     color: rgb(192, 192, 192) !important;

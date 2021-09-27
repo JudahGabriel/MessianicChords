@@ -23,13 +23,13 @@
   ],
   "icons": [
     {
-      "src": "/images/16x16.png",
+      "src": "/images/16x16.ico",
       "sizes": "16x16",
       "purpose": "any",
       "type": "image/x-icon"
     },
     {
-      "src": "/images/16x16.ico",
+      "src": "/images/16x16.png",
       "sizes": "16x16",
       "purpose": "any",
       "type": "image/png"
@@ -119,6 +119,12 @@
       "type": "image/png"
     },
     {
+      "src": "/images/300x300.png",
+      "sizes": "300x300",
+      "purpose": "any",
+      "type": "image/png"
+    },
+    {
       "src": "/images/512x512.png",
       "sizes": "512x512",
       "purpose": "any",
@@ -153,6 +159,68 @@
       "sizes": "1024x1024",
       "purpose": "maskable",
       "type": "image/png"
+    },
+    {
+      "src": "/images/1080x1080.png",
+      "sizes": "1080x1080",
+      "purpose": "any",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshots/desktop-home-2732x1536.png",
+      "sizes": "2732x1536",
+      "platform": "wide",
+      "label": "Messianic Chords is chord charts for Messianic Jewish music"
+    },
+    {
+      "src": "/images/screenshots/desktop-chords-2732x1536.png",
+      "sizes": "2732x1536",
+      "platform": "wide",
+      "label": "View chord charts and lyrics"
+    },
+    {
+      "src": "/images/screenshots/desktop-search-2732x1536.png",
+      "sizes": "2732x1536",
+      "platform": "wide",
+      "label": "Search by song, artist, or lyrics"
+    },
+    {
+      "src": "/images/screenshots/desktop-browsebyartist-2732x1536.png",
+      "sizes": "2732x1536",
+      "platform": "wide",
+      "label": "Browse chord charts by artist, by song name, by newest, and by random"
+    },
+    {
+      "src": "/images/screenshots/tablet-home-1024x500.png",
+      "sizes": "1024x500",
+      "platform": "wide",
+      "label": "Search and browse charts and lyrics"
+    },
+    {
+      "src": "/images/screenshots/tablet-chordchart-2048x2732.png",
+      "sizes": "2048x2732",
+      "platform": "narrow",
+      "label": "View chord charts and lyrics"
+    },
+    {
+      "src": "/images/screenshots/tablet-browsebyartist-2048x2732.png",
+      "sizes": "2048x2732",
+      "platform": "narrow",
+      "label": "Browse chord charts by artist, by song name, by newest, and by random"
+    },
+    {
+      "src": "/images/screenshots/phone-chordchart-1125x2436.png",
+      "sizes": "2048x2732",
+      "platform": "narrow",
+      "label": "View chord charts and lyrics"
+    },
+    {
+      "src": "/images/screenshots/phone-search-1125x2436.png",
+      "sizes": "2048x2732",
+      "platform": "narrow",
+      "label": "Search for chord charts by song name, artist, or lyrics"
     }
   ]
 }

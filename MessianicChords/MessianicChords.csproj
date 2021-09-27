@@ -17,7 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.52.0.2383" />
+    <Content Include="wwwroot\.well-known\assetlinks.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.55.0.2397" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web.Extensions" Version="5.0.0-preview9.20513.1" />
     <PackageReference Include="RavenDB.Client" Version="5.0.5" />
     <PackageReference Include="RavenDB.DependencyInjection" Version="4.0.2" />

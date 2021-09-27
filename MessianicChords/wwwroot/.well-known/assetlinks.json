@@ -1,0 +1,13 @@
+[
+  {
+    "relation": [ "delegate_permission/common.handle_all_urls" ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.messianicchords",
+      "sha256_cert_fingerprints": [
+        "A2:41:A5:E1:C4:95:4C:70:0C:70:10:40:42:40:92:13:5D:CB:FD:66:8A:AB:9A:39:36:C2:18:2D:E9:75:BC:27",
+        "F9:B8:9D:08:93:9D:54:B6:52:1B:3F:60:45:DF:E2:88:3A:41:6F:9F:19:B9:3D:E1:43:7E:09:AC:25:8D:B1:94"
+      ]
+    }
+  }
+]
