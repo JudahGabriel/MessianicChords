@@ -95,7 +95,7 @@ namespace MessianicChords.Controllers
             var priorityElement = doc.CreateElement("priority", siteMapNamespace);
 
             locElement.InnerText = location;
-            lastModElement.InnerText = lastModified.ToString("O");
+            lastModElement.InnerText = lastModified.ToString("MM'-'dd'-'yyyy");
             changeFreqElement.InnerText = changeFrequency;
             priorityElement.InnerText = priority.ToString();
 
