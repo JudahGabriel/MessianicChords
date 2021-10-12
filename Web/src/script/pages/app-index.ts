@@ -2,7 +2,6 @@ import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators';
 import { Router } from '@vaadin/router';
 
-import './app-home';
 import '../components/header';
 import '../components/footer';
 
@@ -23,26 +22,22 @@ export class AppIndex extends LitElement {
         }
       }
 
+      #routerOutlet {
+        position: relative; /* relative so that transitioned in/out pages won't cause scrollbar */
+      }
+
       #routerOutlet > * {
         width: 100% !important;
       }
 
-      #routerOutlet > .leaving {
-        animation: 160ms fadeOut ease-in-out;
-      }
-
       #routerOutlet > .entering {
+        position: fixed;
         animation: 160ms fadeIn linear;
       }
 
-      @keyframes fadeOut {
-        from {
-          opacity: 1;
-        }
-
-        to {
-          opacity: 0;
-        }
+      #routerOutlet > .leaving {
+        position: fixed;
+        animation: 160ms fadeOut ease-in-out;
       }
 
       @keyframes fadeIn {
@@ -52,6 +47,16 @@ export class AppIndex extends LitElement {
 
         to {
           opacity: 1;
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+
+        to {
+          opacity: 0;
         }
       }
     `;
@@ -70,7 +75,7 @@ export class AppIndex extends LitElement {
         path: '',
         animate: true,
         children: [
-          { path: '/', component: 'app-home' },
+          { path: '/', component: 'app-home', action: async () => await import("./app-home") },
           { path: '/chordsheets/:id', component: 'chord-details', action: async () => await import("./chord-details") },
           { path: '/browse/newest', component: 'browse-newest', action: async () => await import("./browse-newest") },
           { path: '/browse/songs', component: 'browse-songs', action: async () => await import("./browse-songs") },

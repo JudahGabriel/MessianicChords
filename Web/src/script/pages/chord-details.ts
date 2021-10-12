@@ -121,9 +121,10 @@ export class ChordDetails extends BootstrapBase {
 
             @media print {
                 iframe {
-                    transform: scale(1);
+                    transform: scale(1.5) translateX(-115px) translateY(-50px);
                     transform-origin: 0 0;
                     box-shadow: none;
+                    border: none;
                     width: var(--iframe-width);
                 }
             }
@@ -183,8 +184,19 @@ export class ChordDetails extends BootstrapBase {
 
     firstUpdated() {
         this.loadChordSheet()
-            .then(result => this.chord = result)
+            .then(result => this.chordSheetLoaded(result))
             .catch(error => this.error = `${error}`);
+    }
+
+    chordSheetLoaded(chord: ChordSheet): any {
+        this.chord = chord;
+        const chordName = [
+            chord.song,
+            chord.hebrewSongName
+        ]
+            .filter(n => !!n)
+            .join(" ");
+        document.title = `${chordName} chords and lyrics on Messianic Chords`;
     }
 
     render(): TemplateResult {
@@ -217,8 +229,8 @@ export class ChordDetails extends BootstrapBase {
                 </div>
             </div>
             
-            <div class="iframe-loading-placeholder placeholder-glow mx-auto">
-                <div class="placeholder w-100 h-100"></div>
+            <div class="iframe-loading-placeholder mx-auto">
+                <div class="w-100 h-100"></div>
             </div>
         `;
     }
