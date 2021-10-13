@@ -76,15 +76,15 @@ export class AppIndex extends LitElement {
         animate: true,
         children: [
           { path: '/', component: 'app-home', action: async () => await import("./app-home") },
-          { path: '/chordsheets/:id', component: 'chord-details', action: async () => await import("./chord-details") },
-          { path: '/browse/newest', component: 'browse-newest', action: async () => await import("./browse-newest") },
-          { path: '/browse/songs', component: 'browse-songs', action: async () => await import("./browse-songs") },
-          { path: '/browse/artists', component: 'browse-artists', action: async () => await import("./browse-artists") },
-          { path: '/browse/random', component: 'browse-random', action: async () => await import("./browse-random") },
-          { path: '/artist/:name', component: 'artist-songs', action: async () => await import("./artist-songs") },
-          { path: '/about', component: 'app-about', action: async () => await import("./app-about") }
         ],
       } as any,
+      { path: '/chordsheets/:id', component: 'chord-details', action: async () => await import("./chord-details") } as any,
+      { path: '/browse/newest', component: 'browse-newest', action: async () => await import("./browse-newest") } as any,
+      { path: '/browse/songs', component: 'browse-songs', action: async () => await import("./browse-songs") } as any,
+      { path: '/browse/artists', component: 'browse-artists', action: async () => await import("./browse-artists") } as any,
+      { path: '/browse/random', component: 'browse-random', action: async () => await import("./browse-random") } as any,
+      { path: '/artist/:name', component: 'artist-songs', action: async () => await import("./artist-songs") } as any,
+      { path: '/about', component: 'app-about', action: async () => await import("./app-about") } as any
     ]);
   }
 

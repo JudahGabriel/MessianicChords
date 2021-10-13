@@ -18,9 +18,9 @@
     "bootstrap-icons": "^1.5.0",
     "lit": "^2.0.0",
     "rxjs": "^6.6.3",
-    "workbox-build": "^5.1.4",
-    "workbox-core": "^6.0.2",
-    "workbox-precaching": "^6.0.2"
+    "workbox-build": "^6.3.0",
+    "workbox-core": "^6.3.0",
+    "workbox-precaching": "^6.3.0"
   },
   "devDependencies": {
     "@open-wc/rollup-plugin-html": "^1.2.3",

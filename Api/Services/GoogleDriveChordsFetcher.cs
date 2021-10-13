@@ -62,7 +62,8 @@ namespace MessianicChords.Services
                     .Select(i => new ChordSheetMetadata
                     {
                         GoogleDocId = i.Id,
-                        LastModified = i.ModifiedTime ?? i.CreatedTime ?? DateTime.UtcNow
+                        LastModified = i.ModifiedTime ?? i.CreatedTime ?? DateTime.UtcNow,
+                        ResourceKey = i.ResourceKey
                     })
                     .ToArray();
                 chordSheets.AddRange(files);

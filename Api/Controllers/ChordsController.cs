@@ -198,6 +198,7 @@ namespace MessianicChords.Controllers
                 "doc" => "application/msword",
                 "rtf" => "application/rtf",
                 "tif" => "image/tiff",
+                "gif" => "image/gif",
                 _ => "application/octet-stream"
             };
         }

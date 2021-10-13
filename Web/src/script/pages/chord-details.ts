@@ -289,8 +289,7 @@ export class ChordDetails extends BootstrapBase {
             
             <div class="row">
                 <div class="col-12 col-lg-8 offset-lg-2">
-                    <iframe class="${this.iframeClass}" src="${this.iframeUrl}" title="${chord.artist}" allowfullscreen
-                        frameborder="0"></iframe>
+                    ${this.renderChordPreviewer(chord)}
                 </div>
             </div>
             <p style="display: none">
@@ -311,6 +310,30 @@ export class ChordDetails extends BootstrapBase {
         `;
     }
 
+    renderChordPreviewer(chord: ChordSheet): TemplateResult {
+        switch (chord.extension) {
+            case "gif":
+            case "jpg":
+            case "jpeg":
+                return this.renderImagePreviewer(chord);
+            default:
+                return this.renderGDocPreviewer(chord);
+        }
+    }
+
+    renderGDocPreviewer(chord: ChordSheet): TemplateResult {
+        return html`
+            <iframe class="${this.iframeClass}" src="${this.iframeUrl}" title="${chord.artist}" allowfullscreen
+                frameborder="0"></iframe>
+        `;
+    }
+
+    renderImagePreviewer(chord: ChordSheet): TemplateResult {
+        return html`
+            <img class="img-fluid" src="${this.downloadUrl(chord)}" />
+        `;
+    }
+
     loadChordSheet(): Promise<ChordSheet> {
         // Grab the chord sheet id
         const chordId = `chordsheets/${this.location?.params["id"]}`;
@@ -324,6 +347,10 @@ export class ChordDetails extends BootstrapBase {
 
         if (this.chord.publishUri) {
             return `${this.chord.publishUri}?embedded=true`;
+        }
+
+        if (this.chord.extension === "pdf") {
+            return `https://docs.google.com/viewer?embedded=true&url=${encodeURIComponent(this.downloadUrl(this.chord))}`;
         }
 
         return `https://docs.google.com/document/d/${this.chord.googleDocId}/preview?resourcekey=${this.chord.googleDocResourceKey}`;
