@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="ravencert.Production.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
