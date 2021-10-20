@@ -217,6 +217,18 @@
       "label": "View chord charts and lyrics"
     },
     {
+      "src": "/assets/images/screenshots/phone-browsebysong-1125x2436.png",
+      "sizes": "2048x2732",
+      "platform": "narrow",
+      "label": "Browse chord charts by song name"
+    },
+    {
+      "src": "/assets/images/screenshots/phone-browsebyartist-1125x2436.png",
+      "sizes": "2048x2732",
+      "platform": "narrow",
+      "label": "Browse chord charts by artist"
+    },
+    {
       "src": "/assets/images/screenshots/phone-search-1125x2436.png",
       "sizes": "2048x2732",
       "platform": "narrow",

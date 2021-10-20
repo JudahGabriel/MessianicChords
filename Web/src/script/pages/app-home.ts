@@ -89,43 +89,53 @@ export class AppHome extends BootstrapBase {
         align-items: center;
       }
 
-    @media (max-width: ${SizeMax.Xs}px) {
-        .new-chords {
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
+      .new-chords-placeholder-container {
+        width: 400px;
+      }
+
+      @media (max-width: ${SizeMax.Xs}px) {
+        .new-chords-placeholder-container {
+          width: 100%;
         }
-    }
+      }
 
-    .new-chords a {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
+      @media (max-width: ${SizeMax.Xs}px) {
+          .new-chords {
+              flex-direction: column;
+              align-items: center;
+              margin-bottom: 10px;
+          }
+      }
 
-    @media (max-width: ${SizeMax.Xs}px) {
-        .new-chords a {
-            text-overflow: ellipsis
-            overflow: hidden;
-            white-space: nowrap;
-            width: 100%;
-            display: inline-block;
-            max-width: 300px;
-            padding: 4px;
-        }
-    }
+      .new-chords a {
+          padding-left: 5px;
+          padding-right: 5px;
+      }
 
-    .loading-block {
-      text-align: center; 
-      margin: 50px;
-    }
+      @media (max-width: ${SizeMax.Xs}px) {
+          .new-chords a {
+              text-overflow: ellipsis
+              overflow: hidden;
+              white-space: nowrap;
+              width: 100%;
+              display: inline-block;
+              max-width: 300px;
+              padding: 4px;
+          }
+      }
 
-    .search-results-container {
-      margin-top: 50px;
-    }
+      .loading-block {
+        text-align: center; 
+        margin: 50px;
+      }
 
-    @media (max-width: ${SizeMax.Xs}px) {
-      margin-top: 20px;
-    }
+      .search-results-container {
+        margin-top: 50px;
+      }
+
+      @media (max-width: ${SizeMax.Xs}px) {
+        margin-top: 20px;
+      }
     `;
 
     return [
@@ -237,8 +247,9 @@ export class AppHome extends BootstrapBase {
       
           <div class="new-chords text-center mt-2 d-flex">
             <span>New chords:</span>
-            ${repeat(this.newChords, c => c.id, (c, index) => this.renderNewChordLink(c, index))}
-            <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}">Load more...</button>
+            ${this.renderNewChords()}
+            <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}>Load
+              more...</button>
           </div>
       
           <div class="d-flex justify-content-center">
@@ -254,6 +265,27 @@ export class AppHome extends BootstrapBase {
           ${repeat(this.searchResults, c => c.id, c => this.renderSearchResult(c))}
         </div>
       </section>`;
+  }
+
+  renderNewChords(): TemplateResult {
+    if (this.newChords.length === 0) {
+      return this.renderNewChordsPlaceholder();
+    }
+
+    return html`
+      ${repeat(this.newChords, c => c.id, (c, index) => this.renderNewChordLink(c, index))}
+    `;
+  }
+
+  renderNewChordsPlaceholder(): TemplateResult {
+    return html`
+      <div class="new-chords-placeholder-container placeholder-glow row ms-sm-2 my-1 my-sm-auto">
+        <span class="placeholder col-4 mx-2 d-none d-sm-block"></span>
+        <span class="placeholder col-3 mx-2 d-none d-sm-block"></span>
+        <span class="placeholder col-4 mr-1 d-none d-sm-block"></span>
+        <span class="placeholder col-12 d-block d-sm-none"></span>
+      </div>
+    `;
   }
 
   renderNewChordLink(newChordSheet: ChordSheet, index: number): TemplateResult {

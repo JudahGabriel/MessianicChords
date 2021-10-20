@@ -175,6 +175,7 @@ export class ChordDetails extends BootstrapBase {
 
     @state() chord: ChordSheet | null = null;
     @state() error: string | null = null;
+    @state() canGoFullScreen: boolean | null = null;
     location: RouterLocation | null = null;
     readonly chordService = new ChordService();
 
@@ -183,6 +184,7 @@ export class ChordDetails extends BootstrapBase {
     }
 
     firstUpdated() {
+        this.canGoFullScreen = !!document.body.requestFullscreen;
         this.loadChordSheet()
             .then(result => this.chordSheetLoaded(result))
             .catch(error => this.error = `${error}`);
@@ -279,6 +281,7 @@ export class ChordDetails extends BootstrapBase {
                                 <img src="/assets/bs-icons/printer.svg" alt="Print">
                             </button>
                             ${this.renderPlayButton()}
+                            ${this.renderFullScreenButton()}
                             <a href="${chord.address}" target="_blank" class="btn btn-light" title="Open on Google Drive">
                                 <img src="/assets/bs-icons/box-arrow-up-right.svg" alt="Open">
                             </a>
@@ -310,6 +313,18 @@ export class ChordDetails extends BootstrapBase {
         `;
     }
 
+    renderFullScreenButton(): TemplateResult {
+        if (!this.canGoFullScreen) {
+            return html``;
+        }
+
+        return html`
+            <button type="button" class="btn btn-light" title="View fullscreen" @click="${this.goFullscreen}">
+                <img src="/assets/bs-icons/arrows-fullscreen.svg" alt="Fullscreen">
+            </button>
+        `;
+    }
+
     renderChordPreviewer(chord: ChordSheet): TemplateResult {
         switch (chord.extension) {
             case "gif":
@@ -323,7 +338,7 @@ export class ChordDetails extends BootstrapBase {
 
     renderGDocPreviewer(chord: ChordSheet): TemplateResult {
         return html`
-            <iframe class="${this.iframeClass}" src="${this.iframeUrl}" title="${chord.artist}" allowfullscreen
+            <iframe class="${this.iframeClass}" src="${this.iframeUrl}" title="${chord.artist}" allowfullscreen zooming="true"
                 frameborder="0"></iframe>
         `;
     }
@@ -378,5 +393,9 @@ export class ChordDetails extends BootstrapBase {
 
     downloadUrl(chord: ChordSheet): string {
         return this.chordService.downloadUrlFor(chord.id);
+    }
+
+    goFullscreen() {
+        return this.shadowRoot?.querySelector("iframe")?.requestFullscreen();
     }
 }
