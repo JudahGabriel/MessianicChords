@@ -1,7 +1,7 @@
 {
-  "name": "pwa-starter",
+  "name": "messianicchords",
   "version": "0.0.1",
-  "description": "A starter kit for building PWAs!",
+  "description": "Guitar chord charts and lyrics for Messianic Jewish music",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,6 +17,7 @@
     "bootstrap": "^5.1.2",
     "bootstrap-icons": "^1.5.0",
     "lit": "^2.0.0",
+    "rollup-plugin-delete": "^2.0.0",
     "rxjs": "^6.6.3",
     "workbox-build": "^6.3.0",
     "workbox-core": "^6.3.0",

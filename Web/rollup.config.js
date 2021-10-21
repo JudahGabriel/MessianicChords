@@ -5,6 +5,7 @@ import replace from "@rollup/plugin-replace";
 import strip from "@rollup/plugin-strip";
 import copy from "rollup-plugin-copy";
 import typescript from "@rollup/plugin-typescript";
+import del from 'rollup-plugin-delete'
 
 export default {
   input: "build/index.html",
@@ -13,6 +14,7 @@ export default {
     format: "es",
   },
   plugins: [
+    del({ targets: 'dist/*' }), // clean out the /dist output before we build
     resolve(),
     replace({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "production")
