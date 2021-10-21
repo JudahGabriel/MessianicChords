@@ -27,10 +27,12 @@ export default {
     }),
     copy({
       targets: [
-        { src: "assets/**/*", dest: "dist/assets/" },
+        { src: "assets", dest: "dist/" },
         { src: "styles/global.css", dest: "dist/styles/" },
         { src: "manifest.json", dest: "dist/" },
+        { src: "privacy.html", dest: "dist/" },
         { src: "robots.txt", dest: "dist/" },
+        { src: "apple-app-site-association.json", dest: "dist/" },
         { src: "web.config", dest: "dist/" }
       ],
     })

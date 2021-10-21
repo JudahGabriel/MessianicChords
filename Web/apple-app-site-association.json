@@ -1,0 +1,23 @@
+{
+    "applinks": {
+        "details": [
+            {
+                "appIDs": [
+                    "com.messianicradio"
+                ],
+                "components": [
+                    {
+                        "/": "/*",
+                        "comment": "Handle all URLs"
+                    }
+                ]
+            }
+        ]
+    },
+    "webcredentials": {
+        "apps": []
+    },
+    "appclips": {
+        "apps": []
+    }
+}
