@@ -1,23 +1,13 @@
 {
     "applinks": {
+        "apps": [],
         "details": [
             {
-                "appIDs": [
-                    "8MCH9328VX.com.messianicchords"
-                ],
-                "components": [
-                    {
-                        "/": "/*",
-                        "comment": "Handle all URLs"
-                    }
+                "appID": "8MCH9328VX.com.messianicchords",
+                "paths": [
+                    "*"
                 ]
             }
         ]
-    },
-    "webcredentials": {
-        "apps": []
-    },
-    "appclips": {
-        "apps": []
     }
 }
