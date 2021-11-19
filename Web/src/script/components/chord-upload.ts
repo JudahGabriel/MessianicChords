@@ -65,7 +65,6 @@ export class ChordUpload extends BootstrapBase {
 
     uploadButtonClicked() {
         const uploadInput = this.shadowRoot?.querySelector("#hidden-upload-input") as HTMLInputElement;
-        console.log("zanz", uploadInput);
         if (uploadInput) {
             uploadInput.click();
         }

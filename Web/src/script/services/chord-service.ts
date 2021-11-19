@@ -28,7 +28,6 @@ export class ChordService extends ApiServiceBase {
         if (artist) {
             args.artist = artist;
         }
-        console.log("zanz", artist, url);
         return super.get(url, args);
     }
 
@@ -37,6 +36,10 @@ export class ChordService extends ApiServiceBase {
             take
         };
         return super.get("/chords/getByRandom", args);
+    }
+
+    getAllArtists(): Promise<string[]> {
+        return super.get("/chords/getAllArtists");
     }
 
     async getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {

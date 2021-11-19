@@ -16,7 +16,7 @@ type ChordsByLetter = { [letter: string]: ChordSheet[] };
 export class BrowseSongs extends BootstrapBase {
 
     readonly chordGrouping: ChordsByLetter = {};
-    readonly chordService = new ChordService();
+    protected readonly chordService = new ChordService();
     readonly allChords: PagedList<ChordSheet>;
 
     static get styles() {
@@ -75,7 +75,14 @@ export class BrowseSongs extends BootstrapBase {
             return this.renderLoading();
         }
 
-        return this.renderChordsByGroup();
+        return html`
+            ${this.renderAdditionalContainerContent()}
+            ${this.renderChordsByGroup()}
+        `;
+    }
+
+    renderAdditionalContainerContent(): TemplateResult {
+        return html``;
     }
 
     renderLoading(): TemplateResult {

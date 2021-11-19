@@ -150,6 +150,7 @@ namespace MessianicChords.Controllers
             };
         }
 
+        [HttpGet]
         public async Task<FileStreamResult> Download(string id)
         {
             var chordSheet = await DbSession.LoadRequiredAsync<ChordSheet>(id);
@@ -163,6 +164,15 @@ namespace MessianicChords.Controllers
             }.Where(s => !string.IsNullOrWhiteSpace(s));
             var fileName = $"{chordSheet.Artist} - {string.Join(" ", songNames)}.{chordSheet.Extension}";
             return File(stream, mimeType, fileName);
+        }
+
+        [HttpGet]
+        public Task<List<string>> GetAllArtists()
+        {
+            return DbSession.Query<ChordSheet>()
+                .Select(c => c.Artist)
+                .Distinct()
+                .ToListAsync();
         }
 
         private async Task<List<ChordSheet>> QuerySuggestions(System.Linq.Expressions.Expression<Func<ChordSheet, object>> field, string searchText)

@@ -17,6 +17,7 @@ export class ArtistSongs extends BrowseArtists {
         `;
         return [
             BootstrapBase.styles,
+            BrowseArtists.styles,
             localStyles
         ];
     }
