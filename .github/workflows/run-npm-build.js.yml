@@ -31,3 +31,7 @@ jobs:
       working-directory: Web
     - run: npm run build
       working-directory: Web
+
+    ## The previous step, npm run build, will generate a dist folder.
+    ## Deploy the dist folder to our VM
+    ## TODO...
