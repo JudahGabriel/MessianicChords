@@ -26,5 +26,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: '**/package-lock.json' # THIS PATTERN did the trick for me.
     - run: npm run build
       working-directory: Web
