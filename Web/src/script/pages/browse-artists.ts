@@ -57,9 +57,9 @@ export class BrowseArtists extends BrowseSongs {
             <div class="row jump-to-artist mb-4 mb-sm-0">
                 <div class="col-lg-2 col-md-4 col-sm-4 offset-lg-9 offset-md-8 offset-sm-8">
                     <label for="artistDataList" class="form-label visually-hidden">Jump to artist</label>
-                    <input class="form-control" list="datalistOptions" id="artistDataList" placeholder="Jump to artist"
+                    <input class="form-control" list="artistOptions" id="artistDataList" placeholder="Jump to artist"
                         @input="${this.jumpToArtistChanged}">
-                    <datalist id="datalistOptions">
+                    <datalist id="artistOptions">
                         ${repeat(this.artists, a => a, a => this.renderArtist(a))}
                     </datalist>
                 </div>

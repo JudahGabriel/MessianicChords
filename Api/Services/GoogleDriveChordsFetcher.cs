@@ -1,14 +1,17 @@
 ﻿using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
+using MessianicChords.Api.Models;
 using MessianicChords.Common;
 using MessianicChords.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MessianicChords.Services
@@ -21,21 +24,23 @@ namespace MessianicChords.Services
         private readonly DriveService driveApi;
         private readonly AppSettings settings;
         private readonly HttpClient http;
+        private readonly ILogger<GoogleDriveChordsFetcher> logger;
 
         public GoogleDriveChordsFetcher(
             IHttpClientFactory httpClientFactory, 
-            IOptions<AppSettings> settings)
+            IOptions<AppSettings> settings,
+            ILogger<GoogleDriveChordsFetcher> logger)
         {
             this.http = httpClientFactory.CreateClient();
             var initializer = new BaseClientService.Initializer
             {
                 ApplicationName = "Messianic Chords",
-                ApiKey = settings.Value.GDriveApiKey,
-                
+                ApiKey = settings.Value.GDriveApiKey
             };
             
             this.driveApi = new DriveService(initializer);
             this.settings = settings.Value;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -51,7 +56,8 @@ namespace MessianicChords.Services
             listReq.PageSize = 100;
             listReq.IncludeItemsFromAllDrives = true;
             listReq.SupportsAllDrives = true;
-            listReq.Fields = "files/id, files/modifiedTime, files/createdTime";
+            listReq.Fields = "files/id, files/modifiedTime, files/createdTime, files/resourceKey";
+            listReq.AddExecuteInterceptor(new ResourceKeyInterceptor(this.settings.GDriveFolderId, this.settings.GDriveFolderResourceKey));
 
             var chordSheets = new List<ChordSheetMetadata>(50);
             var hasMoreResults = true;
@@ -177,6 +183,7 @@ namespace MessianicChords.Services
             }
 
             (var englishName, var hebrewName) = songName.GetEnglishAndHebrew();
+            var chavahSong = await TryGetChavahSong(englishName, artist);
 
             var chordSheet = new ChordSheet
             {
@@ -194,12 +201,32 @@ namespace MessianicChords.Services
                 PlainTextContents = "",
                 HasFetchedPlainTextContents = false,
                 DownloadUrl = $"https://docs.google.com/uc?id={googleDocId}&export=download",
-                ChavahSongId = null,
+                ChavahSongId = chavahSong?.Id,
                 PagesCount = 1,
                 PublishUri = null
             };
             
             return chordSheet;
+        }
+
+        private async Task<ChavahSong?> TryGetChavahSong(string songName, string artist)
+        {
+            try
+            {
+                var uri = new Uri($"https://messianicradio.com/api/songs/getsongbynameandartist?name={Uri.EscapeDataString(songName)}&artist={Uri.EscapeDataString(artist)}");
+                var songJson = await http.GetStringAsync(uri);
+                if (songJson == null)
+                {
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize<ChavahSong>(songJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception fetchOrDeserializeError)
+            {
+                logger.LogWarning(fetchOrDeserializeError, "Attempted to fetch Chavah song for {songName} by {artist}, but encountered an error.", songName, artist);
+                return null;
+            }
         }
 
         /// <summary>
