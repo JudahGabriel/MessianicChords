@@ -107,6 +107,7 @@ namespace MessianicChords.Services
                 var startTime = DateTime.UtcNow.Subtract(stopwatch.Elapsed);
                 var syncRecordId = $"SyncRecords/{startTime:O}";
                 await session.StoreAsync(syncRecord, syncRecordId);
+                session.SetRavenExpiration(syncRecord, DateTime.UtcNow.AddDays(60));
                 await session.SaveChangesAsync();
             }
             catch (Exception error)
