@@ -65,13 +65,13 @@ namespace MessianicChords.Controllers
                     .OrderByDescending(c => c.LastUpdated)
                     .Select(c => c.LastUpdated)
                     .FirstOrDefault();
-                urlSet.AppendChild(CreateUrlNode(xmlDoc, $"https://messianicchords.com/artist/${Uri.EscapeDataString(artist)}", artistLastModified, "monthly", 0.4));
+                urlSet.AppendChild(CreateUrlNode(xmlDoc, $"https://messianicchords.com/artist/{Uri.EscapeDataString(artist)}", artistLastModified, "monthly", 0.4));
             }
 
             // Append chord detail pages
             foreach (var chord in chords)
             {
-                urlSet.AppendChild(CreateUrlNode(xmlDoc, "https://messianicradio.com/" + chord.Id!.ToLowerInvariant(), chord.LastUpdated, "yearly", 0.5));
+                urlSet.AppendChild(CreateUrlNode(xmlDoc, "https://messianicchords.com/" + chord.Id!.ToLowerInvariant(), chord.LastUpdated, "yearly", 0.5));
             }
 
             var docStream = new MemoryStream();

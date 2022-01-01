@@ -44,7 +44,7 @@ namespace MessianicChords.Services
             foreach (var chordSheet in chordSheets)
             {
                 using var attachmentStream = chordSheet.OpenReadStream();
-                await email.AddAttachmentAsync(chordSheet.Name, attachmentStream, chordSheet.ContentType);
+                await email.AddAttachmentAsync(chordSheet.FileName, attachmentStream, chordSheet.ContentType);
             }
             await client.SendEmailAsync(email);
         }
