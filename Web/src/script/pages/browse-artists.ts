@@ -1,5 +1,5 @@
 import { css, html, TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators';
+import { customElement, state } from 'lit/decorators.js';
 import '../components/chord-card';
 import '../components/chord-card-loading';
 import '../components/load-more-button';
@@ -7,7 +7,7 @@ import { ChordSheet } from '../models/interfaces';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { BrowseSongs } from './browse-songs';
 import { PagedResult } from '../models/paged-result';
-import { repeat } from 'lit/directives/repeat';
+import { repeat } from 'lit/directives/repeat.js';
 import { SizeMax } from '../common/constants';
 
 // This component is the same as browse songs, only the grouping is by artist, rather than by first letter of song name.

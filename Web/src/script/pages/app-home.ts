@@ -1,5 +1,5 @@
 import { css, html, TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators';
+import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import '../components/chord-card';
 import '../components/chord-upload';
@@ -248,7 +248,7 @@ export class AppHome extends BootstrapBase {
           <div class="new-chords text-center mt-2 d-flex">
             <span>New chords:</span>
             ${this.renderNewChords()}
-            <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}>Load
+            <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length===0}>Load
               more...</button>
           </div>
       

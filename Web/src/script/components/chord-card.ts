@@ -1,5 +1,5 @@
 import { css, CSSResult, CSSResultGroup, html } from 'lit';
-import { property, customElement } from 'lit/decorators';
+import { property, customElement } from 'lit/decorators.js';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { SizeMax } from '../common/constants';
 import { ChordSheet } from '../models/interfaces';

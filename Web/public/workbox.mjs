@@ -6,6 +6,6 @@ injectManifest({
   globPatterns: [
     '**/*.{html,js,css,png,webp,jpg}',
   ],
-  swSrc: 'dist/pwabuilder-sw.js',
-  swDest: 'dist/pwabuilder-sw.js',
+  swSrc: './service-worker.js',
+  swDest: 'dist/service-worker.js',
 });

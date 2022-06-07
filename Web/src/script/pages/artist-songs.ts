@@ -1,6 +1,6 @@
 import { RouterLocation } from '@vaadin/router';
 import { css } from 'lit';
-import { customElement } from 'lit/decorators';
+import { customElement } from 'lit/decorators.js';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { ChordSheet } from '../models/interfaces';
 import { PagedResult } from '../models/paged-result';

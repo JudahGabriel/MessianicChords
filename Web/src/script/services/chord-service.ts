@@ -50,7 +50,11 @@ export class ChordService extends ApiServiceBase {
         return super.get("/chords/getNew", args);
     }
 
-    downloadUrlFor(id: string): string {
-        return `${this.apiUrl}/chords/download?id=${id}`;
+    downloadUrlFor(chord: ChordSheet): string {
+        if (chord.downloadUrl) {
+            return chord.downloadUrl;
+        }
+
+        return `${this.apiUrl}/chords/download?id=${chord.id}`;
     }
 }

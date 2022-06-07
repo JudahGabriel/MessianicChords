@@ -64,7 +64,7 @@ namespace MessianicChords
             app.UseRouting();
 
             app.UseCors(x => x
-                .WithOrigins("http://localhost:8000", "https://messianicchords.com", "https://www.messianicchords.com")
+                .WithOrigins("http://localhost:8000", "http://localhost:3000", "https://messianicchords.com", "https://www.messianicchords.com")
                 .AllowAnyMethod()
                 .AllowAnyHeader());
             app.UseAuthorization();

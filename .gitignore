@@ -188,3 +188,4 @@ FakesAssemblies/
 
 appsettings.Development.json
 appsettings.Production.json
+Web/dist

@@ -1,6 +1,6 @@
 import { css, html, TemplateResult } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-import { customElement } from 'lit/decorators';
+import { customElement } from 'lit/decorators.js';
 import '../components/chord-card';
 import '../components/chord-card-loading';
 import '../components/load-more-button';

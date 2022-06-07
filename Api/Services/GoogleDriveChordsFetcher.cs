@@ -184,6 +184,11 @@ namespace MessianicChords.Services
 
             (var englishName, var hebrewName) = songName.GetEnglishAndHebrew();
             var chavahSong = await TryGetChavahSong(englishName, artist);
+            var downloadUrl = googleDoc.WebContentLink switch
+            {
+                var val when string.IsNullOrEmpty(val) => $"https://docs.google.com/uc?id={googleDocId}&export=download&resourcekey={googleDoc.ResourceKey}",
+                _ => googleDoc.WebContentLink
+            };
 
             var chordSheet = new ChordSheet
             {
@@ -197,10 +202,10 @@ namespace MessianicChords.Services
                 GoogleDocId = googleDoc.Id,
                 LastUpdated = googleDoc.ModifiedTime ?? DateTime.UtcNow,
                 ETag = googleDoc.ETag,
-                Extension = !string.IsNullOrEmpty(googleDoc.FileExtension) ? googleDoc.FileExtension : googleDoc.FullFileExtension,
+                Extension = !string.IsNullOrEmpty(googleDoc.FileExtension) ? googleDoc.FileExtension : !string.IsNullOrEmpty(googleDoc.FullFileExtension) ? googleDoc.FullFileExtension : ".gdoc",
                 PlainTextContents = "",
                 HasFetchedPlainTextContents = false,
-                DownloadUrl = $"https://docs.google.com/uc?id={googleDocId}&export=download",
+                DownloadUrl = downloadUrl,
                 ChavahSongId = chavahSong?.Id,
                 PagesCount = 1,
                 PublishUri = null
@@ -230,7 +235,7 @@ namespace MessianicChords.Services
         }
 
         /// <summary>
-        /// Marks a Google Doc file as published to the web. Returns the URL of the publish
+        /// Marks a Google Doc file as published to the web. Returns the URL of the published doc.
         /// </summary>
         /// <param name="gDocId">The ID of the document.</param>
         /// <returns></returns>

@@ -1,11 +1,10 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators';
+import { customElement } from 'lit/decorators.js';
+
+import './script/components/header';
+import './script/components/footer';
+import { SizeMax } from './script/common/constants';
 import { Router } from '@vaadin/router';
-
-import '../components/header';
-import '../components/footer';
-
-import { SizeMax } from '../common/constants';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -75,16 +74,16 @@ export class AppIndex extends LitElement {
         path: '',
         animate: true,
         children: [
-          { path: '/', component: 'app-home', action: async () => await import("./app-home") },
+          { path: '/', component: 'app-home', action: async () => await import("./script/pages/app-home") },
         ],
       } as any,
-      { path: '/chordsheets/:id', component: 'chord-details', action: async () => await import("./chord-details") } as any,
-      { path: '/browse/newest', component: 'browse-newest', action: async () => await import("./browse-newest") } as any,
-      { path: '/browse/songs', component: 'browse-songs', action: async () => await import("./browse-songs") } as any,
-      { path: '/browse/artists', component: 'browse-artists', action: async () => await import("./browse-artists") } as any,
-      { path: '/browse/random', component: 'browse-random', action: async () => await import("./browse-random") } as any,
-      { path: '/artist/:name', component: 'artist-songs', action: async () => await import("./artist-songs") } as any,
-      { path: '/about', component: 'app-about', action: async () => await import("./app-about") } as any
+      { path: '/chordsheets/:id', component: 'chord-details', action: async () => await import("./script/pages/chord-details") } as any,
+      { path: '/browse/newest', component: 'browse-newest', action: async () => await import("./script/pages/browse-newest") } as any,
+      { path: '/browse/songs', component: 'browse-songs', action: async () => await import("./script/pages/browse-songs") } as any,
+      { path: '/browse/artists', component: 'browse-artists', action: async () => await import("./script/pages/browse-artists") } as any,
+      { path: '/browse/random', component: 'browse-random', action: async () => await import("./script/pages/browse-random") } as any,
+      { path: '/artist/:name', component: 'artist-songs', action: async () => await import("./script/pages/artist-songs") } as any,
+      { path: '/about', component: 'app-about', action: async () => await import("./script/pages/app-about") } as any
     ]);
   }
 

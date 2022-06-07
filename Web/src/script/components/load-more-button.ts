@@ -1,5 +1,5 @@
 import { css, html, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators';
+import { customElement, property } from 'lit/decorators.js';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { PagedList } from '../models/paged-list';
 

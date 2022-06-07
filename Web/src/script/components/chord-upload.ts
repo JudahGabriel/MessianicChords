@@ -1,5 +1,5 @@
 import { css, html, TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators';
+import { customElement, state } from 'lit/decorators.js';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { FileUploadService } from '../services/file-upload-service';
 

@@ -1,5 +1,5 @@
 import { LitElement, css, CSSResultGroup } from 'lit';
-import { customElement } from 'lit/decorators';
+import { customElement } from 'lit/decorators.js';
 import { SizeMax } from './constants';
 
 /**

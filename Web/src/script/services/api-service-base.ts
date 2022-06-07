@@ -17,7 +17,7 @@ export class ApiServiceBase {
             throw new Error("HTTP GET resulted in non-successful status code " + result.status);
         }
 
-        const json = await result.json<T>();
+        const json = await result.json() as T;
         return json;
     }
 

@@ -1,5 +1,5 @@
 import { css, html } from 'lit';
-import { customElement } from 'lit/decorators';
+import { customElement } from 'lit/decorators.js';
 import { BootstrapBase } from '../common/bootstrap-base';
 
 @customElement('app-about')

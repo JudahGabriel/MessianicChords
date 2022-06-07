@@ -130,7 +130,7 @@ namespace MessianicChords.Services
             foreach (var docId in gDocIdsMissingFromRaven)
             {
                 var resourceKey = updatedDocs
-                    .Where(d => d.GoogleDocId == docId)
+                    .Where(d => string.Equals(d.GoogleDocId, docId, StringComparison.OrdinalIgnoreCase))
                     .Select(d => d.ResourceKey)
                     .FirstOrDefault() ?? string.Empty;
                 var chordSheet = await chordsFetcher.CreateChordSheet(docId, resourceKey);
@@ -138,6 +138,8 @@ namespace MessianicChords.Services
                 // Make sure it's not one of those temporary files created by Word or a conflict file created by Google Drive
                 if (!chordSheet.IsTempFile() && !chordSheet.IsConflictFile())
                 {
+                    // COMMENTED OUT, NOTE TO SELF: Unfortunately, PublishToWeb doesn't work. Google Docs gives an error saying authentication is required. To fix this, we'll need to authorize: https://stackoverflow.com/questions/59148718/google-drive-api-publish-document-and-get-published-link
+                    // chordSheet.PublishUri = await TryPublishToWeb(docId);
                     await dbSession.StoreAsync(chordSheet);
                     syncRecord.Log.Add($"Added {docId} as a new ChordSheet. Added it as {chordSheet.Id}, {chordSheet.GetDisplayName()}.");
                     syncRecord.AddedDocs.Add(chordSheet.GetDisplayName());
@@ -145,6 +147,20 @@ namespace MessianicChords.Services
             }
 
             await dbSession.SaveChangesAsync();
+        }
+
+        private async Task<Uri?> TryPublishToWeb(string gDocId)
+        {
+            // Try to publish on the web.
+            try
+            {
+                return await chordsFetcher.PublishForWeb(gDocId);
+            }
+            catch (Exception publishError)
+            {
+                logger.LogWarning(publishError, "Error when publishing GDoc {id} to the web. This doc won't be set for web publishing.", gDocId);
+                return null;
+            }
         }
 
         //private async Task RemovedTrashedDocsFromRaven(List<ChordSheetMetadata> deletedGDocs)

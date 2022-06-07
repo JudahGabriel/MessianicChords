@@ -121,7 +121,7 @@ export class ChordDetails extends BootstrapBase {
 
             @media print {
                 iframe {
-                    transform: scale(1.5) translateX(-115px) translateY(-50px);
+                    transform: scale(1.4) translateX(-110px) translateY(-50px);
                     transform-origin: 0 0;
                     box-shadow: none;
                     border: none;
@@ -165,6 +165,12 @@ export class ChordDetails extends BootstrapBase {
                     width: 100%;
                 }
             }
+
+            /* Google Docs published to the web have no document border. We'll add one, otherwise it's kinda weird looking. */
+            .web-published-doc {
+                box-shadow: 0 0 3px 0px silver;
+                margin-top: 13px;
+            }
         `;
 
         return [
@@ -176,6 +182,7 @@ export class ChordDetails extends BootstrapBase {
     @state() chord: ChordSheet | null = null;
     @state() error: string | null = null;
     @state() canGoFullScreen: boolean | null = null;
+    @state() isWebPublished = false;
     location: RouterLocation | null = null;
     readonly chordService = new ChordService();
 
@@ -192,6 +199,7 @@ export class ChordDetails extends BootstrapBase {
 
     chordSheetLoaded(chord: ChordSheet): any {
         this.chord = chord;
+        this.isWebPublished = !!chord.publishUri;
         const chordName = [
             chord.song,
             chord.hebrewSongName
@@ -330,6 +338,8 @@ export class ChordDetails extends BootstrapBase {
             case "gif":
             case "jpg":
             case "jpeg":
+            case "tiff":
+            case "png":
                 return this.renderImagePreviewer(chord);
             default:
                 return this.renderGDocPreviewer(chord);
@@ -371,7 +381,7 @@ export class ChordDetails extends BootstrapBase {
         return `https://docs.google.com/document/d/${this.chord.googleDocId}/preview?resourcekey=${this.chord.googleDocResourceKey}`;
     }
 
-    get iframeClass(): string {
+    get pageClass(): string {
         if (!this.chord) {
             return "";
         }
@@ -387,12 +397,20 @@ export class ChordDetails extends BootstrapBase {
         return "three-page";
     }
 
+    get iframeClass(): string {
+        if (this.isWebPublished) {
+            return this.pageClass + " web-published-doc";
+        }
+
+        return this.pageClass;
+    }
+
     print() {
         window.print();
     }
 
     downloadUrl(chord: ChordSheet): string {
-        return this.chordService.downloadUrlFor(chord.id);
+        return this.chordService.downloadUrlFor(chord);
     }
 
     goFullscreen() {

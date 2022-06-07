@@ -1,91 +1,37 @@
 # pwa-starter
 
-<img loading="lazy" alt="an image of what the starter looks like" src="https://github.com/pwa-builder/pwa-starter/raw/main/assets/readme/intro.png"/>
+Please use our [main repository for any issues/bugs/features suggestion](https://github.com/pwa-builder/PWABuilder/issues/new/choose).
 
-Welcome to the [PWABuilder](https://www.pwabuilder.com/) pwa-starter! Looking to build a new [Progressive Web App](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps) and not sure where to get started? This is what you are looking for! The pwa-starter includes everything you need to start building a production ready PWA and follows all best practices. You get:
+[Documentation](https://docs.pwabuilder.com/#/starter/quick-start)
 
-- lazy-loaded routes using [@vaadin/router](https://vaadin.com/router).
-- A 100 on [Lighthouse](https://developers.google.com/web/tools/lighthouse/), giving you a great starting point for performance and accessibility.
-- Use [lit](https://lit.dev/) to build your PWA. lit gives you all of the developer experience of React with all the benefits of Web Components such as smaller bundles, simplicity and faster load times.
-- Includes the [PWABuilder pwa-install component](https://github.com/pwa-builder/pwa-install#pwa-install) for an app store like PWA install experience.
-- [Workbox](https://developers.google.com/web/tools/workbox/) for service workers along with the [PWABuilder pwa-update component](https://github.com/pwa-builder/pwa-update#pwa-update) to give your PWA a great offline experience.
-- [FAST Components](https://www.fast.design/docs/components/getting-started/) for awesome, pre-built components using the Fluent Design Language.
+The PWABuilder pwa-starter is our opinionated, best practices, production tested starter that we use to build all of our PWAs, including [PWABuilder itself](https://blog.pwabuilder.com/posts/introducing-the-brand-new-pwa-builder/)! The pwa-starter is a starter codebase, just like create-react-app or the Angular CLI can generate, that uses the PWABuilder team&#39;s preferred front-end tech stack.
 
-**[Live Demo](https://pwa-starter-demo.glitch.me/)**
+[![Get started with the pwa-starter!](https://img.youtube.com/vi/u3pWKpmic_k/0.jpg)](https://www.youtube.com/watch?v=u3pWKpmic_k)
 
-## Getting Started
+With it you get an app that:
+- Has no build system to set up and no boilerplate code to add. Everything is included out of the box.
+- Has a Service Worker system using [Workbox](https://developers.google.com/web/tools/workbox/)
+- Scores close to 100 on Lighthouse out of the box
+- Using the fluent Web Components, you can build native looking PWAs on Windows
+- Has everything needed to be installable in the browser
+- Is ready to be package for the app stores using [PWABuilder](https://www.pwabuilder.com)
 
-### Supported Browsers
-- Edge
-- Chrome
-- Firefox
-- Safari
+and all with just a few button clicks 😊.
 
-### Prequisites
+[Get Started!](https://docs.pwabuilder.com/#/starter/quick-start)
 
-You will need the following things properly installed on your computer.
+## Sample PWAs built with the starter!
 
-* [Node.js](http://nodejs.org/) (with NPM)
-* [NPM](https://www.npmjs.com/get-npm)
+- SimpleEdit: Simple Image editing and collage making app!
+   - Github: https://github.com/jgw96/simple-edit-2
+   - Web: https://gray-pond-01ccec410.azurestaticapps.net/
+   - Microsoft Store: https://www.microsoft.com/store/productId/9P53Q9BF3MV6
+   - Google Play: https://play.google.com/store/apps/details?id=net.azurestaticapps.thankful_tree_07da4921e.twa&hl=en&gl=US
 
-You should also be familiar with [TypeScript](https://www.typescriptlang.org/) which we use for this project. This helps give you more guidance as you code from [intellisense](https://code.visualstudio.com/docs/editor/intellisense) when using [VSCode](https://code.visualstudio.com/).
+- Mail GO: Full featured email client. This app aims to show the power of the web by integrating many of the advanced APIs now avilable to PWAs, such as [receiving content shared from another app](https://docs.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/how-to/share#receiving-shared-content), [a custom titlebar](https://docs.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/how-to/window-controls-overlay), [sycing data in the background](https://docs.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/how-to/background-syncs) and more!
+  - Github: https://github.com/jgw96/graph-app
+  - Web: https://www.memosapp.app
+  - Microsoft Store: https://www.microsoft.com/store/productId/9NQW566N4866
 
-### Recommended Development setup
-
-We recommend the following tools for your dev setup:
-
-* Editor: [VSCode](https://code.visualstudio.com/)
-* Terminal: [Windows Terminal](https://www.microsoft.com/en-us/p/windows-terminal-preview/9n0dx20hk701?activetab=pivot:overviewtab) or [hyper](https://hyper.is/)
-* PWABuilder VSCode extension: [PWABuilder VSCode extension](https://marketplace.visualstudio.com/items?itemName=PWABuilder.pwabuilder-extension)
-* lit-html VSCode extension: [lit-html VSCode extension](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html)
-
-### Development
-
-Run `npm install` and then run `npm run dev`, the starter should open in your default browser. From here you can start developing, your changes will be rebuilt and reloaded in the browser as you develop.
-
-### Building for Production
-
-Run `npm run build`, the `dist/` folder will contain your built PWA. The production build will also generate a pre-caching service worker using [Workbox](https://developers.google.com/web/tools/workbox/modules/workbox-precaching).
-
-## Deployment and Packaging
-
-### Deployment
-
-Once your PWA is ready to deploy we recommend [Azure static website hosting](https://docs.microsoft.com/en-us/learn/modules/publish-app-service-static-web-app-api/) for deploying your PWA.
-
-### Packaging
-
-Many app stores, including the Microsoft Store and the Google Play Store support PWAs. To package your PWA for deployment to these app stores head back to https://pwabuilder.com/, put in your URL and hit `Build My PWA`.
-
-## Folder Structure
-
-```
-pwa-starter
-│   README.md (docs)
-│   rollup.config.js (bundler config https://rollupjs.org/)
-|   tsconfig.json (TypeScript config https://www.typescriptlang.org/)
-|   pwabuilder-sw.js (Service Worker https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
-|   package.json (https://docs.npmjs.com/creating-a-package-json-file)
-|   package-lock.json (https://docs.npmjs.com/files/package-lock.json)
-|   manifest.json (web manifest https://developer.mozilla.org/en-US/docs/Web/Manifest)
-|   index.prod.html (index.html file used for production builds)
-|   index.html (index.html for dev builds)
-|   *note*: The index.prod.html registers a service worker which caches assets, so index.html is used for dev builds
-|   .gitignore (git config file https://git-scm.com/docs/gitignore)
-│
-└───src (most of your development will happen here)
-│   │   global.css (used for global CSS styles and CSS variables)
-│   │
-│   └───script
-│       │
-│       |
-|       └───components
-|           |   header.ts (header component)
-|       |
-|       |
-|       └───pages
-|           |   app-index.ts (app-index component)
-|           |   app-home.ts (app-home component)
-|           |   app-about.ts (app-about component)
-
-```
+## More Resources
+- [The pwa-starter docs](https://docs.pwabuilder.com/#/starter/quick-start)
