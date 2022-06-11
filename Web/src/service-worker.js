@@ -40,7 +40,14 @@ catch (err) {
 
 // Page cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#page_cache
 // This is a network-first stragety for HTML pages. If the page doesn't respond in 3 seconds, it falls back to cache.
-pageCache();
+pageCache({
+  networkTimeoutSeconds: 2,
+  warmCache: [
+    "/",
+    "/browse/newest",
+    "/browse/songs",
+    "/browse/artists"],
+});
 
 // Static resource recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#static_resources_cache
 // This is a stale-while-revalidate strategy for CSS, JS, and web workers.
@@ -63,9 +70,6 @@ imageCache({
   maxEntries: 500,
   matchCallback: (e) => e.request.destination === "image"
 });
-
-// Offline page recipe https://developers.google.com/web/tools/workbox/modules/workbox-recipes#offline_fallback
-offlineFallback();
 
 // For our API calls to fetch apps, we use StaleWhileRevalidate strategy.
 // This strategy loads from the cache first for fast UI updates. Meanwhile,
@@ -103,3 +107,6 @@ registerRoute(
     ]
   })
 )
+
+// Offline page recipe https://developers.google.com/web/tools/workbox/modules/workbox-recipes#offline_fallback
+offlineFallback();
