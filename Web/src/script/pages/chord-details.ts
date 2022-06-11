@@ -5,6 +5,7 @@ import { BootstrapBase } from "../common/bootstrap-base";
 import { SizeMax } from "../common/constants";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
+import { repeat } from 'lit/directives/repeat.js';
 
 @customElement('chord-details')
 export class ChordDetails extends BootstrapBase {
@@ -121,8 +122,8 @@ export class ChordDetails extends BootstrapBase {
 
             @media print {
                 iframe {
-                    transform: scale(1.4) translateX(-110px) translateY(-50px);
-                    transform-origin: 0 0;
+                    /* transform: scale(1.4) translateX(-110px) translateY(-50px);
+                    transform-origin: 0 0; */
                     box-shadow: none;
                     border: none;
                     width: var(--iframe-width);
@@ -167,9 +168,22 @@ export class ChordDetails extends BootstrapBase {
             }
 
             /* Google Docs published to the web have no document border. We'll add one, otherwise it's kinda weird looking. */
-            .web-published-doc {
+            .web-published-doc,
+            .img-preview {
                 box-shadow: 0 0 3px 0px silver;
                 margin-top: 13px;
+            }
+
+            @media print {
+                .web-published-doc,
+                .img-preview {
+                    box-shadow: none;
+                    width: var(--iframe-width);
+                }
+
+                .img-preview {
+                    min-height: 11in; // Standard page size for PDF and Word docs
+                }
             }
         `;
 
@@ -207,6 +221,9 @@ export class ChordDetails extends BootstrapBase {
             .filter(n => !!n)
             .join(" ");
         document.title = `${chordName} chords and lyrics on Messianic Chords`;
+
+        // Asynchronously load screenshots, thus making the chord chart available offline.
+        chord.screenshots.forEach(i => fetch(i));
     }
 
     render(): TemplateResult {
@@ -334,13 +351,26 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderChordPreviewer(chord: ChordSheet): TemplateResult {
+
+        // Are we offline? Then we only support loading the screenshot.
+        if (!navigator.onLine) {
+            return this.renderOfflinePreviewer(chord);
+        }
+
         switch (chord.extension) {
             case "gif":
             case "jpg":
             case "jpeg":
             case "tiff":
             case "png":
-                return this.renderImagePreviewer(chord);
+                return this.renderImagePreviewer(this.downloadUrl(chord));
+            case "pdf":
+                // Do we have a screenshot of the doc? Use that. PDF preview is quite buggy and heavyweight.
+                if (chord.screenshots.length > 0) {
+                    return this.renderScreenshots(chord);
+                }
+
+                return this.renderGDocPreviewer(chord);
             default:
                 return this.renderGDocPreviewer(chord);
         }
@@ -353,10 +383,28 @@ export class ChordDetails extends BootstrapBase {
         `;
     }
 
-    renderImagePreviewer(chord: ChordSheet): TemplateResult {
+    renderImagePreviewer(imgSrc: string): TemplateResult {
         return html`
-            <img class="img-fluid" src="${this.downloadUrl(chord)}" />
+            <div class="img-preview">
+                <img class="img-fluid" src="${imgSrc}" />
+            </div>
         `;
+    }
+
+    renderScreenshots(chord: ChordSheet): TemplateResult {
+        return html`
+            <div class="d-flex flex-column">
+                ${repeat(chord.screenshots, k => k, i => this.renderImagePreviewer(i))}
+            </div>
+        `;
+    }
+
+    renderOfflinePreviewer(chord: ChordSheet): TemplateResult {
+        if (chord.screenshots.length == 0) {
+            return html`⚠ This chord sheet is not available offline.`;
+        }
+
+        return this.renderScreenshots(chord);
     }
 
     loadChordSheet(): Promise<ChordSheet> {
@@ -374,6 +422,8 @@ export class ChordDetails extends BootstrapBase {
             return `${this.chord.publishUri}?embedded=true`;
         }
 
+        // TODO: Consider migrating away from this buggy thing and move towards Adobe's free PDF previewer.
+        // See https://developer.adobe.com/document-services/apis/pdf-embed/
         if (this.chord.extension === "pdf") {
             return `https://docs.google.com/viewer?embedded=true&url=${encodeURIComponent(this.downloadUrl(this.chord))}`;
         }

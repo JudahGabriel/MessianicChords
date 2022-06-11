@@ -37,7 +37,7 @@ namespace MessianicChords.Services
                 ApplicationName = "Messianic Chords",
                 ApiKey = settings.Value.GDriveApiKey
             };
-            
+
             this.driveApi = new DriveService(initializer);
             this.settings = settings.Value;
             this.logger = logger;
@@ -141,7 +141,7 @@ namespace MessianicChords.Services
         /// <param name="googleDocId">The ID of the Google Doc.</param>
         /// <param name="resourceKey">The resource key for the doc.</param>
         /// <returns>A stream of the file contents.</returns>
-        public async Task<Stream> GetChordSheetStream(string googleDocId, string resourceKey)
+        public async Task<Stream> GetChordSheetStream(string googleDocId, string? resourceKey)
         {
             var query = driveApi.Files.Get(googleDocId);
             query.Fields = "webContentLink";
@@ -159,16 +159,45 @@ namespace MessianicChords.Services
             return memStream;
         }
 
-        public async Task<ChordSheet> CreateChordSheet(string googleDocId, string? resourceKey)
+        /// <summary>
+        /// Gets the web published URI link for a Google doc.
+        /// </summary>
+        /// <param name="gDocId"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// NOTE: This throws a 401 error currently, saying authorization is required.
+        /// </remarks>
+        public async Task<Uri?> GetWebPublishedLink(string gDocId)
         {
-            var query = driveApi.Files.Get(googleDocId);
+            var query = driveApi.Revisions.Get(gDocId, "head");
+            query.Fields = "*";
+            var lastRevision = await query.ExecuteAsync();
+
+            Uri.TryCreate(lastRevision?.PublishedLink, UriKind.Absolute, out var validUri);
+            return validUri;
+        }
+
+        public async Task<Google.Apis.Drive.v3.Data.File?> GetDocument(string gDocId, string? resourceKey)
+        {
+            var query = driveApi.Files.Get(gDocId);
             if (!string.IsNullOrEmpty(resourceKey))
             {
-                query.AddExecuteInterceptor(new ResourceKeyInterceptor(googleDocId, resourceKey));
+                query.AddExecuteInterceptor(new ResourceKeyInterceptor(gDocId, resourceKey));
             }
             query.Fields = "*";
-            
+
             var googleDoc = await query.ExecuteAsync();
+            return googleDoc;
+        }
+
+        public async Task<ChordSheet> CreateChordSheet(string googleDocId, string? resourceKey)
+        {
+            var googleDoc = await GetDocument(googleDocId, resourceKey);
+            if (googleDoc == null)
+            {
+                logger.LogWarning("Attempted to create ChordSheet from GDoc {id}, but no such doc was found", googleDocId);
+                throw new InvalidOperationException("No Google Doc with ID found");
+            }
 
             var artistTitleKey = System.IO.Path.GetFileNameWithoutExtension(googleDoc.Name.Replace('/', ','))
                 .Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
@@ -205,6 +234,7 @@ namespace MessianicChords.Services
                 Extension = !string.IsNullOrEmpty(googleDoc.FileExtension) ? googleDoc.FileExtension : !string.IsNullOrEmpty(googleDoc.FullFileExtension) ? googleDoc.FullFileExtension : ".gdoc",
                 PlainTextContents = "",
                 HasFetchedPlainTextContents = false,
+                HasFetchedThumbnail = false,
                 DownloadUrl = downloadUrl,
                 ChavahSongId = chavahSong?.Id,
                 PagesCount = 1,

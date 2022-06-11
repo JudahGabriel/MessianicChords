@@ -18,4 +18,6 @@ export interface ChordSheet {
     publishUri: string | null;
     chavahSongId: string | null;
     pagesCount: number;
+    hasFetchedThumbnail: boolean;
+    screenshots: string[];
 }

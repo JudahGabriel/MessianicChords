@@ -44,8 +44,12 @@ namespace MessianicChords.Services
                 syncRecord.Log.Add($"Looking for changes since last sync record of {lastSyncTime}");
 
                 var changedGDocs = await chordsFetcher.GetUpdatedDocsSince(lastSyncTime);
-                await AddNewChordSheetsToDb(changedGDocs);
-                await UpdateExistingDocsInDb(changedGDocs);
+                if (changedGDocs.Count > 0)
+                {
+                    await AddNewChordSheetsToDb(changedGDocs);
+                    await UpdateExistingDocsInDb(changedGDocs);
+                }
+
                 await RemoveDeletedDocsFromDb();
             }
             catch (Exception error)

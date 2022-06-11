@@ -8,19 +8,24 @@ using System.Threading.Tasks;
 
 namespace MessianicChords.Services
 {
-    public class TimedSyncService : IHostedService, IDisposable
+    /// <summary>
+    /// Services that kicks off Google Drive sync services that add new GDrive docs to the 
+    /// database, removes deleted GDocs from the database, updates GDocs in the database, 
+    /// and fetches any plain text content for GDocs and updates the corresponding docs in Raven.
+    /// </summary>
+    public class GoogleDriveRavenSyncService : IHostedService, IDisposable
     {
-        private readonly ILogger<TimedSyncService> logger;
+        private readonly ILogger<GoogleDriveRavenSyncService> logger;
         private readonly GoogleDriveSync driveSync;
         private readonly GoogleDocPlainTextFetcher plainTextFetcher;
         private Timer? timer;
 
         private static readonly TimeSpan syncTime = TimeSpan.FromHours(12);
 
-        public TimedSyncService(
+        public GoogleDriveRavenSyncService(
             GoogleDriveSync driveSync, 
             GoogleDocPlainTextFetcher plainTextFetcher,
-            ILogger<TimedSyncService> logger)
+            ILogger<GoogleDriveRavenSyncService> logger)
         {
             this.driveSync = driveSync;
             this.plainTextFetcher = plainTextFetcher;
@@ -52,7 +57,6 @@ namespace MessianicChords.Services
         {
             await driveSync.Start();
             await plainTextFetcher.Start();
-            //return Task.CompletedTask;
         }
     }
 }

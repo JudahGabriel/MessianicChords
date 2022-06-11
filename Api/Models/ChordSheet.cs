@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MessianicChords.Models
 {
@@ -12,17 +13,23 @@ namespace MessianicChords.Models
         public string? ThumbnailUrl { get; set; }
         public string? DownloadUrl { get; set; }
         public string GoogleDocId { get; set; } = string.Empty;
-        public string GoogleDocResourceKey { get; set; } = string.Empty;
+        public string? GoogleDocResourceKey { get; set; } = string.Empty;
         public string? ETag { get; set; }
         public string? Id { get; set; }
+        public bool HasFetchedPlainTextContents { get; set; }
         public string? PlainTextContents { get; set; }
         public DateTime LastUpdated { get; set; }
         public DateTime Created { get; set; }
         public string? Extension { get; set; }
-        public bool HasFetchedPlainTextContents { get; set; }
         public Uri? PublishUri { get; set; }
         public string? ChavahSongId { get; set; }
         public int PagesCount { get; set; }
+        public List<Uri> Screenshots { get; set; } = new List<Uri>();
+
+        /// <summary>
+        /// Whether we've fetched a thumbnail of the doc from Google Drive.
+        /// </summary>
+        public bool HasFetchedThumbnail { get; set; }
 
         public void UpdateFrom(ChordSheet other)
         {
@@ -34,6 +41,7 @@ namespace MessianicChords.Models
             Extension = other.Extension;
             GoogleDocId = other.GoogleDocId;
             HasFetchedPlainTextContents = other.HasFetchedPlainTextContents;
+            HasFetchedThumbnail = other.HasFetchedThumbnail;
             Key = other.Key;
             LastUpdated = other.LastUpdated;
             PlainTextContents = other.PlainTextContents;

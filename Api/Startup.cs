@@ -47,7 +47,8 @@ namespace MessianicChords
             services.AddTransient<GoogleDriveChordsFetcher>();
             services.AddTransient<GoogleDriveSync>();
             services.AddTransient<GoogleDocPlainTextFetcher>();
-            services.AddHostedService<TimedSyncService>();
+            services.AddHostedService<GoogleDriveRavenSyncService>();
+            services.AddHostedService<ThumbnailFetcher>();
             services.AddHttpClient();
         }
 
