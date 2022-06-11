@@ -184,6 +184,10 @@ export class ChordDetails extends BootstrapBase {
                 .img-preview {
                     min-height: 11in; // Standard page size for PDF and Word docs
                 }
+
+                .web-published-doc {
+                    transform: scale(0.80);
+                }
             }
         `;
 
@@ -221,9 +225,6 @@ export class ChordDetails extends BootstrapBase {
             .filter(n => !!n)
             .join(" ");
         document.title = `${chordName} chords and lyrics on Messianic Chords`;
-
-        // Asynchronously load screenshots, thus making the chord chart available offline.
-        chord.screenshots.forEach(i => fetch(i));
     }
 
     render(): TemplateResult {
@@ -236,11 +237,15 @@ export class ChordDetails extends BootstrapBase {
             content = this.renderChordDetails(this.chord);
         }
 
+        // Render the screenshots visually hidden. This allows us to fetch them for offline use later.
+        const footer = this.chord ? this.renderScreenshots(this.chord, "hidden") : html``;
+
         return html`
             <section class="chord-details-page container mx-auto">
                 <div class="text-center">
                     ${content}
                 </div>
+                ${footer}
             </section>
         `;
     }
@@ -367,7 +372,7 @@ export class ChordDetails extends BootstrapBase {
             case "pdf":
                 // Do we have a screenshot of the doc? Use that. PDF preview is quite buggy and heavyweight.
                 if (chord.screenshots.length > 0) {
-                    return this.renderScreenshots(chord);
+                    return this.renderScreenshots(chord, "visible");
                 }
 
                 return this.renderGDocPreviewer(chord);
@@ -391,9 +396,10 @@ export class ChordDetails extends BootstrapBase {
         `;
     }
 
-    renderScreenshots(chord: ChordSheet): TemplateResult {
+    renderScreenshots(chord: ChordSheet, visiblility: "hidden" | "visible"): TemplateResult {
+        const visibilityClass = visiblility === "hidden" ? "visually-hidden" : "";
         return html`
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column ${visibilityClass}">
                 ${repeat(chord.screenshots, k => k, i => this.renderImagePreviewer(i))}
             </div>
         `;
@@ -404,7 +410,7 @@ export class ChordDetails extends BootstrapBase {
             return html`⚠ This chord sheet is not available offline.`;
         }
 
-        return this.renderScreenshots(chord);
+        return this.renderScreenshots(chord, "visible");
     }
 
     loadChordSheet(): Promise<ChordSheet> {
