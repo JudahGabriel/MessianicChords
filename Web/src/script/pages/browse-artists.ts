@@ -46,7 +46,7 @@ export class BrowseArtists extends BrowseSongs {
     protected firstUpdated(changedProps: Map<string | number | symbol, unknown>): void {
         super.firstUpdated(changedProps);
         this.chordService.getAllArtists()
-           .then(a => this.artists = a.sort());
+           .then(a => this.artists = a);
     }
 
     renderAdditionalContainerContent(): TemplateResult {

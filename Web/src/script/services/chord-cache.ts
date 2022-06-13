@@ -126,7 +126,12 @@ export class ChordCache {
     }
 
     private chordSheetToDbDoc(chordSheet: ChordSheet): ChordSheetDbDoc {
-        const terms = Array.from(new Set<string>(chordSheet.song.split(' ')));
+        const wordsList = [
+            ...this.getWords(chordSheet.song),
+            ...this.getWords(chordSheet.artist)
+        ];
+        const termsSet = new Set<string>(wordsList);
+        const terms = Array.from(termsSet);
         return {
             ...chordSheet,
             songLowered: chordSheet.song.toLowerCase(),
@@ -137,6 +142,10 @@ export class ChordCache {
             searchTerm4: (terms[3] || "").toLocaleLowerCase(),
             searchTerm5: (terms[4] || "").toLocaleLowerCase()
         }
+    }
+
+    private getWords(input: string): string[] {
+        return input.split(/\s|,/); // space or comma
     }
 }
 

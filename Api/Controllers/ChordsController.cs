@@ -170,6 +170,7 @@ namespace MessianicChords.Controllers
         public Task<List<string>> GetAllArtists()
         {
             return DbSession.Query<ChordSheet>()
+                .OrderBy(a => a.Artist)
                 .Select(c => c.Artist)
                 .Distinct()
                 .ToListAsync();
