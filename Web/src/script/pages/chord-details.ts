@@ -6,6 +6,7 @@ import { SizeMax } from "../common/constants";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from 'lit/directives/repeat.js';
+import { ChordCache } from "../services/chord-cache";
 
 @customElement('chord-details')
 export class ChordDetails extends BootstrapBase {
@@ -184,9 +185,16 @@ export class ChordDetails extends BootstrapBase {
                 .img-preview {
                     min-height: 11in; // Standard page size for PDF and Word docs
                 }
+            }
 
-                .web-published-doc {
-                    transform: scale(0.80);
+            /* We don't display printable screenshots. They're just used for printing. */
+            .printable-screenshots {
+                display: none;
+            }
+
+            @media print {
+                .printable-screenshots {
+                    display: block;
                 }
             }
         `;
@@ -201,8 +209,10 @@ export class ChordDetails extends BootstrapBase {
     @state() error: string | null = null;
     @state() canGoFullScreen: boolean | null = null;
     @state() isWebPublished = false;
+    @state() hasScreenshots = false;
     location: RouterLocation | null = null;
     readonly chordService = new ChordService();
+    readonly chordCache = new ChordCache();
 
     constructor() {
         super();
@@ -212,12 +222,19 @@ export class ChordDetails extends BootstrapBase {
         this.canGoFullScreen = !!document.body.requestFullscreen;
         this.loadChordSheet()
             .then(result => this.chordSheetLoaded(result))
-            .catch(error => this.error = `${error}`);
+            .catch(error => this.chordSheetLoadFailed(error));
     }
 
-    chordSheetLoaded(chord: ChordSheet): any {
+    chordSheetLoaded(chord: ChordSheet) {
+        if (chord == null) {
+            this.chordSheetLoadFailed("Unable to load chord sheet. API return null for " + this.location?.params["id"]);
+            return;
+        }
+
         this.chord = chord;
         this.isWebPublished = !!chord.publishUri;
+        this.hasScreenshots = chord.screenshots.length > 0;
+        this.cacheChordForOfflineSearch(chord);
         const chordName = [
             chord.song,
             chord.hebrewSongName
@@ -225,6 +242,20 @@ export class ChordDetails extends BootstrapBase {
             .filter(n => !!n)
             .join(" ");
         document.title = `${chordName} chords and lyrics on Messianic Chords`;
+    }
+
+    chordSheetLoadFailed(error: any) {
+        // Couldn't load the chord sheet from the network? See if it's in our local cache.
+        const chordId = this.location?.params["id"] as string;
+        if (!chordId) {
+            this.error = "Couldn't load chord from local cache because we couldn't find an chord ID in the URL.";
+            return;
+        }
+
+        // If the chord sheet is in the cache, cool, let's just use that.
+        this.chordCache.get(chordId)
+            .then(chord => chord ? this.chordSheetLoaded(chord) : this.error = `Unable to load chord from API and from cache: ${error}`)
+            .catch(cacheError => this.error = `Unable to load chord from API due to error ${error}. Failed to load from cache due to cache error: ${cacheError}`);
     }
 
     render(): TemplateResult {
@@ -237,16 +268,29 @@ export class ChordDetails extends BootstrapBase {
             content = this.renderChordDetails(this.chord);
         }
 
-        // Render the screenshots visually hidden. This allows us to fetch them for offline use later.
-        const footer = this.chord ? this.renderScreenshots(this.chord, "hidden") : html``;
-
         return html`
             <section class="chord-details-page container mx-auto">
                 <div class="text-center">
                     ${content}
                 </div>
-                ${footer}
             </section>
+            ${this.renderPrintableScreenshots()}
+        `;
+    }
+
+    renderPrintableScreenshots(): TemplateResult {
+        // If we have screenshots, render them but hidden.
+        // This accomplishes 2 purposes:
+        //  1. Fetches the screenshots, making them available offline and enabling offline rendering of this page.
+        //  2. Makes printing easier. Printing iframes is fraught with issues. Printing images isn't.
+        if (!this.chord || !this.hasScreenshots) {
+            return html``;
+        }
+
+        return html`
+            <div class="printable-screenshots">
+                ${this.renderScreenshots(this.chord)}
+            </div>
         `;
     }
 
@@ -260,7 +304,7 @@ export class ChordDetails extends BootstrapBase {
                     <span class="placeholder w-100 d-inline-block"></span>
                 </div>
             </div>
-            
+
             <div class="iframe-loading-placeholder mx-auto">
                 <div class="w-100 h-100"></div>
             </div>
@@ -298,7 +342,7 @@ export class ChordDetails extends BootstrapBase {
                     </div>
                 </div>
             </div>
-            
+
             <!-- Song details -->
             <div class="row d-print-none">
                 <div class="col-12 col-lg-8 offset-lg-2">
@@ -319,7 +363,7 @@ export class ChordDetails extends BootstrapBase {
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-12 col-lg-8 offset-lg-2">
                     ${this.renderChordPreviewer(chord)}
@@ -356,29 +400,41 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderChordPreviewer(chord: ChordSheet): TemplateResult {
+        // Are we offline? Then we only support display via screenshots of the doc.
+        let previewer: TemplateResult;
 
-        // Are we offline? Then we only support loading the screenshot.
+        // If we're not online, see if we can render the offline previewer (i.e. the screenshots of the doc)
+        // This is needed because we can't load iframes of other domains (Google Docs) while offline, even with service worker caching.
         if (!navigator.onLine) {
-            return this.renderOfflinePreviewer(chord);
+            previewer = this.renderOfflinePreviewer(chord);
+        } else {
+            switch (chord.extension) {
+                case "gif":
+                case "jpg":
+                case "jpeg":
+                case "tiff":
+                case "png":
+                    previewer = this.renderImagePreviewer(this.downloadUrl(chord));
+                    break;
+                case "pdf":
+                    // Do we have a screenshot of the doc? Use that. PDF preview is quite buggy and heavyweight.
+                    previewer = this.hasScreenshots ? this.renderScreenshots(chord) : this.renderGDocPreviewer(chord);
+                    break;
+                default:
+                    previewer = this.renderGDocPreviewer(chord);
+            }
         }
 
-        switch (chord.extension) {
-            case "gif":
-            case "jpg":
-            case "jpeg":
-            case "tiff":
-            case "png":
-                return this.renderImagePreviewer(this.downloadUrl(chord));
-            case "pdf":
-                // Do we have a screenshot of the doc? Use that. PDF preview is quite buggy and heavyweight.
-                if (chord.screenshots.length > 0) {
-                    return this.renderScreenshots(chord, "visible");
-                }
-
-                return this.renderGDocPreviewer(chord);
-            default:
-                return this.renderGDocPreviewer(chord);
+        // If we have screenshots, we'll use those for printing and hide the previewer during print.
+        if (this.hasScreenshots) {
+            return html`
+                <div class="d-print-none">
+                    ${previewer}
+                </div>
+            `;
         }
+
+        return previewer;
     }
 
     renderGDocPreviewer(chord: ChordSheet): TemplateResult {
@@ -396,10 +452,9 @@ export class ChordDetails extends BootstrapBase {
         `;
     }
 
-    renderScreenshots(chord: ChordSheet, visiblility: "hidden" | "visible"): TemplateResult {
-        const visibilityClass = visiblility === "hidden" ? "visually-hidden" : "";
+    renderScreenshots(chord: ChordSheet): TemplateResult {
         return html`
-            <div class="d-flex flex-column ${visibilityClass}">
+            <div class="d-flex flex-column">
                 ${repeat(chord.screenshots, k => k, i => this.renderImagePreviewer(i))}
             </div>
         `;
@@ -407,10 +462,17 @@ export class ChordDetails extends BootstrapBase {
 
     renderOfflinePreviewer(chord: ChordSheet): TemplateResult {
         if (chord.screenshots.length == 0) {
-            return html`⚠ This chord sheet is not available offline.`;
+            return html`
+                <div class="alert alert-warning d-inline-block mx-auto" role="alert">
+                    ⚠ This chord sheet is not available offline.
+                    <p class="mb-0">
+                        ℹ️ To make this chord chart available offline, first view it while you're online.
+                    </p>
+                </div>
+            `;
         }
 
-        return this.renderScreenshots(chord, "visible");
+        return this.renderScreenshots(chord);
     }
 
     loadChordSheet(): Promise<ChordSheet> {
@@ -471,5 +533,10 @@ export class ChordDetails extends BootstrapBase {
 
     goFullscreen() {
         return this.shadowRoot?.querySelector("iframe")?.requestFullscreen();
+    }
+
+    cacheChordForOfflineSearch(chord: ChordSheet) {
+        this.chordCache.add(chord)
+            .catch(cacheError => console.warn("Unable to add chord sheet to offline chord cache due to an error", cacheError));
     }
 }

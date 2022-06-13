@@ -9,7 +9,6 @@ import { SizeMax } from '../common/constants';
 import { ChordService } from '../services/chord-service';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
 @customElement('app-home')
 export class AppHome extends BootstrapBase {
 
@@ -125,7 +124,7 @@ export class AppHome extends BootstrapBase {
       }
 
       .loading-block {
-        text-align: center; 
+        text-align: center;
         margin: 50px;
       }
 
@@ -211,7 +210,17 @@ export class AppHome extends BootstrapBase {
     this.isLoading = true;
     this.updateSearchQueryString(query);
     try {
-      const results = await this.chordService.search(query);
+      let results: ChordSheet[];
+
+      // If we're online, hit the API.
+      // If offline, hit the chord cache.
+      if (navigator.onLine) {
+        results = await this.chordService.search(query);
+      } else {
+        const chordCacheModule = await import("../services/chord-cache");
+        const chordCache = new chordCacheModule.ChordCache();
+        results = await chordCache.query(query);
+      }
 
       const isStillWaitingForResults = query === this.searchText.value;
       if (isStillWaitingForResults) {
@@ -227,7 +236,7 @@ export class AppHome extends BootstrapBase {
     const navClass = this.searchResults.length > 0 ? "d-none" : "";
     return html`
       <section class="home-page container">
-      
+
         <div class="search-container">
           <span class="search-box-brace">{</span>
           <input id="search-box" class="form-control" type="text" placeholder="Type a song, artist, or partial lyric"
@@ -244,23 +253,23 @@ export class AppHome extends BootstrapBase {
           <a class="fw-bold" href="/browse/artists">By artist</a>
           <span class="bar-separator">&nbsp;|&nbsp;</span>
           <a class="fw-bold" href="/browse/random">Random</a>
-      
+
           <div class="new-chords text-center mt-2 d-flex">
             <span>New chords:</span>
             ${this.renderNewChords()}
             <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length===0}>Load
               more...</button>
           </div>
-      
+
           <div class="d-flex justify-content-center">
             <div class="site-text">
               <chord-upload></chord-upload>
             </div>
           </div>
         </nav>
-      
+
         ${this.renderLoading()}
-      
+
         <div class="search-results-container w-100 d-flex flex-wrap justify-content-evenly align-items-stretch">
           ${repeat(this.searchResults, c => c.id, c => this.renderSearchResult(c))}
         </div>

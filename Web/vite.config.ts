@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   build: {
     sourcemap: true,
-    assetsDir: "code"
+    assetsDir: "code",
   },
   plugins: [
     VitePWA({
@@ -14,13 +14,18 @@ export default defineConfig({
       base: "/",
       scope: "/",
       registerType: "autoUpdate",
-      injectRegister: false,
+      //injectRegister: false,
+      injectRegister: "inline",
       manifest: false,
       strategies: 'injectManifest', // inject the file manifest into the service worker
       srcDir: "src",
       filename: "service-worker.js",
       workbox: {
         swDest: "service-worker.js"
+      },
+      devOptions: {
+        type: 'module',
+        enabled: true // enable service worker in dev mode
       }
     })
   ]

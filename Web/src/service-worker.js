@@ -41,7 +41,7 @@ catch (err) {
 // Page cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#page_cache
 // This is a network-first stragety for HTML pages. If the page doesn't respond in 3 seconds, it falls back to cache.
 pageCache({
-  networkTimeoutSeconds: 2,
+  networkTimeoutSeconds: 3,
   warmCache: [
     "/",
     "/browse/newest",
@@ -67,8 +67,7 @@ staticResourceCache({
 // This is a cache-first strategy for all images. We specify a max number of images and max age of image.
 imageCache({
   maxAgeSeconds: 60 * 60 * 24 * 14, // 14 days: 60 seconds * 60 minutes in an hour * 24 hours in a day * 14 days
-  maxEntries: 500,
-  matchCallback: (e) => e.request.destination === "image"
+  maxEntries: 1000
 });
 
 // For our API calls to fetch apps, we use StaleWhileRevalidate strategy.
@@ -92,7 +91,9 @@ function isCachableApiRoute(e) {
   const host = e.url.host?.toLowerCase() || "";
   const isApiRoute = host === "api.messianicchords.com";
   const relativePath = e.url.pathname.toLowerCase();
-  return isApiRoute && apiCallPrefixes.some(apiUrl => relativePath.startsWith(apiUrl));
+  const result = isApiRoute && apiCallPrefixes.some(apiUrl => relativePath.startsWith(apiUrl));
+  console.log(result ? "api cache hit" : "api cache miss", e.request.url);
+  return result;
 }
 
 registerRoute(
@@ -101,7 +102,7 @@ registerRoute(
     cacheName: "api-cache",
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 200,
+        maxEntries: 500,
         maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days. OK to cache these longer as we have a StaleWhileRevalidate, meaning we show results from cache instantly while refreshing cache in background.
       })
     ]
