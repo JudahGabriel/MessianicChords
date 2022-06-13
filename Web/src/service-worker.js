@@ -75,8 +75,8 @@ imageCache({
 // we do a network request in the background to refresh the cache.
 // These cache results remain valid for a short period of time before we invalidate them.
 const apiCallPrefixes = [
-  "/chords/get?", // Getting a specific chord sheet
-  "/chords/getNew", // fetching new chord sheets
+  "/chords/get", // Getting a specific chord sheet
+  "/chords/getnew", // fetching new chord sheets
   "/chords/getbysongname", // chords by song name
   "/chords/getallartists", // list of all artists
   "/chords/getbyartistname", // list of artists sorted by name
@@ -91,8 +91,7 @@ function isCachableApiRoute(e) {
   const host = e.url.host?.toLowerCase() || "";
   const isApiRoute = host === "api.messianicchords.com";
   const relativePath = e.url.pathname.toLowerCase();
-  const result = isApiRoute && apiCallPrefixes.some(apiUrl => relativePath.startsWith(apiUrl));
-  console.log(result ? "api cache hit" : "api cache miss", e.request.url);
+  const result = isApiRoute && apiCallPrefixes.some(apiUrl => relativePath === apiUrl);
   return result;
 }
 
@@ -102,7 +101,7 @@ registerRoute(
     cacheName: "api-cache",
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 500,
+        maxEntries: 1000,
         maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days. OK to cache these longer as we have a StaleWhileRevalidate, meaning we show results from cache instantly while refreshing cache in background.
       })
     ]
