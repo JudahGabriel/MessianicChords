@@ -21,18 +21,7 @@ self.addEventListener("message", event => {
 try {
   //@ts-ignore
   const filesToCacheManifest = self.__WB_MANIFEST; // array of {revision: string, url: string}
-
-  // Add the "/" path to the precache manifest as well.
-  const indexCache = filesToCacheManifest.find(f => f.url === "index.html");
-  if (indexCache) {
-    const indexCacheClone = {
-      revision: indexCache.revision,
-      url: "/"
-    };
-    precacheAndRoute(filesToCacheManifest.concat([indexCacheClone]));
-  } else {
-    precacheAndRoute(filesToCacheManifest);
-  }
+  precacheAndRoute(filesToCacheManifest);
 }
 catch (err) {
   console.info("if you are in development mode this error is expected: ", err);
@@ -46,7 +35,8 @@ pageCache({
     "/",
     "/browse/newest",
     "/browse/songs",
-    "/browse/artists"],
+    "/browse/artists"
+  ]
 });
 
 // Static resource recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#static_resources_cache
@@ -57,17 +47,19 @@ const staticResourceDestinations = [
   "style",
   "script",
   "worker",
-  "font"
+  "font",
+  "media"
 ]
 staticResourceCache({
-  matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination)
+  matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination),
+  warmCache: ["/assets/audio/dice.mp3"]
 });
 
 // Image cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#image_cache
 // This is a cache-first strategy for all images. We specify a max number of images and max age of image.
 imageCache({
   maxAgeSeconds: 60 * 60 * 24 * 14, // 14 days: 60 seconds * 60 minutes in an hour * 24 hours in a day * 14 days
-  maxEntries: 1000
+  maxEntries: 5000
 });
 
 // For our API calls to fetch apps, we use StaleWhileRevalidate strategy.
@@ -101,7 +93,7 @@ registerRoute(
     cacheName: "api-cache",
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 1000,
+        maxEntries: 5000,
         maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days. OK to cache these longer as we have a StaleWhileRevalidate, meaning we show results from cache instantly while refreshing cache in background.
       })
     ]
