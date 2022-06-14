@@ -494,7 +494,7 @@ export class ChordDetails extends BootstrapBase {
 
     loadChordSheet(): Promise<ChordSheet> {
         // Grab the chord sheet id
-        const chordId = `chordsheets/${this.location?.params["id"]}`;
+        const chordId = `ChordSheets/${this.location?.params["id"]}`;
         return this.chordService.getById(chordId);
     }
 
