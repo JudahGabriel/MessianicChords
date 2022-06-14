@@ -210,18 +210,7 @@ export class AppHome extends BootstrapBase {
     this.isLoading = true;
     this.updateSearchQueryString(query);
     try {
-      let results: ChordSheet[];
-
-      // If we're online, hit the API.
-      // If offline, hit the chord cache.
-      if (navigator.onLine) {
-        results = await this.chordService.search(query);
-      } else {
-        const chordCacheModule = await import("../services/chord-cache");
-        const chordCache = new chordCacheModule.ChordCache();
-        results = await chordCache.search(query);
-      }
-
+      const results = await this.chordService.search(query);
       const isStillWaitingForResults = query === this.searchText.value;
       if (isStillWaitingForResults) {
         this.searchResults = results;
