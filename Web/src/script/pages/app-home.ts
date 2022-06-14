@@ -219,7 +219,7 @@ export class AppHome extends BootstrapBase {
       } else {
         const chordCacheModule = await import("../services/chord-cache");
         const chordCache = new chordCacheModule.ChordCache();
-        results = await chordCache.query(query);
+        results = await chordCache.search(query);
       }
 
       const isStillWaitingForResults = query === this.searchText.value;

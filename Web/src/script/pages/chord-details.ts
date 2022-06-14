@@ -242,6 +242,23 @@ export class ChordDetails extends BootstrapBase {
             .filter(n => !!n)
             .join(" ");
         document.title = `${chordName} chords and lyrics on Messianic Chords`;
+
+        // Offline helper: see if we have a offline index query string.
+        // If so, fetch the next chord sheet in the list and load that in a moment.
+        const queryParams = new URLSearchParams(this.location?.search || "");
+        const offlineIndexStr = queryParams.get("offline-index") || "";
+        const offlineIndex = parseFloat(offlineIndexStr);
+        if (offlineIndex >= 0) {
+            setTimeout(() => {
+                this.chordService.getByOrderedIndex(offlineIndex)
+                    .then(chordId => {
+                        if (chordId) {
+                            window.location.href = `/${chordId}?offline-index=${offlineIndex+1}`;
+                        }
+                    })
+
+            }, 3000);
+        }
     }
 
     chordSheetLoadFailed(error: any) {

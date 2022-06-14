@@ -9,8 +9,6 @@ export class AppHeader extends BootstrapBase {
     const localStyles = css`
 
       header {
-        /* background-color: var(--theme-color); */
-        /* background: linear-gradient(rgb(11, 9, 116) 0%, rgb(67, 73, 121) 24%, transparent 96%); */
         padding: 20px;
       }
 
@@ -89,6 +87,10 @@ export class AppHeader extends BootstrapBase {
           font-size: 0.9em;
         }
       }
+
+      .alert {
+        font-family: var(--subtitle-font);
+      }
     `;
 
     return [
@@ -98,6 +100,8 @@ export class AppHeader extends BootstrapBase {
   }
 
   @state() locationPath: string = "/";
+  @state() isOnline: boolean = navigator.onLine;
+  @state() hideOfflineAlert = false;
 
   constructor() {
     super();
@@ -105,7 +109,8 @@ export class AppHeader extends BootstrapBase {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent))
+    window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
+    window.addEventListener('online', () => this.isOnline = navigator.onLine);
   }
 
   disconnectedCallback() {
@@ -137,6 +142,10 @@ export class AppHeader extends BootstrapBase {
         <!-- On XS screen, show the subtitle beneath the  -->
         ${this.renderPhoneSubheader()}
       </header>
+
+      <div class="d-flex justify-content-center d-print-none">
+        ${this.renderOfflineStatus()}
+      </div>
     `;
   }
 
@@ -157,6 +166,19 @@ export class AppHeader extends BootstrapBase {
       <h2 class="d-block d-sm-none w-100 text-center">
         <span>Chord charts for Messiah's music</span>
       </h2>
+    `;
+  }
+
+  renderOfflineStatus(): TemplateResult {
+    if (this.isOnline || this.hideOfflineAlert) {
+      return html``;
+    }
+
+    return html`
+      <div class="alert alert-warning alert-dismissible fade show d-inline-block" role="alert">
+        <strong>You're offline.</strong> You can view chord charts you previously viewed while online.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @click="${() => this.hideOfflineAlert = true}"></button>
+      </div>
     `;
   }
 }

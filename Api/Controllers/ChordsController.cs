@@ -40,6 +40,17 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet]
+        public Task<string?> GetByOrderedIndex(int index)
+        {
+            return DbSession.Query<ChordSheet>()
+                .OrderBy(s => s.Song)
+                .Skip(index)
+                .Take(1)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        [HttpGet]
         public async Task<List<ChordSheet>> Search(string search)
         {
             const int maxResults = 25;
