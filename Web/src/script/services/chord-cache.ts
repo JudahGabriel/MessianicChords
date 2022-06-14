@@ -201,22 +201,18 @@ export class ChordCache {
                 if (cursorResult) {
                     // If we'vce skipped enough, add results.
                     if (skip <= currentSkip) {
-                        console.log("zanz pushing result because skip is ", skip, "current skip is ", currentSkip);
                         results.push(cursorResult.value as ChordSheet);
                     }
 
                     // Do we reach our max length (take)? Resolve with that.
                     if (results.length === take) {
-                        console.log("zanz returning results because ", results.length);
                         resolve(results);
                     } else {
-                        console.log("zanz moving next");
                         cursorResult.continue();
                         currentSkip++;
                     }
                 } else {
                     // no more results. Resolve.
-                    console.log("zanz no more results", results);
                     resolve(results);
                 }
             };
