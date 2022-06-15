@@ -77,7 +77,7 @@ export class AppIndex extends LitElement {
           { path: '/', component: 'app-home', action: async () => await import("./script/pages/app-home") },
         ],
       } as any,
-      { path: '/chordsheets/:id', component: 'chord-details', action: async () => await import("./script/pages/chord-details") } as any,
+      { path: '/ChordSheets/:id', component: 'chord-details', action: async () => await import("./script/pages/chord-details") } as any,
       { path: '/browse/newest', component: 'browse-newest', action: async () => await import("./script/pages/browse-newest") } as any,
       { path: '/browse/songs', component: 'browse-songs', action: async () => await import("./script/pages/browse-songs") } as any,
       { path: '/browse/artists', component: 'browse-artists', action: async () => await import("./script/pages/browse-artists") } as any,
@@ -91,11 +91,11 @@ export class AppIndex extends LitElement {
     return html`
       <div>
         <app-header></app-header>
-      
+
         <main>
           <div id="routerOutlet"></div>
         </main>
-      
+
         <app-footer></app-footer>
       </div>
     `;

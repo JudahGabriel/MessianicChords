@@ -6,43 +6,42 @@ import { ChordFetchBackend } from "./chord-fetch-backend";
 
 export class ChordService extends ApiServiceBase {
 
-    private readonly backend: ChordFetchBackend;
+    private backend: ChordFetchBackend | null = null;
 
     constructor() {
         super();
-        this.backend = navigator.onLine ? new ApiBackend() : new CacheBackend();
     }
 
-    async getById(chordId: string): Promise<ChordSheet> {
-        return this.backend.getById(chordId);
+    getById(chordId: string): Promise<ChordSheet> {
+        return this.getBackend().then(b => b.getById(chordId));
     }
 
     getByOrderedIndex(index: number): Promise<string | null> {
-        return this.backend.getByOrderedIndex(index);
+        return this.getBackend().then(b => b.getByOrderedIndex(index));
     }
 
     search(query: string): Promise<ChordSheet[]> {
-        return this.backend.search(query);
+        return this.getBackend().then(b => b.search(query));
     }
 
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.backend.getBySongName(skip, take);
+        return this.getBackend().then(b => b.getBySongName(skip, take));
     }
 
     getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.backend.getByArtistName(artist, skip, take);
+        return this.getBackend().then(b => b.getByArtistName(artist, skip, take));
     }
 
     getByRandom(take: number): Promise<ChordSheet[]> {
-        return this.backend.getByRandom(take);
+        return this.getBackend().then(b => b.getByRandom(take));
     }
 
     getAllArtists(): Promise<string[]> {
-        return this.backend.getAllArtists();
+        return this.getBackend().then(b => b.getAllArtists());
     }
 
     getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.backend.getNew(skip, take);
+        return this.getBackend().then(b => b.getNew(skip, take));
     }
 
     downloadUrlFor(chord: ChordSheet): string {
@@ -52,10 +51,24 @@ export class ChordService extends ApiServiceBase {
 
         return `${this.apiUrl}/chords/download?id=${chord.id}`;
     }
+
+    private async getBackend(): Promise<ChordFetchBackend> {
+        if (this.backend) {
+            return this.backend;
+        }
+
+        const module = await import("./online-detector");
+        const detector = new module.OnlineDetector();
+        const isOnline = await detector.checkOnline();
+        this.backend = isOnline ?
+            new ApiBackend() :
+            new CacheBackend();
+        return this.backend;
+    }
 }
 
 /**
- * An implementation of ChordFetchService that talks to the API. Used when online.
+ * An implementation of ChordFetchBackend that talks to the API. Used when online.
  */
  class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
 

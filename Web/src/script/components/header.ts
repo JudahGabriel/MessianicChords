@@ -111,11 +111,18 @@ export class AppHeader extends BootstrapBase {
     super.connectedCallback();
     window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
     window.addEventListener('online', () => this.isOnline = navigator.onLine);
+    this.listenForOfflineStatusChange();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent))
+  }
+
+  async listenForOfflineStatusChange() {
+    const module = await import("../services/online-detector");
+    const detector = new module.OnlineDetector();
+    detector.checkOnline().then(result => this.isOnline = result);
   }
 
   routeChanged(e: CustomEvent) {

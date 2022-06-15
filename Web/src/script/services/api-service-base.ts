@@ -42,7 +42,7 @@ export class ApiServiceBase {
         }
     }
 
-    private async getResponse(url: string, args?: Object): Promise<Response> {
+    protected async getResponse(url: string, args?: Object): Promise<Response> {
         let absoluteUrl = this.apiUrl + url;
         if (args) {
             absoluteUrl += "?";
