@@ -35,8 +35,29 @@ pageCache({
     "/",
     "/browse/newest",
     "/browse/songs",
-    "/browse/artists"
-  ]
+    "/browse/artists",
+    "/artist/_",
+    "/ChordSheets/_"
+  ],
+  plugins: [{
+      // We want to override cache key for
+      //  - Artist page: /artist/Joe%20Artist
+      //  - Chord details page: /ChordSheets/2630
+      // Reason is, these pages are the same HTML, just different behavior.
+      cacheKeyWillBeUsed: async function({request}) {
+        const isArtistPage = !!request.url.match(/\/artist\/[^\/]+$/);
+        if (isArtistPage) {
+          return new URL(request.url).origin + "/artist/_";
+        }
+        const chordDetailsRegex = new RegExp(/\/ChordSheets\/[\w|\d|-]+$/, "i");
+        const isChordDetailsPage = !!request.url.match(chordDetailsRegex);
+        if (isChordDetailsPage) {
+          return new URL(request.url).origin + "/ChordSheets/_"
+        }
+
+        return request.url;
+      }
+    }]
 });
 
 // Static resource recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#static_resources_cache
@@ -51,7 +72,7 @@ const staticResourceDestinations = [
   "media"
 ]
 staticResourceCache({
-  matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination),
+  matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination) || e.url?.href.endsWith("dice.mp3"),
   warmCache: ["/assets/audio/dice.mp3"]
 });
 
@@ -83,8 +104,7 @@ function isCachableApiRoute(e) {
   const host = e.url.host?.toLowerCase() || "";
   const isApiRoute = host === "api.messianicchords.com";
   const relativePath = e.url.pathname.toLowerCase();
-  const result = isApiRoute && apiCallPrefixes.some(apiUrl => relativePath === apiUrl);
-  return result;
+  return isApiRoute && apiCallPrefixes.some(apiUrl => relativePath === apiUrl);
 }
 
 registerRoute(
