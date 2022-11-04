@@ -1,4 +1,5 @@
-﻿using MessianicChords.Models;
+﻿using MessianicChords.Api.Services;
+using MessianicChords.Models;
 using MessianicChords.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,14 +17,11 @@ namespace MessianicChords.Services
     /// <summary>
     /// Runs periodically looking for <see cref="ChordSheet"/>s that need thumbnails fetched.
     /// </summary>
-    public class ThumbnailFetcher : BackgroundService
+    public class ThumbnailFetcher : TimedBackgroundServiceBase
     {
-        private readonly ILogger<ThumbnailFetcher> logger;
         private readonly IDocumentStore docStore;
         private readonly HttpClient http;
         private readonly GoogleDriveChordsFetcher gDocFetcher;
-        private Timer? timer = null;
-        private CancellationToken cancelToken;
 
         public const string ThumbnailName = "thumbnail.jpg";
 
@@ -32,21 +30,14 @@ namespace MessianicChords.Services
             IHttpClientFactory httpFactory,
             GoogleDriveChordsFetcher gDocFetcher,
             ILogger<ThumbnailFetcher> logger)
+            : base(TimeSpan.FromMinutes(5), TimeSpan.FromHours(1), logger)
         {
             this.docStore = docStore;
             this.http = httpFactory.CreateClient();
             this.gDocFetcher = gDocFetcher;
-            this.logger = logger;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            timer = new Timer(async _ => await UpdateThumbnails(), null, TimeSpan.FromSeconds(15), TimeSpan.FromHours(1));
-            this.cancelToken = stoppingToken;
-            return Task.CompletedTask;
-        }
-
-        private async Task UpdateThumbnails()
+        public override async Task DoWorkAsync(CancellationToken cancelToken)
         {
             try
             {
@@ -108,6 +99,9 @@ namespace MessianicChords.Services
                         session.Advanced.Attachments.Delete(chart.Id, ThumbnailName);
                     }
 
+                    // Must save changes now, otherwise we get an error saying there's a deferred command to delete an attachment of the same name.
+                    await session.SaveChangesAsync();
+
                     // Add the thumbnail stream as an attachment.
                     session.Advanced.Attachments.Store(chart.Id, ThumbnailName, seekableStream, "image/jpeg");
                     await session.SaveChangesAsync();
@@ -125,7 +119,7 @@ namespace MessianicChords.Services
             return await session.Query<ChordSheet>()
                 .Where(c => !c.HasFetchedThumbnail)
                 .OrderByDescending(c => c.LastUpdated)
-                .Take(2000) // ZANZ temporary
+                .Take(10)
                 .ToListAsync();
         }
 
@@ -146,22 +140,6 @@ namespace MessianicChords.Services
                 logger.LogWarning(gDocError, "Tried to fetch thumbnail for Google Doc {id}, but an error occurred.", googleDocId);
                 return null;
             }
-        }
-
-        private Task SaveThumbsAsAttachments(object docsWithTemporalThumbs)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task StopAsync(CancellationToken stoppingToken)
-        {
-            this.cancelToken = stoppingToken;
-            if (this.timer != null)
-            {
-                await this.timer.DisposeAsync();
-            }
-
-            await base.StopAsync(stoppingToken);
         }
     }
 }

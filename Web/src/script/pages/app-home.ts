@@ -2,7 +2,6 @@ import { css, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import '../components/chord-card';
-import '../components/chord-upload';
 import { ChordSheet } from '../models/interfaces';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { SizeMax } from '../common/constants';
@@ -252,7 +251,8 @@ export class AppHome extends BootstrapBase {
 
           <div class="d-flex justify-content-center">
             <div class="site-text">
-              <chord-upload></chord-upload>
+              Got chords to share?
+              <a class="fw-bold" href="/chordsheets/new">Upload</a>
             </div>
           </div>
         </nav>

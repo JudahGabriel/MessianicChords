@@ -52,6 +52,10 @@ export class ChordService extends ApiServiceBase {
         return `${this.apiUrl}/chords/download?id=${chord.id}`;
     }
 
+    submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
+        return this.getBackend().then(b => b.submitChordEdit(chord, attachments));
+    }
+
     private async getBackend(): Promise<ChordFetchBackend> {
         if (this.backend) {
             return this.backend;
@@ -124,11 +128,34 @@ export class ChordService extends ApiServiceBase {
     }
 
     downloadUrlFor(chord: ChordSheet): string {
-        if (chord.downloadUrl) {
+        if (!chord.chords && chord.downloadUrl) {
             return chord.downloadUrl;
         }
 
         return `${this.apiUrl}/chords/download?id=${chord.id}`;
+     }
+
+     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
+        // Create a new form to hold all the chord props and attachments.
+        const formData = new FormData();
+        const chordProps = Object.entries(chord);
+        for (let [prop,val] of chordProps) {
+            if (val !== null && val !== undefined) {
+                // Is it an array? Append all array values to the form.
+                const arrayVal = Array.isArray(val) ? val as Array<unknown> : null;
+                if (arrayVal) {
+                    arrayVal.forEach(v => formData.append(prop, `${v}`))
+                } else {
+                    formData.append(prop, `${val}`);
+                }
+            }
+        }
+
+        if (attachments.length > 0) {
+            attachments.forEach(a => formData.append("attachments", a, a.name));
+        }
+
+        return super.postFormData("/chords/submitEdit", formData);
     }
 }
 
@@ -189,5 +216,9 @@ class CacheBackend implements ChordFetchBackend {
         }
 
         return this.chordCache;
+    }
+
+    submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
+        throw new Error("Can't upload chords while offline.");
     }
 }

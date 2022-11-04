@@ -1,4 +1,5 @@
-﻿using Google.Apis.Drive.v3;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using MessianicChords.Api.Models;
@@ -52,11 +53,11 @@ namespace MessianicChords.Services
         {
             var listReq = this.driveApi.Files.List();
             listReq.OrderBy = "modifiedTime desc";
-            listReq.Q = $"'{this.settings.GDriveFolderId}' in parents and modifiedTime > '{date:O}' and (trashed = true or trashed = false)"; // Inside our Messianic chords folder, modified since the specified date, and isn't a folder itself
+            listReq.Q = $"'{this.settings.GDriveFolderId}' in parents and (modifiedTime > '{date:O}' or createdTime > '{date:O}') and (trashed = true or trashed = false)"; // Inside our Messianic chords folder, modified since the specified date, and isn't a folder itself
             listReq.PageSize = 100;
             listReq.IncludeItemsFromAllDrives = true;
             listReq.SupportsAllDrives = true;
-            listReq.Fields = "files/id, files/modifiedTime, files/createdTime, files/resourceKey";
+            listReq.Fields = "files/id, files/modifiedTime, files/createdTime, files/resourceKey, nextPageToken";
             listReq.AddExecuteInterceptor(new ResourceKeyInterceptor(this.settings.GDriveFolderId, this.settings.GDriveFolderResourceKey));
 
             var chordSheets = new List<ChordSheetMetadata>(50);
@@ -157,6 +158,62 @@ namespace MessianicChords.Services
                 Position = 0
             };
             return memStream;
+
+            // COMMENTED OUT: below is the proper way to download files in Google Drive.
+            // Unfortunately, we consistently get a 404 not found. Not sure why.
+
+            //var query = driveApi.Files.Get(googleDocId);
+            //query.SupportsAllDrives = true;
+
+            //var memoryStream = new MemoryStream(50_000);
+            //if (!string.IsNullOrEmpty(resourceKey))
+            //{
+            //    query.AddExecuteInterceptor(new ResourceKeyInterceptor(googleDocId, resourceKey));
+            //}
+
+            //var progressError = default(Exception);
+            //var progressHandler = new Action<Google.Apis.Download.IDownloadProgress>(progress =>
+            //{
+            //    if (progress.Exception != null)
+            //    {
+            //        logger.LogError(progress.Exception, "Google doc download failed for {googleDocId}.", googleDocId);
+            //        progressError = progress.Exception;
+            //    }
+            //    else
+            //    {
+            //        logger.LogInformation("Google doc download progresssed. {status}, {bytes downloaded}", progress.Status, progress.BytesDownloaded);
+            //    }
+            //});
+
+            //query.MediaDownloader.ProgressChanged += progressHandler;
+            //try
+            //{
+            //    var downloadTask = await query.DownloadAsync(memoryStream);
+            //    if (downloadTask.Exception != null)
+            //    {
+            //        throw downloadTask.Exception;
+            //    }
+            //}
+            //catch (Exception downloadError)
+            //{
+            //    logger.LogError(downloadError, "Error downloading Google doc {id}", googleDocId);
+            //    memoryStream.Dispose();
+            //    throw;
+            //}
+            //finally
+            //{
+            //    query.MediaDownloader.ProgressChanged -= progressHandler;
+            //}
+
+            //// If there was an exception from the progress handler, throw that here.
+            //if (progressError != null)
+            //{
+            //    memoryStream.Dispose();
+            //    throw progressError;
+            //}
+
+            //memoryStream.Position = 0;
+            //return memoryStream;
         }
 
         /// <summary>
@@ -230,7 +287,6 @@ namespace MessianicChords.Services
                 ThumbnailUrl = googleDoc.ThumbnailLink,
                 GoogleDocId = googleDoc.Id,
                 LastUpdated = googleDoc.ModifiedTime ?? DateTime.UtcNow,
-                ETag = googleDoc.ETag,
                 Extension = !string.IsNullOrEmpty(googleDoc.FileExtension) ? googleDoc.FileExtension : !string.IsNullOrEmpty(googleDoc.FullFileExtension) ? googleDoc.FullFileExtension : ".gdoc",
                 PlainTextContents = "",
                 HasFetchedPlainTextContents = false,
@@ -238,7 +294,12 @@ namespace MessianicChords.Services
                 DownloadUrl = downloadUrl,
                 ChavahSongId = chavahSong?.Id,
                 PagesCount = 1,
-                PublishUri = null
+                PublishUri = null,
+                Authors = new List<string>(),
+                Links = new List<Uri>(),
+                Copyright = null,
+                IsSheetMusic = englishName.Contains("sheet music", StringComparison.OrdinalIgnoreCase),
+                Capo = 0
             };
             
             return chordSheet;

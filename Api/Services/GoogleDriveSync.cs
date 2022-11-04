@@ -1,4 +1,5 @@
-﻿using MessianicChords.Common;
+﻿using MessianicChords.Api.Services;
+using MessianicChords.Common;
 using MessianicChords.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,8 +29,8 @@ namespace MessianicChords.Services
 
         public GoogleDriveSync(
             GoogleDriveChordsFetcher chordsFetcher,
-            ILogger<GoogleDriveSync> logger, 
-            IDocumentStore db)
+            IDocumentStore db,
+            ILogger<GoogleDriveSync> logger)
         {
             this.chordsFetcher = chordsFetcher;
             this.db = db;
@@ -77,7 +79,7 @@ namespace MessianicChords.Services
             await foreach (var chordSheet in allChordSheets)
             {
                 var isInGDrive = gDocIds.Contains(chordSheet.GoogleDocId);
-                if (!isInGDrive)
+                if (!isInGDrive && !string.IsNullOrEmpty(chordSheet.GoogleDocId))
                 {
                     removedChords.Add(chordSheet);
                 }
@@ -130,7 +132,10 @@ namespace MessianicChords.Services
                 .Where(c => c.GoogleDocId.In(gDocIds))
                 .ToListAsync();
             var googleChordIdsInRaven = matchingChordSheets.Select(c => c.GoogleDocId);
-            var gDocIdsMissingFromRaven = gDocIds.Except(googleChordIdsInRaven);
+            var gDocIdsMissingFromRaven = gDocIds
+                .Except(googleChordIdsInRaven)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id => id!);
             foreach (var docId in gDocIdsMissingFromRaven)
             {
                 var resourceKey = updatedDocs
@@ -152,41 +157,6 @@ namespace MessianicChords.Services
 
             await dbSession.SaveChangesAsync();
         }
-
-        private async Task<Uri?> TryPublishToWeb(string gDocId)
-        {
-            // Try to publish on the web.
-            try
-            {
-                return await chordsFetcher.PublishForWeb(gDocId);
-            }
-            catch (Exception publishError)
-            {
-                logger.LogWarning(publishError, "Error when publishing GDoc {id} to the web. This doc won't be set for web publishing.", gDocId);
-                return null;
-            }
-        }
-
-        //private async Task RemovedTrashedDocsFromRaven(List<ChordSheetMetadata> deletedGDocs)
-        //{
-        //    var deletedGDocIds = deletedGDocs
-        //        .Select(d => d.GoogleDocId)
-        //        .ToList();
-
-        //    if (deletedGDocIds.Count > 0)
-        //    {
-        //        using var dbSession = db.OpenAsyncSession();
-        //        var chordSheetsToDelete = dbSession.Query<ChordSheet>()
-        //            .Where(c => c.GoogleDocId.In(deletedGDocIds))
-        //            .ToList();
-        //        chordSheetsToDelete.ForEach(d =>
-        //        {
-        //            syncRecord.RemovedDocs.Add(d.GetDisplayName());
-        //            dbSession.Delete(d);
-        //        });
-        //        await dbSession.SaveChangesAsync();
-        //    }
-        //}
 
         /// <summary>
         /// Checks the etags for all the chord sheets. If the etag is different than the one in the database,
@@ -214,11 +184,17 @@ namespace MessianicChords.Services
             var changedChordSheets = changedDocs.Select(i => i.chordSheet);
             foreach (var chordSheet in changedChordSheets)
             {
+                if (string.IsNullOrWhiteSpace(chordSheet.GoogleDocId))
+                {
+                    continue;
+                }
+
                 var refreshedChordSheet = await chordsFetcher.CreateChordSheet(chordSheet.GoogleDocId, chordSheet.GoogleDocResourceKey);
                 var existingPlainTextContents = chordSheet.PlainTextContents;
-                chordSheet.UpdateFrom(refreshedChordSheet);
+                chordSheet.UpdateGoogleDrivePropsFrom(refreshedChordSheet);
                 chordSheet.HasFetchedPlainTextContents = false; // So that it will be fetched again in the near future.
                 chordSheet.PlainTextContents = existingPlainTextContents; // Use existing PlainTextContents until we can refetch them later from the updated doc.
+                chordSheet.HasFetchedScreenshots = false; // So that it will be fetched again in the near future by ScreenshotGenerator.
                 syncRecord.Log.Add($"Updated {chordSheet.Id}, {chordSheet.GetDisplayName()}");
                 syncRecord.UpdatedDocs.Add(chordSheet.GetDisplayName());
             }

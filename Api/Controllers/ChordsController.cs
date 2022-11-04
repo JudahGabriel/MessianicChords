@@ -1,15 +1,22 @@
-﻿using MessianicChords.Common;
+﻿using MessianicChords.Api.Models;
+using MessianicChords.Api.Services;
+using MessianicChords.Common;
 using MessianicChords.Data;
 using MessianicChords.Models;
 using MessianicChords.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using static Sparrow.Hashing;
 
 namespace MessianicChords.Controllers
 {
@@ -17,14 +24,17 @@ namespace MessianicChords.Controllers
     public class ChordsController : RavenController
     {
         private readonly GoogleDriveChordsFetcher gDocFetcher;
+        private readonly IWebHostEnvironment host;
 
         public ChordsController(
             GoogleDriveChordsFetcher gDocFetcher,
-            IAsyncDocumentSession dbSession, 
+            IAsyncDocumentSession dbSession,
+            IWebHostEnvironment host,
             ILogger<ChordsController> logger)
             : base(dbSession, logger)
         {
             this.gDocFetcher = gDocFetcher;
+            this.host = host;
         }
 
         [HttpGet]
@@ -165,15 +175,17 @@ namespace MessianicChords.Controllers
         public async Task<FileStreamResult> Download(string id)
         {
             var chordSheet = await DbSession.LoadRequiredAsync<ChordSheet>(id);
-            var stream = await this.gDocFetcher.GetChordSheetStream(chordSheet.GoogleDocId, chordSheet.GoogleDocResourceKey);
+            var stream = await GetFileStreamForChordSheet(chordSheet);
             this.Response.RegisterForDispose(stream);
+
             var mimeType = GetMimeTypeFromChordSheetExtension(chordSheet.Extension);
             var songNames = new[]
             {
                 chordSheet.Song,
                 chordSheet.HebrewSongName
             }.Where(s => !string.IsNullOrWhiteSpace(s));
-            var fileName = $"{chordSheet.Artist} - {string.Join(" ", songNames)}.{chordSheet.Extension}";
+            var extension = string.IsNullOrWhiteSpace(chordSheet.Extension) || chordSheet.Extension == "mc" ? "html" : chordSheet.Extension;
+            var fileName = $"{chordSheet.Artist} - {string.Join(" ", songNames)}.{extension}";
             return File(stream, mimeType, fileName);
         }
 
@@ -185,6 +197,31 @@ namespace MessianicChords.Controllers
                 .Select(c => c.Artist)
                 .Distinct()
                 .ToListAsync();
+        }
+
+        [HttpGet]
+        public Task<SyncRecord> Sync([FromServices]GoogleDriveSync sync)
+        {
+            return sync.Start();
+        }
+
+        /// <summary>
+        /// Submits an edit for an existing chord sheet, or a new chord sheet.
+        /// </summary>
+        /// <param name="request">The chord edit request.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public Task SubmitEdit(ChordSubmissionRequest request, [FromServices]ChordSubmissionService submissionService)
+        {
+            return submissionService.Create(request);
+        }
+
+        [HttpPost]
+        public Task ApproveRejectSubmission(
+            [FromBody]ChordSubmissionApproval decision, 
+            [FromServices]ChordSubmissionService submissionService)
+        {
+            return submissionService.ApproveOrReject(decision);
         }
 
         private async Task<List<ChordSheet>> QuerySuggestions(System.Linq.Expressions.Expression<Func<ChordSheet, object>> field, string searchText)
@@ -221,8 +258,35 @@ namespace MessianicChords.Controllers
                 "rtf" => "application/rtf",
                 "tif" => "image/tiff",
                 "gif" => "image/gif",
+                "html" => "text/html",
+                "mc" => "text/html",
+                "txt" => "text/plain",
+                "" => "text/plain",
+                null => "text/plain",
                 _ => "application/octet-stream"
             };
+        }
+
+        private async Task<Stream> GetFileStreamForChordSheet(ChordSheet chordSheet)
+        {
+            if (!string.IsNullOrWhiteSpace(chordSheet.Chords))
+            {
+                // It's plain text. Send them our HTML template.
+                var filePath = Path.Combine(host.ContentRootPath, "App_Data\\plain-text-chord-download-template.html");
+                var fileContents = await System.IO.File.ReadAllTextAsync(filePath);
+                // Update the template with our real values.
+                var chordDownloadHtml = fileContents
+                    .Replace("{{title}}", $"{chordSheet.Song} {chordSheet.HebrewSongName}")
+                    .Replace("{{artist}}", chordSheet.Artist)
+                    .Replace("{{chords}}", chordSheet.Chords);
+                return new MemoryStream(Encoding.UTF8.GetBytes(chordDownloadHtml));
+            }
+            if (!string.IsNullOrEmpty(chordSheet.GoogleDocId))
+            {
+                return await this.gDocFetcher.GetChordSheetStream(chordSheet.GoogleDocId, chordSheet.GoogleDocResourceKey);
+            }
+
+            throw new ArgumentException("Chord sheet had neither plain text chords nor Google Doc ID");
         }
     }
 }

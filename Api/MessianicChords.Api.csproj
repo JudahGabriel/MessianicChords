@@ -10,12 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.55.0.2453" />
-    <PackageReference Include="RavenDB.Client" Version="5.3.102" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.57.0.2831" />
+    <PackageReference Include="RavenDB.Client" Version="5.3.103" />
     <PackageReference Include="RavenDB.DependencyInjection" Version="4.0.2" />
     <PackageReference Include="RavenDB.StructuredLogger" Version="6.0.1" />
     <PackageReference Include="RavenMigrations" Version="5.0.1" />
-    <PackageReference Include="SendGrid" Version="9.24.3" />
+    <PackageReference Include="SendGrid" Version="9.28.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="App_Data\plain-text-chord-download-template.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ravencert.Production.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

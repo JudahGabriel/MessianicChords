@@ -16,5 +16,6 @@ namespace MessianicChords.Models
         public string SendGridKey { get; set; } = string.Empty;
         public string UploadedAttachmentEmailRecipient { get; set; } = string.Empty;
         public string EmailSender { get; set; } = string.Empty;
+        public string BunnyCdnApiKey { get; set; } = string.Empty;
     }
 }

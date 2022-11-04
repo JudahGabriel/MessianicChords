@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MessianicChords.Api.Common;
+using MessianicChords.Api.Services;
 using MessianicChords.Models;
 using MessianicChords.Services;
 using Microsoft.AspNetCore.Builder;
@@ -47,8 +48,12 @@ namespace MessianicChords
             services.AddTransient<GoogleDriveChordsFetcher>();
             services.AddTransient<GoogleDriveSync>();
             services.AddTransient<GoogleDocPlainTextFetcher>();
+            services.AddTransient<PdfToPng>();
+            services.AddTransient<BunnyCdnManagerService>();
+            services.AddTransient<ChordSubmissionService>();
             services.AddHostedService<GoogleDriveRavenSyncService>();
             services.AddHostedService<ThumbnailFetcher>();
+            services.AddHostedService<ScreenshotGenerator>();
             services.AddHttpClient();
         }
 

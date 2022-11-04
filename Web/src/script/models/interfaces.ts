@@ -2,13 +2,13 @@ export interface ChordSheet {
     song: string;
     hebrewSongName: string | null;
     artist: string;
+    chords: string | null;
     key: string | null;
     address: string;
     thumbnailUrl: string | null;
     downloadUrl: string | null;
     googleDocId: string;
     googleDocResourceKey: string;
-    etag: string | null;
     id: string;
     plainTextContents: string | null;
     lastUpdated: string;
@@ -20,4 +20,12 @@ export interface ChordSheet {
     pagesCount: number;
     hasFetchedThumbnail: boolean;
     screenshots: string[];
+    links: string[];
+    authors: string[];
+    copyright: string | null;
+    isSheetMusic: boolean;
+    capo: number;
+    about: string | null;
+    year: number | null;
+    scripture: string | null;
 }

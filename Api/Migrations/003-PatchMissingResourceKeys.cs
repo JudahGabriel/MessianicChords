@@ -36,7 +36,7 @@ namespace MessianicChords.Api.Migrations
                 if (matchingChord != null && !string.IsNullOrWhiteSpace(gDoc.ResourceKey))
                 {
                     session.Advanced.Evict(matchingChord);
-                    session.Advanced.Patch<ChordSheet, string>(matchingChord.Id, c => c.GoogleDocResourceKey, gDoc.ResourceKey);
+                    session.Advanced.Patch<ChordSheet, string?>(matchingChord.Id, c => c.GoogleDocResourceKey, gDoc.ResourceKey);
                 }
             }
 

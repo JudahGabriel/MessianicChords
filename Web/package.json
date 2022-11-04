@@ -1,7 +1,6 @@
 {
-  "name": "pwa-starter",
+  "name": "blessisrael.messianicchords",
   "version": "0.0.1",
-  "description": "A starter kit for building PWAs!",
   "main": "index.js",
   "scripts": {
     "dev": "vite --open",

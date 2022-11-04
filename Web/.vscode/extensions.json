@@ -2,7 +2,6 @@
   "recommendations": [
     "eg2.vscode-npm-script",
     "christian-kohler.npm-intellisense",
-    "ms-edgedevtools.vscode-edge-devtools",
-    "PWABuilder.pwa-studio"
+    "ms-edgedevtools.vscode-edge-devtools"
   ]
 }

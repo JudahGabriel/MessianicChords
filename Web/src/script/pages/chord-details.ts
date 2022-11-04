@@ -7,6 +7,7 @@ import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from 'lit/directives/repeat.js';
 import { ChordCache } from "../services/chord-cache";
+import { ChordChartLine } from "../models/chord-chart-line";
 
 @customElement('chord-details')
 export class ChordDetails extends BootstrapBase {
@@ -95,6 +96,16 @@ export class ChordDetails extends BootstrapBase {
                 height: 22px;
             }
 
+            .btn-toolbar .transpose-btn {
+                position: relative;
+            }
+
+            .btn-toolbar .transpose-btn span {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+
             iframe {
                 width: 100%;
             }
@@ -170,14 +181,34 @@ export class ChordDetails extends BootstrapBase {
 
             /* Google Docs published to the web have no document border. We'll add one, otherwise it's kinda weird looking. */
             .web-published-doc,
-            .img-preview {
+            .img-preview,
+            .plain-text-preview
+            {
                 box-shadow: 0 0 3px 0px silver;
                 margin-top: 13px;
             }
 
+            .plain-text-preview {
+                white-space: pre;
+                text-align: left;
+                padding: 0.5in;
+                min-height: 9in;
+                font-size: 16px;
+                font-family: monospace;
+                overflow: auto;
+                background-color: white;
+            }
+
+            .plain-text-preview .chord {
+                background-color: #e9ecef;
+                font-weight: bold;
+                box-shadow: #e9ecef 0px 0px 15px 2px;
+            }
+
             @media print {
                 .web-published-doc,
-                .img-preview {
+                .img-preview,
+                .plain-text-preview {
                     box-shadow: none;
                     width: var(--iframe-width);
                 }
@@ -210,9 +241,17 @@ export class ChordDetails extends BootstrapBase {
     @state() canGoFullScreen: boolean | null = null;
     @state() isWebPublished = false;
     @state() hasScreenshots = false;
+    @state() transpose: number = 0;
+
     location: RouterLocation | null = null;
+    chordLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
+    readonly majorScaleNotes = ["A", "B", "C", "D", "E", "F", "G"];
+    readonly majorScaleFlatSteps = ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"];
+    readonly minorScaleFlatSteps = this.majorScaleFlatSteps.map(s => s + "m");
+    readonly majorScaleSharpSteps = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
+    readonly minorScaleSharpSteps = this.majorScaleSharpSteps.map(s => s + "m");
 
     constructor() {
         super();
@@ -364,17 +403,19 @@ export class ChordDetails extends BootstrapBase {
             <div class="row d-print-none">
                 <div class="col-12 col-lg-8 offset-lg-2">
                     <div class="btn-toolbar">
-                        <div class="btn-group" role="group" aria-label="First group">
-                            <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download">
+                        <div class="btn-group" role="group" aria-label="Chord chart toolbar">
+                            <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download" aria-label="Download">
                                 <img src="/assets/bs-icons/save.svg" alt="Download">
                             </a>
-                            <button type="button" class="btn btn-light" title="Print" @click="${this.print}">
+                            <button type="button" class="btn btn-light" title="Print" @click="${this.print}" aria-label="Print">
                                 <img src="/assets/bs-icons/printer.svg" alt="Print">
                             </button>
-                            ${this.renderPlayButton()}
+                            ${this.renderTransposeButtons(chord)}
+                            ${this.renderPlayButton(chord)}
                             ${this.renderFullScreenButton()}
-                            <a href="${chord.address}" target="_blank" class="btn btn-light" title="Open on Google Drive">
-                                <img src="/assets/bs-icons/box-arrow-up-right.svg" alt="Open">
+                            ${this.renderOpenInGDriveButton(chord)}
+                            <a href="/${chord.id}/edit" class="btn btn-light" title="Edit chord chart" aria-label="Edit chord chart">
+                                <img src="/assets/bs-icons/pencil-square.svg" alt="Edit" style="transform: translateY(2px)" />
                             </a>
                         </div>
                     </div>
@@ -392,14 +433,20 @@ export class ChordDetails extends BootstrapBase {
         `;
     }
 
-    renderPlayButton(): TemplateResult {
-        if (!this.chord?.chavahSongId) {
+    renderPlayButton(chord: ChordSheet): TemplateResult {
+        const chavahLink =
+            chord.links.find(url => url.startsWith("https://messianicradio.com") && url.includes("song=songs/")) ||
+                (chord.chavahSongId ? `https://messianicraido.com?song=${chord.chavahSongId}` : null);
+        const youtubeLink = chord.links.find(l => l.startsWith("https://youtube.com/watch?v="));
+        const playLink = chavahLink || youtubeLink;
+        if (!playLink) {
             return html``;
         }
 
+        const iconName = chavahLink ? "play-circle.svg" : "youtube.svg";
         return html`
-            <a href="http://messianicradio.com?song=${this.chord.chavahSongId}" target="_blank" class="btn btn-light" title="Play">
-                <img src="/assets/bs-icons/play-circle.svg" alt="Play">
+            <a href="${playLink}" target="_blank" class="btn btn-light" title="Play this song" aria-label="Play this song">
+                <img src="/assets/bs-icons/${iconName}" alt="Play icon">
             </a>
         `;
     }
@@ -410,18 +457,55 @@ export class ChordDetails extends BootstrapBase {
         }
 
         return html`
-            <button type="button" class="btn btn-light" title="View fullscreen" @click="${this.goFullscreen}">
+            <button type="button" class="btn btn-light" title="View fullscreen" @click="${this.goFullscreen}" aria-label="View fullscreen">
                 <img src="/assets/bs-icons/arrows-fullscreen.svg" alt="Fullscreen">
             </button>
         `;
     }
 
+    renderOpenInGDriveButton(chord: ChordSheet): TemplateResult {
+        // Do we have this thing on Google Drive?
+        const address = chord.publishUri || chord.address;
+        if (!address) {
+            return html``;
+        }
+
+        return html`
+            <a href="${address}" target="_blank" class="btn btn-light" title="Open on Google Drive" aria-label="Open on Google Drive">
+                <img src="/assets/bs-icons/box-arrow-up-right.svg" alt="Open">
+            </a>
+        `;
+    }
+
+    renderTransposeButtons(chord: ChordSheet): TemplateResult {
+        // We can only do this for plain text chord sheets.
+        if (!chord.chords) {
+            return html``;
+        }
+
+        const positiveTransposeClass = this.transpose > 0 ? "d-inline" : "d-none";
+        const negativeTransposeClass = this.transpose < 0 ? "d-inline" : "d-none";
+        return html`
+            <button type="button" class="btn btn-light transpose-btn" title="Transpose down a half-step" aria-label="Transpose down a half-step" @click="${() => this.bumpTranspose(-1)}">
+                <img src="/assets/bs-icons/dash.svg" alt="-" />
+                <span class="text-muted ${negativeTransposeClass}">${this.transpose}</span>
+            </button>
+            <button type="button" class="btn btn-light transpose-btn" title="Transpose up a half-step" aria-label="Transpose down a half-step" @click="${() => this.bumpTranspose(1)}">
+                <img src="/assets/bs-icons/plus.svg" alt="+" />
+                <span class="text-muted ${positiveTransposeClass}">${this.transpose}</span>
+            </button>
+        `;
+    }
+
     renderChordPreviewer(chord: ChordSheet): TemplateResult {
-        // Are we offline? Then we only support display via screenshots of the doc.
-        let previewer: TemplateResult;
+        // Best case scenario: Do we have plain text chords? Cool, use those.
+        if (chord.chords) {
+            return this.renderPlainTextPreviewer(chord);
+        }
 
         // If we're not online, see if we can render the offline previewer (i.e. the screenshots of the doc)
         // This is needed because we can't load iframes of other domains (Google Docs) while offline, even with service worker caching.
+        let previewer: TemplateResult;
         if (!navigator.onLine) {
             previewer = this.renderOfflinePreviewer(chord);
         } else {
@@ -452,6 +536,90 @@ export class ChordDetails extends BootstrapBase {
         }
 
         return previewer;
+    }
+
+    renderPlainTextPreviewer(chord: ChordSheet): TemplateResult {
+        const lines = this.linefyChords(chord);
+        // <p class="plain-text-preview">${chord.chords}</p>
+        return html`
+            <p class="plain-text-preview">${repeat(lines, l => lines.indexOf(l), l => this.renderPlainTextLine(l))}</p>
+        `;
+    }
+
+    renderPlainTextLine(line: ChordChartLine): TemplateResult {
+        if (line.type === "lyrics") {
+            return this.renderPlainTextLyricLine(line.spans[0]);
+        }
+
+        return this.renderPlainTextChordLine(line);
+    }
+
+    renderPlainTextLyricLine(line: string): TemplateResult {
+        return html`<span>${line}</span>\n`;
+    }
+
+    renderPlainTextChordLine(chordLine: ChordChartLine): TemplateResult {
+        return html`${repeat(chordLine.spans, i => chordLine.spans.indexOf(i), s => this.renderPlainTextChordSpan(s))}\n`;
+    }
+
+    renderPlainTextChordSpan(span: string): TemplateResult {
+        const chord = span.trim();
+        if (chord.length === 0) {
+            return this.renderPlainTextLyricLine(chord);
+        }
+
+        const chordStartIndex = span.indexOf(chord);
+        const chordEndIndex = chordStartIndex + chord.length;
+        const whitespaceStart = chordStartIndex > 0 ? span.slice(0, chordStartIndex) : "";
+        const whitespaceEnd = span.slice(chordEndIndex);
+        return html`<span>${whitespaceStart}</span><span class="chord">${this.transposeChord(chord, this.transpose)}</span><span>${whitespaceEnd}</span>`;
+    }
+
+    transposeChord(chord: string, halfSteps: number): string {
+        // If we're at zero, there's nothing to transpose.
+        if (halfSteps === 0) {
+            return chord;
+        }
+
+        // Punt if it doesn't look like a legit chord.
+        if (!this.majorScaleNotes.includes(chord[0])) {
+            return chord;
+        }
+
+        const isFlat = chord[1] === "b";
+        const isSharp = chord[1] === "#";
+        const isMinor = chord[1] === "m" || ((isFlat || isSharp) && chord[2] === "m");
+        const chordNoVariants = chord[0] + (isSharp ? "#" : "") + (isFlat ? "b" : "") + (isMinor ? "m" : "");
+        const chordVariants = chord.slice(chordNoVariants.length);
+
+        // Scale steps: we'll use one of these to determine the next half step.
+        const desiredScale = [
+            this.majorScaleFlatSteps,
+            this.minorScaleFlatSteps,
+            this.majorScaleSharpSteps,
+            this.minorScaleSharpSteps
+        ].find(stepCollection => stepCollection.includes(chordNoVariants));
+        if (!desiredScale) {
+            console.warn("Couldn't transpose chord. This might mean the chord is not actually a legit chord.", chord);
+            return chord;
+        }
+        const scaleIndex = desiredScale.indexOf(chordNoVariants);
+
+        let nextIndex = scaleIndex;
+        for (let i = 0; i < Math.abs(halfSteps); i++) {
+            nextIndex += (halfSteps > 0 ? 1 : -1);
+
+            // Scale wrap-around:
+            // If we were at zero and went to -1, we want to go to the end of the array (e.g. "A" -> "G")
+            // Similarly, if we were at the end of the array and went beyond it, go to the beginning (e.g. "G" -> "A")
+            if (nextIndex === -1) {
+                nextIndex = desiredScale.length - 1;
+            } else if (nextIndex === desiredScale.length) {
+                nextIndex = 0;
+            }
+        }
+
+        return desiredScale[nextIndex] + chordVariants;
     }
 
     renderGDocPreviewer(chord: ChordSheet): TemplateResult {
@@ -549,7 +717,47 @@ export class ChordDetails extends BootstrapBase {
     }
 
     goFullscreen() {
-        return this.shadowRoot?.querySelector("iframe")?.requestFullscreen();
+        const plainTextPreview = this.shadowRoot?.querySelector(".plain-text-preview");
+        const imgPreview = this.shadowRoot?.querySelector("img-preview");
+        const iframe = this.shadowRoot?.querySelector("iframe");
+        (plainTextPreview || imgPreview || iframe)?.requestFullscreen();
+    }
+
+    // Turns the plain text chords into an array of ChordChartLine
+    linefyChords(chord: ChordSheet): ChordChartLine[] {
+        if (!chord.chords) {
+            return [];
+        }
+
+        if (!this.chordLines) {
+            this.chordLines = [];
+            const lines = chord.chords.split("\n");
+            const chordRegex = new RegExp(/\s*[A-G]+[b#m(sus)(dim)(add)245679(11)(13)\s$]+/g); // Optional whitespace, Chords A through G at least once, followed by a flat (b), sharp (#), minor (m), sustained (sus), diminished (dim), add (add), 4, 5, 6, 7, 9, 11, or 13 or EOL
+            for (const line of lines) {
+                const chordMatches = line.match(chordRegex);
+                if (!chordMatches) {
+                    // It's a lyric line.
+                    this.chordLines.push({ type: "lyrics", "spans": [line] });
+                } else {
+                    this.chordLines.push({
+                        type: "chords",
+                        spans: chordMatches
+                    });
+                }
+            }
+        }
+
+        return this.chordLines;
+    }
+
+    bumpTranspose(increment: 1 | -1) {
+        this.transpose += increment;
+
+        // 12 half-steps in the musical scale (A, Bb, B, C, C#, D, D#, E, E#, F, F#, G)
+        // If we go outside the scale, wrap to the other side.
+        if (this.transpose === 12 || this.transpose === -12) {
+            this.transpose = 0;
+        }
     }
 
     cacheChordForOfflineSearch(chord: ChordSheet) {
