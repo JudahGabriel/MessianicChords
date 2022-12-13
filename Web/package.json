@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@vaadin/router": "^1.7.4",
-    "lit": "^2.2.1",
+    "lit": "^2.5.0",
     "rxjs": "^7.5.5",
     "workbox-build": "^6.5.2",
     "workbox-core": "^6.5.2",

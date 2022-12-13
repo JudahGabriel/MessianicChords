@@ -7,7 +7,8 @@ import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from 'lit/directives/repeat.js';
 import { ChordCache } from "../services/chord-cache";
-import { ChordChartLine } from "../models/chord-chart-line";
+import { ChordChartLine, ChordChartSpan, createChordChartLines } from "../models/chord-chart-line";
+import { Chord } from "../models/chord";
 
 @customElement('chord-details')
 export class ChordDetails extends BootstrapBase {
@@ -50,12 +51,14 @@ export class ChordDetails extends BootstrapBase {
                 }
             }
 
-            .artist-name {
+            .artist-author-name {
                 justify-self: end;
                 transform: rotateZ(-1deg);
+                line-height: 45px;
             }
 
-            .artist-name a {
+            .artist-author-name a,
+            span.artist-author-name {
                 font-family: var(--title-font);
                 text-decoration: none;
                 color: var(--theme-color);
@@ -67,13 +70,14 @@ export class ChordDetails extends BootstrapBase {
             }
 
             @media (max-width: ${SizeMax.Md}px) {
-                .artist-name a {
+                .artist-author-name a,
+                .artist-author-name span {
                     padding: 2px 6px;
                     font-size: 0.8em;
                 }
             }
 
-            .artist-name a:hover {
+            .artist-author-name a:hover {
                 color: brown;
             }
 
@@ -244,14 +248,9 @@ export class ChordDetails extends BootstrapBase {
     @state() transpose: number = 0;
 
     location: RouterLocation | null = null;
-    chordLines: ChordChartLine[] | null = null;
+    chordChartLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
-    readonly majorScaleNotes = ["A", "B", "C", "D", "E", "F", "G"];
-    readonly majorScaleFlatSteps = ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"];
-    readonly minorScaleFlatSteps = this.majorScaleFlatSteps.map(s => s + "m");
-    readonly majorScaleSharpSteps = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
-    readonly minorScaleSharpSteps = this.majorScaleSharpSteps.map(s => s + "m");
 
     constructor() {
         super();
@@ -390,7 +389,7 @@ export class ChordDetails extends BootstrapBase {
                     <div class="d-flex justify-content-between align-items-center mb-sm-4">
                         <h1 class="song-name">${chord.song}</h1>
                         <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span>
-                        <h5 class="artist-name">
+                        <h5 class="artist-author-name">
                             <a href="/artist/${encodeURIComponent(chord.artist)}">
                                 ${chord.artist}
                             </a>
@@ -539,7 +538,7 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderPlainTextPreviewer(chord: ChordSheet): TemplateResult {
-        const lines = this.linefyChords(chord);
+        const lines = this.getChordChartLines(chord);
         // <p class="plain-text-preview">${chord.chords}</p>
         return html`
             <p class="plain-text-preview">${repeat(lines, l => lines.indexOf(l), l => this.renderPlainTextLine(l))}</p>
@@ -548,78 +547,40 @@ export class ChordDetails extends BootstrapBase {
 
     renderPlainTextLine(line: ChordChartLine): TemplateResult {
         if (line.type === "lyrics") {
-            return this.renderPlainTextLyricLine(line.spans[0]);
+            return this.renderPlainTextLyricLine(line);
         }
 
         return this.renderPlainTextChordLine(line);
     }
 
-    renderPlainTextLyricLine(line: string): TemplateResult {
-        return html`<span>${line}</span>\n`;
+    renderPlainTextLyricLine(chordLine: ChordChartLine): TemplateResult {
+        return html`<span>${chordLine.spans[0].value}</span>\n`;
     }
 
     renderPlainTextChordLine(chordLine: ChordChartLine): TemplateResult {
-        return html`${repeat(chordLine.spans, i => chordLine.spans.indexOf(i), s => this.renderPlainTextChordSpan(s))}\n`;
+        return html`${repeat(chordLine.spans, i => chordLine.spans.indexOf(i), s => this.renderPlainTextSpan(s))}\n`;
     }
 
-    renderPlainTextChordSpan(span: string): TemplateResult {
-        const chord = span.trim();
-        if (chord.length === 0) {
-            return this.renderPlainTextLyricLine(chord);
-        }
-
-        const chordStartIndex = span.indexOf(chord);
-        const chordEndIndex = chordStartIndex + chord.length;
-        const whitespaceStart = chordStartIndex > 0 ? span.slice(0, chordStartIndex) : "";
-        const whitespaceEnd = span.slice(chordEndIndex);
-        return html`<span>${whitespaceStart}</span><span class="chord">${this.transposeChord(chord, this.transpose)}</span><span>${whitespaceEnd}</span>`;
+    renderPlainTextLyricSpan(span: ChordChartSpan) {
+        return html`<span>${span.value}</span>`;
     }
 
-    transposeChord(chord: string, halfSteps: number): string {
-        // If we're at zero, there's nothing to transpose.
-        if (halfSteps === 0) {
-            return chord;
+    renderPlainTextSpan(span: ChordChartSpan): TemplateResult {
+        if (span.type === "other") {
+            return this.renderPlainTextLyricSpan(span);
         }
 
-        // Punt if it doesn't look like a legit chord.
-        if (!this.majorScaleNotes.includes(chord[0])) {
-            return chord;
+        const chord = Chord.tryParse(span.value);
+        if (!chord) {
+            return this.renderPlainTextLyricSpan(span);
         }
 
-        const isFlat = chord[1] === "b";
-        const isSharp = chord[1] === "#";
-        const isMinor = chord[1] === "m" || ((isFlat || isSharp) && chord[2] === "m");
-        const chordNoVariants = chord[0] + (isSharp ? "#" : "") + (isFlat ? "b" : "") + (isMinor ? "m" : "");
-        const chordVariants = chord.slice(chordNoVariants.length);
-
-        // Scale steps: we'll use one of these to determine the next half step.
-        const desiredScale = [
-            this.majorScaleFlatSteps,
-            this.minorScaleFlatSteps,
-            this.majorScaleSharpSteps,
-            this.minorScaleSharpSteps
-        ].find(stepCollection => stepCollection.includes(chordNoVariants));
-        if (!desiredScale) {
-            console.warn("Couldn't transpose chord. This might mean the chord is not actually a legit chord.", chord);
-            return chord;
-        }
-        const scaleIndex = desiredScale.indexOf(chordNoVariants);
-
-        let nextIndex = scaleIndex;
-        for (let i = 0; i < Math.abs(halfSteps); i++) {
-            nextIndex += (halfSteps > 0 ? 1 : -1);
-
-            // Scale wrap-around:
-            // If we were at zero and went to -1, we want to go to the end of the array (e.g. "A" -> "G")
-            // Similarly, if we were at the end of the array and went beyond it, go to the beginning (e.g. "G" -> "A")
-            if (nextIndex === -1) {
-                nextIndex = desiredScale.length - 1;
-            } else if (nextIndex === desiredScale.length) {
-                nextIndex = 0;
-            }
-        }
-
-        return desiredScale[nextIndex] + chordVariants;
+        const chordStartIndex = span.value.indexOf(chord.fullName);
+        const chordEndIndex = chordStartIndex + chord.fullName.length;
+        const whitespaceStart = chordStartIndex > 0 ? span.value.slice(0, chordStartIndex) : "";
+        const whitespaceEnd = span.value.slice(chordEndIndex);
+        const transposedChord = chord.transpose(this.transpose);
+        return html`<span>${whitespaceStart}</span><span class="chord">${transposedChord.fullName}</span><span>${whitespaceEnd}</span>`;
     }
 
     renderGDocPreviewer(chord: ChordSheet): TemplateResult {
@@ -708,6 +669,11 @@ export class ChordDetails extends BootstrapBase {
         return this.pageClass;
     }
 
+    cacheChordForOfflineSearch(chord: ChordSheet) {
+        this.chordCache.add(chord)
+            .catch(cacheError => console.warn("Unable to add chord sheet to offline chord cache due to an error", cacheError));
+    }
+
     print() {
         window.print();
     }
@@ -723,31 +689,12 @@ export class ChordDetails extends BootstrapBase {
         (plainTextPreview || imgPreview || iframe)?.requestFullscreen();
     }
 
-    // Turns the plain text chords into an array of ChordChartLine
-    linefyChords(chord: ChordSheet): ChordChartLine[] {
-        if (!chord.chords) {
-            return [];
+    getChordChartLines(chord: ChordSheet): ChordChartLine[] {
+        if (!this.chordChartLines) {
+            this.chordChartLines = createChordChartLines(chord.chords);
         }
 
-        if (!this.chordLines) {
-            this.chordLines = [];
-            const lines = chord.chords.split("\n");
-            const chordRegex = new RegExp(/\s*[A-G]+[b#m(sus)(dim)(add)245679(11)(13)\s$]+/g); // Optional whitespace, Chords A through G at least once, followed by a flat (b), sharp (#), minor (m), sustained (sus), diminished (dim), add (add), 4, 5, 6, 7, 9, 11, or 13 or EOL
-            for (const line of lines) {
-                const chordMatches = line.match(chordRegex);
-                if (!chordMatches) {
-                    // It's a lyric line.
-                    this.chordLines.push({ type: "lyrics", "spans": [line] });
-                } else {
-                    this.chordLines.push({
-                        type: "chords",
-                        spans: chordMatches
-                    });
-                }
-            }
-        }
-
-        return this.chordLines;
+         return this.chordChartLines;
     }
 
     bumpTranspose(increment: 1 | -1) {
@@ -758,10 +705,5 @@ export class ChordDetails extends BootstrapBase {
         if (this.transpose === 12 || this.transpose === -12) {
             this.transpose = 0;
         }
-    }
-
-    cacheChordForOfflineSearch(chord: ChordSheet) {
-        this.chordCache.add(chord)
-            .catch(cacheError => console.warn("Unable to add chord sheet to offline chord cache due to an error", cacheError));
     }
 }

@@ -218,6 +218,7 @@ class CacheBackend implements ChordFetchBackend {
         return this.chordCache;
     }
 
+    // @ts-ignore
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
         throw new Error("Can't upload chords while offline.");
     }

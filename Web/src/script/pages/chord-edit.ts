@@ -187,7 +187,8 @@ export class ChordEdit extends BootstrapBase {
                         placeholder="&nbsp;&nbsp;&nbsp;Em&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D&#x0a;Sh'ma Yisrael, sh'ma Yisrael"
                         aria-describedby="chord-chart-input-help"
                         ${focusOnInvalid()}
-                        @input="${(e: InputEvent) => chord.chords = inputEventValue(e)}">${chord.chords || ""}</textarea>
+                        @input="${(e: InputEvent) => chord.chords = inputEventValue(e)}"
+                        @paste="${this.chordsPasted}">${chord.chords || ""}</textarea>
                     <div class="invalid-feedback">
                         You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.
                     </div>
@@ -399,6 +400,25 @@ export class ChordEdit extends BootstrapBase {
         const links = e.detail.items as string[];
         if (Array.isArray(links) && this.chord) {
             this.chord.links = links;
+        }
+    }
+
+    chordsPasted(e: ClipboardEvent) {
+        // When pasting chords into an empty box, do our best to reformat the spaces to our monospaced font.
+        // Basically, 2 spaces in normal font ~= 1 space in monospace font. It's not perfect, but better
+
+        // Punt if we already have chords.
+        if (!this.chord || this.chord.chords) {
+            return;
+        }
+
+        const pastedText = e.clipboardData?.getData("text");
+        if (pastedText) {
+            const chordsElement = this.shadowRoot?.querySelector("#chord-chart-input") as HTMLTextAreaElement;
+            if (chordsElement) {
+                chordsElement.value = pastedText.replace(/  /g, " ");
+                e.preventDefault();
+            }
         }
     }
 

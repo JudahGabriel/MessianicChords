@@ -1,6 +1,6 @@
 export class ApiServiceBase {
-    protected readonly apiUrl = "https://api.messianicchords.com";
-    //protected readonly apiUrl = "https://localhost:44365";
+    //protected readonly apiUrl = "https://api.messianicchords.com";
+    protected readonly apiUrl = "https://localhost:44365";
 
     protected async getJson<T>(url: string, args?: Object): Promise<T> {
         const response = await this.getResponse(url, args);

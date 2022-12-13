@@ -216,12 +216,15 @@ namespace MessianicChords.Controllers
             return submissionService.Create(request);
         }
 
-        [HttpPost]
-        public Task ApproveRejectSubmission(
-            [FromBody]ChordSubmissionApproval decision, 
+        [HttpGet]
+        public async Task<string> ApproveRejectSubmission(
+            [FromQuery] ChordSubmissionApproval decision,
+            [FromQuery] string token,
             [FromServices]ChordSubmissionService submissionService)
         {
-            return submissionService.ApproveOrReject(decision);
+            await submissionService.ApproveOrReject(decision, token);
+            var approvalOrRejection = decision.Approved ? "approved" : "rejected";
+            return $"Chord chart submission {approvalOrRejection}.";
         }
 
         private async Task<List<ChordSheet>> QuerySuggestions(System.Linq.Expressions.Expression<Func<ChordSheet, object>> field, string searchText)

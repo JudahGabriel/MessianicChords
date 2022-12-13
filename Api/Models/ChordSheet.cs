@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MessianicChords.Models
 {
@@ -136,14 +137,14 @@ namespace MessianicChords.Models
             ChavahSongId = other.ChavahSongId;
             PagesCount = other.PagesCount;
             Links = other.Links;
-            Authors = other.Authors;
-            Copyright = other.Copyright;
+            Authors = other.Authors ?? this.Authors;
+            Copyright = other.Copyright ?? this.Copyright;
             IsSheetMusic = other.IsSheetMusic;
-            Capo = other.Capo;
-            Scripture = other.Scripture;
-            Year = other.Year;
-            About = other.About;
-            Chords = other.Chords;
+            Capo = other.Capo ?? this.Capo;
+            Scripture = other.Scripture ?? this.Scripture;
+            Year = other.Year ?? this.Year;
+            About = other.About ?? this.About;
+            Chords = other.Chords ?? this.Chords;
         }
 
         public void UpdateGoogleDrivePropsFrom(ChordSheet other)

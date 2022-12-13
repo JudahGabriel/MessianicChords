@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace MessianicChords.Services
 {
@@ -48,16 +49,19 @@ namespace MessianicChords.Services
         /// Sends an email notifying that a chord sheet has been edited or created and is awaiting approval.
         /// </summary>
         /// <param name="submission"></param>
+        /// <param name="token">The approval token.</param>
         /// <returns></returns>
-        public async Task SendChordSubmissionEmail(ChordSubmission submission)
+        public async Task SendChordSubmissionEmail(ChordSubmission submission, string token)
         {
             var isNew = submission.EditedChordSheetId == null;
             var chordChartLabel = $"{submission.Artist ?? string.Join(", ", submission.Authors)} - {submission.Song}";
             var submissionDescription = isNew ?
                 $"A new chord chart for {chordChartLabel} has been submitted." :
                 $"The chord chart for {chordChartLabel} has been edited.";
-            var htmlBody = $"{submissionDescription} <a href='https://a.bitshuvadb3.ravendb.community/studio/index.html#databases/documents?collection=ChordSubmissions&database=MessianicChords'>View the submission</a>.";
-            var email = this.CreateEmail("MessianicChords: chord edit awaiting your approval", new EmailAddress(settings.UploadedAttachmentEmailRecipient), null, htmlBody);
+            var chordChart = $"<pre>{submission.Chords ?? "[empty]"}</pre>";
+            var createApproveRejectLink = new Func<bool, string>(approved => $"https://api.messianicchords.com/chords/ApproveRejectSubmission?submissionId={Uri.EscapeDataString(submission.Id ?? string.Empty)}&approved={approved}&token={token}");
+            var htmlBody = $"<p>{submissionDescription}</p><p>{chordChart}</p><a href='{createApproveRejectLink(true)}'>Approve</a> or <a href='{createApproveRejectLink(false)}'>Reject</a>.";
+            var email = this.CreateEmail("MessianicChords: chord chart edit awaiting your approval", new EmailAddress(settings.UploadedAttachmentEmailRecipient), null, htmlBody);
             await this.SendEmail(email);
         }
 

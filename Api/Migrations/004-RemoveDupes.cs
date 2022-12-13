@@ -15,7 +15,7 @@ namespace MessianicChords.Api.Migrations
             var chordSheetIdsToDelete = new List<string>();
             foreach (var chordSheet in chords)
             {
-                if (chordSheet.Id == null)
+                if (chordSheet.Id == null || chordSheet.GoogleDocId == null)
                 {
                     continue;
                 }
