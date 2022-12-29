@@ -84,8 +84,8 @@ export class ChordCard extends BootstrapBase {
                         ${this.renderHebrewName()}
                     </div>
                     <h6 class="card-subtitle mb-2 text-muted">
-                        <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist)}">
-                            ${this.chord.artist}
+                        <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist || this.chord.authors[0])}">
+                            ${this.chord.artist || this.chord.authors.join(", ")}
                         </a>
                     </h6>
                     ${this.renderKey()}

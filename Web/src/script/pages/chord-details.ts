@@ -390,8 +390,8 @@ export class ChordDetails extends BootstrapBase {
                         <h1 class="song-name">${chord.song}</h1>
                         <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span>
                         <h5 class="artist-author-name">
-                            <a href="/artist/${encodeURIComponent(chord.artist)}">
-                                ${chord.artist}
+                            <a href="/artist/${encodeURIComponent(chord.artist || chord.authors[0])}">
+                                ${chord.artist || chord.authors.join(", ")}
                             </a>
                         </h5>
                     </div>
@@ -514,7 +514,7 @@ export class ChordDetails extends BootstrapBase {
                 case "jpeg":
                 case "tiff":
                 case "png":
-                    previewer = this.renderImagePreviewer(this.downloadUrl(chord));
+                    previewer = this.hasScreenshots ? this.renderScreenshots(chord) : this.renderImagePreviewer(this.downloadUrl(chord));
                     break;
                 case "pdf":
                     // Do we have a screenshot of the doc? Use that. PDF preview is quite buggy and heavyweight.

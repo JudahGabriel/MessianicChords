@@ -78,8 +78,8 @@ namespace MessianicChords.Services
             var removedChords = new List<ChordSheet>(5);
             await foreach (var chordSheet in allChordSheets)
             {
-                var isInGDrive = !string.IsNullOrEmpty(chordSheet.GoogleDocId) ? gDocIds.Contains(chordSheet.GoogleDocId) : false;
-                if (!isInGDrive)
+                var isInGDrive = !string.IsNullOrEmpty(chordSheet.GoogleDocId) && gDocIds.Contains(chordSheet.GoogleDocId);
+                if (!isInGDrive && !string.IsNullOrEmpty(chordSheet.GoogleDocId) && string.IsNullOrEmpty(chordSheet.Chords))
                 {
                     removedChords.Add(chordSheet);
                 }

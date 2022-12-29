@@ -15,7 +15,7 @@ export class Chord {
     // 4. Optional variants: one or more of these: major (maj or M), minor (m), sustained (sus), diminished (dim), add, +. Note: individual groups here have "?:"" in the beginning, meaning non-capturing group. We don't want to capture these, as we rely on an exact number of captured groups to extract the data.
     // 5. Optional variant number: 2, 5, 9, 11, 13
     // 6. Optional bass note: "/" character followed by A-G with optional sharp or flat zero or once.
-    public static readonly chordRegex = new RegExp(/\s*([A-G])+([#b])?((?:maj)|(?:M)|(?:min)|m|(?:sus2)|(?:sus4)|(?:sus)|(?:dim)|(?:dim)|(?:add)|(?:dom)|(?:aug)|(?:\+))*((?:11)|(?:13)|9|7|5)*(\/[A-G]+[#b]?)?/g);
+    public static readonly chordRegex = new RegExp(/\s*([A-G])+([#b])?((?:maj)|(?:M)|(?:min)|m|(?:sus2)|(?:sus4)|(?:sus)|(?:dim)|(?:dim)|(?:add)|(?:dom)|(?:aug)|(?:\+))*((?:13)|(?:11)|9|7|5|2)*(\/[A-G]+[#b]?)?/g);
 
     /**
      * Creates a new chord.
