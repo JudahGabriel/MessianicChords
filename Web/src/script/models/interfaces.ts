@@ -28,4 +28,5 @@ export interface ChordSheet {
     about: string | null;
     year: number | null;
     scripture: string | null;
+    ccliNumber: number | null;
 }

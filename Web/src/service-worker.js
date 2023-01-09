@@ -6,17 +6,28 @@ import {
 } from 'workbox-recipes';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { RouteMatchCallbackOptions } from 'workbox-core';
 
-// Add custom service worker logic, such as a push notification serivce, or json request cache.
 self.addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });
 
+/**
+ * Determines whether the specified route is an Messianic Chords API call and whether it matches the list of cacheable routes.
+ * @param {RouteMatchCallbackOptions} e Route match details
+ * @param {string[]} cacheableRoutes A list of routes that should match.
+ * @returns Whether the route is a cachable API route.
+ */
+function isCachableApiRoute(e, cacheableRoutes) {
+  const host = e.url.host?.toLowerCase() || "";
+  const isApiRoute = host === "api.messianicchords.com";
+  const relativePath = e.url.pathname.toLowerCase();
+  return isApiRoute && cacheableRoutes.some(apiUrl => relativePath === apiUrl);
+}
 
 try {
   //@ts-ignore
@@ -87,34 +98,38 @@ imageCache({
 // This strategy loads from the cache first for fast UI updates. Meanwhile,
 // we do a network request in the background to refresh the cache.
 // These cache results remain valid for a short period of time before we invalidate them.
-const apiCallPrefixes = [
-  "/chords/get", // Getting a specific chord sheet
-  "/chords/getnew", // fetching new chord sheets
+const staleWhileRevalidateRoutes = [
   "/chords/getbysongname", // chords by song name
   "/chords/getallartists", // list of all artists
   "/chords/getbyartistname", // list of artists sorted by name
   "/chords/search", // searches
 ];
-/**
- *
- * @param {RouteMatchCallbackOptions} e
- * @returns Whether the route is a cachable API route.
- */
-function isCachableApiRoute(e) {
-  const host = e.url.host?.toLowerCase() || "";
-  const isApiRoute = host === "api.messianicchords.com";
-  const relativePath = e.url.pathname.toLowerCase();
-  return isApiRoute && apiCallPrefixes.some(apiUrl => relativePath === apiUrl);
-}
-
 registerRoute(
-  isCachableApiRoute,
+  e => isCachableApiRoute(e, staleWhileRevalidateRoutes),
   new StaleWhileRevalidate({
     cacheName: "api-cache",
     plugins: [
       new ExpirationPlugin({
         maxEntries: 5000,
         maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days. OK to cache these longer as we have a StaleWhileRevalidate, meaning we show results from cache instantly while refreshing cache in background.
+      })
+    ]
+  })
+)
+
+// API calls that should be network first, with fallback to cache
+const networkFirstRoutes = [
+  "/chords/getnew", // fetching new chord sheets
+  "/chords/get", // Getting a specific chord sheet
+];
+registerRoute(
+  e => isCachableApiRoute(e, networkFirstRoutes),
+  new NetworkFirst({
+    cacheName: "api-cache-network-first",
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
       })
     ]
   })

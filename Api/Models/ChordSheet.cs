@@ -117,6 +117,11 @@ namespace MessianicChords.Models
         /// </summary>
         public string? Scripture { get; set; }
 
+        /// <summary>
+        /// The Christian Copyright Licensing Internation (CCLI) number for the song.
+        /// </summary>
+        public int? CcliNumber { get; set; }
+
         public void UpdateFrom(ChordSheet other)
         {
             Address = other.Address;
@@ -145,6 +150,7 @@ namespace MessianicChords.Models
             Year = other.Year ?? this.Year;
             About = other.About ?? this.About;
             Chords = other.Chords ?? this.Chords;
+            CcliNumber = other.CcliNumber ?? this.CcliNumber;
         }
 
         public void UpdateGoogleDrivePropsFrom(ChordSheet other)

@@ -251,22 +251,15 @@ export class ChordEdit extends BootstrapBase {
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input mt-4" id="sheet-music-input" aria-describedby="sheet-music-help" @input="${(e: InputEvent) => chord.isSheetMusic = inputEventChecked(e)}">
-                            <label class="form-check-label mt-4" for="sheet-music-input">Contains sheet music</label>
-                            <div id="sheet-music-help" class="form-text">If the attachments for this song contains musical notation files. <a href="/ChordSheets/4803" target="_blank">Example</a>.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-4 col-sm-12">
                         <div class="mb-3">
                             <label for="scripture-input" class="form-label">Scripture</label>
                             <input type="text" class="form-control" id="scripture-input" placeholder="Deuteronomy 6:4" value="${chord.scripture || ""}" aria-describedby="scripture-input-help" @input="${(e: InputEvent) => chord.scripture = inputEventValue(e)}" />
                             <div id="scripture-input-help" class="form-text">Optional. The segment of Scripture relevant to this song.</div>
                         </div>
                     </div>
+                </div>
+
+                <div class="row">
                     <div class="col-lg-4 col-sm-12">
                         <div class="mb-3">
                             <label for="copyright-input" class="form-label">Copyright</label>
@@ -276,11 +269,24 @@ export class ChordEdit extends BootstrapBase {
                     </div>
                     <div class="col-lg-4 col-sm-12">
                         <div class="mb-3">
+                            <label for="copyright-input" class="form-label">CCLI</label>
+                            <input type="number" class="form-control" id="ccli-input" placeholder="7112570" value="${chord.ccliNumber || ""}" aria-describedby="ccli-input-help" @input="${(e: InputEvent) => chord.ccliNumber = inputEventNumber(e)}" />
+                            <div id="ccli-input-help" class="form-text">Optional. The Christian Copyright Licensing International (CCLI) number of the song.</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-12">
+                        <div class="mb-3">
                             <label for="year-input" class="form-label">Year</label>
                             <input type="number" class="form-control" id="year-input" placeholder="1978" value="${chord.year || ""}" aria-describedby="year-input-help" @input="${(e: InputEvent) => chord.year = inputEventNumber(e)}" />
                             <div id="year-input-help" class="form-text">Optional. The year the song was authored.</div>
                         </div>
                     </div>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input mt-4" id="sheet-music-input" aria-describedby="sheet-music-help" @input="${(e: InputEvent) => chord.isSheetMusic = inputEventChecked(e)}">
+                    <label class="form-check-label mt-4" for="sheet-music-input">Contains sheet music</label>
+                    <div id="sheet-music-help" class="form-text">If the attachments for this song contains musical notation files. <a href="/ChordSheets/4803" target="_blank">Example</a>.</div>
                 </div>
 
                 <div class="mb-3">

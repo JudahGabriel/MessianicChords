@@ -30,7 +30,8 @@ export function emptyChordSheet(): ChordSheet {
         capo: 0,
         about: null,
         year: null,
-        scripture: null
+        scripture: null,
+        ccliNumber: null
     };
 }
 
