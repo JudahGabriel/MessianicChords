@@ -77,6 +77,11 @@ namespace MessianicChords.Services
 
         private async Task<string> FetchPlainTextForChord(ChordSheet chord)
         {
+            if (string.IsNullOrEmpty(chord.GoogleDocId))
+            {
+                return string.Empty;
+            }
+
             using var stream = await chordsFetcher.GetChordSheetStream(chord.GoogleDocId, chord.GoogleDocResourceKey);
             
             // We have a .docx on Google Drive.

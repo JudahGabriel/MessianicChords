@@ -72,8 +72,11 @@ namespace MessianicChords.Services
 
         private async Task UpdateThumbnailForDoc(ChordSheet chart)
         {
-            var temporalThumb = await TryGetThumbnail(chart.GoogleDocId, chart.GoogleDocResourceKey);            
-            await TrySaveThumbnailAsAttachment(chart, temporalThumb);
+            if (chart.GoogleDocId != null)
+            {
+                var temporalThumb = await TryGetThumbnail(chart.GoogleDocId, chart.GoogleDocResourceKey);
+                await TrySaveThumbnailAsAttachment(chart, temporalThumb);
+            }
         }
 
         private async Task TrySaveThumbnailAsAttachment(ChordSheet chart, Uri? temporalThumbUri)

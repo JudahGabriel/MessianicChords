@@ -55,6 +55,8 @@ namespace MessianicChords
             services.AddHostedService<ThumbnailFetcher>();
             services.AddHostedService<ScreenshotGenerator>();
             services.AddHttpClient();
+
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,12 +67,19 @@ namespace MessianicChords
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseCors(x => x
-                .WithOrigins("http://localhost:8000", "http://localhost:3000", "https://messianicchords.com", "https://www.messianicchords.com")
+                .WithOrigins(
+                    "http://localhost:8000", 
+                    "http://localhost:3000",
+                    "https://localhost:44365",
+                    "https://messianicchords.com", 
+                    "https://www.messianicchords.com"
+                )
                 .AllowAnyMethod()
                 .AllowAnyHeader());
             app.UseAuthorization();

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 
 namespace MessianicChords.Api.Models
 {
@@ -10,5 +12,19 @@ namespace MessianicChords.Api.Models
     /// <param name="CdnUri">The full URI to the file on the CDN.</param>
     public record TempAttachment(string CdnFileName, string UntrustedUserFileName, Uri CdnUri)
     {
+        public string ToHtmlLink()
+        {
+            return $"<a href='{CdnUri}'>{GetHtmlLinkLabelFromUntrusted()}</a>";
+        }
+
+        private string GetHtmlLinkLabelFromUntrusted()
+        {
+            var baseName = string.IsNullOrWhiteSpace(UntrustedUserFileName) ? CdnFileName : UntrustedUserFileName;
+            var safeName = new string(UntrustedUserFileName
+                .Select(c => (char.IsLetterOrDigit(c) || c == '.') ? c : '_')
+                .ToArray());
+
+            return safeName;
+        }
     }
 }

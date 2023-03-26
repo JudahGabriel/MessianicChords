@@ -1,29 +1,49 @@
 ﻿using MessianicChords.Common;
 using MessianicChords.Models;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace MessianicChords.Controllers
 {
     [Route("")]
-    public class HomeController : ControllerBase
+    public class HomeController : Controller
     {
         private readonly IAsyncDocumentSession dbSession;
-        public HomeController(IAsyncDocumentSession dbSession)
+        private readonly IWebHostEnvironment webHost;
+        private static Uri[]? fingerprintedResources = null;
+
+        public HomeController(IAsyncDocumentSession dbSession, IWebHostEnvironment webHost)
         {
             this.dbSession = dbSession;
+            this.webHost = webHost;
         }
 
         [HttpGet("/")]
         public string Get()
         {
             return "Messianic Chords API is running";
+        }
+
+        [HttpGet("foo")]
+        public IActionResult Foo()
+        {
+            if (fingerprintedResources == null)
+            {
+                fingerprintedResources = LoadFingerprintedJsAndCss();
+            }
+
+            var model = new HomeViewModel(fingerprintedResources[0], fingerprintedResources[1]);
+            return View("Index", model);
         }
 
         [HttpGet("sitemap")]
@@ -105,6 +125,30 @@ namespace MessianicChords.Controllers
             urlElement.AppendChild(priorityElement);
             
             return urlElement;
+        }
+
+        private Uri[] LoadFingerprintedJsAndCss()
+        {
+            var indexHtml = System.IO.File.ReadAllText(Path.Combine(this.webHost.WebRootPath, "index.html"));
+            
+            var jsRegex = new Regex("(/code/index.\\w+.js)");
+            var jsMatch = jsRegex.Match(indexHtml);
+            var jsUrl = jsMatch != null && jsMatch.Captures.Count > 0 ? jsMatch.Captures[0].Value : null;
+
+            var cssRegex = new Regex("(/code/index.\\w+.css)");
+            var cssMatch = cssRegex.Match(indexHtml);
+            var cssUrl = cssMatch != null && cssMatch.Captures.Count > 0 ? cssMatch.Captures[0].Value : null;
+
+            if (jsUrl == null)
+            {
+                throw new InvalidOperationException("Couldn't find fingerprinted JS in index.html");
+            }
+            if (cssUrl == null)
+            {
+                throw new InvalidOperationException("Couldn't find fingerprinted CSS in index.html");
+            }
+
+            return new[] { new Uri(jsUrl, UriKind.Relative), new Uri(cssUrl, UriKind.Relative) };
         }
     }
 }

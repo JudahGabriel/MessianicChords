@@ -74,6 +74,11 @@ namespace MessianicChords.Api.Services
 
         private async Task TryCreateScreenshots(ChordSheet chordSheet)
         {
+            if (string.IsNullOrEmpty(chordSheet.GoogleDocId))
+            {
+                return;
+            }
+
             // We only support PDFs currently.
             if (chordSheet.Extension != "pdf")
             {

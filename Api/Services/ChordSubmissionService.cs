@@ -97,10 +97,12 @@ namespace MessianicChords.Api.Services
             await dbSession.StoreAsync(approvalToken);
             dbSession.SetRavenExpiration(approvalToken, DateTime.Now.AddDays(30));
 
+            var existingChordSheet = string.IsNullOrWhiteSpace(request.Id) ? null : await dbSession.LoadRequiredAsync<ChordSheet>(request.Id!);
+
             await dbSession.SaveChangesAsync();
 
             // Send off an email to admins.
-            await emailService.SendChordSubmissionEmail(submission, approvalToken.Token);
+            await emailService.SendChordSubmissionEmail(submission, existingChordSheet, approvalToken.Token);
 
             return submission;
         }
