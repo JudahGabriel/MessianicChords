@@ -28,21 +28,48 @@ namespace MessianicChords.Controllers
             this.webHost = webHost;
         }
 
+        /// <summary>
+        /// Server side rendering for home page.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/")]
-        public string Get()
-        {
-            return "Messianic Chords API is running";
-        }
-
-        [HttpGet("foo")]
-        public IActionResult Foo()
+        public async Task<IActionResult> Index()
         {
             if (fingerprintedResources == null)
             {
-                fingerprintedResources = LoadFingerprintedJsAndCss();
+                fingerprintedResources = await LoadFingerprintedJsAndCssAsync();
             }
 
             var model = new HomeViewModel(fingerprintedResources[0], fingerprintedResources[1]);
+            return View("Index", model);
+        }
+
+        /// <summary>
+        /// Server side rendering for chord details.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("chordsheets/{id}")]
+        public async Task<IActionResult> ChordDetails(string id)
+        {
+            if (fingerprintedResources == null)
+            {
+                fingerprintedResources = await LoadFingerprintedJsAndCssAsync();
+            }
+
+            var model = new HomeViewModel(fingerprintedResources[0], fingerprintedResources[1]);
+            var chordSheet = await dbSession.LoadOptionalAsync<ChordSheet>("chordsheets/" + id);
+            if (chordSheet != null)
+            {
+                model.Description = $"Chord chart for {chordSheet.GetSongName()} by {chordSheet.Artist}. {new[] { chordSheet.Chords, chordSheet.PlainTextContents }.FirstOrDefault(i => !string.IsNullOrEmpty(i)) ?? string.Empty}";
+                model.Keywords = string.Join(", ", new[] { chordSheet.GetSongName(), chordSheet.Artist }.Concat(chordSheet.Authors)) + ", " + model.Keywords;
+                if (!string.IsNullOrEmpty(chordSheet.ThumbnailUrl))
+                {
+                    model.SocialCardImage = new Uri(chordSheet.ThumbnailUrl);
+                }
+                model.Title = $"Chord chart for {chordSheet.GetSongName()} by {chordSheet.Artist} - Messianic Chords";
+            }
+
             return View("Index", model);
         }
 
@@ -127,9 +154,9 @@ namespace MessianicChords.Controllers
             return urlElement;
         }
 
-        private Uri[] LoadFingerprintedJsAndCss()
+        private async Task<Uri[]> LoadFingerprintedJsAndCssAsync()
         {
-            var indexHtml = System.IO.File.ReadAllText(Path.Combine(this.webHost.WebRootPath, "index.html"));
+            var indexHtml = await System.IO.File.ReadAllTextAsync(Path.Combine(this.webHost.WebRootPath, "index.html"));
             
             var jsRegex = new Regex("(/code/index.\\w+.js)");
             var jsMatch = jsRegex.Match(indexHtml);

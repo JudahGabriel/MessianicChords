@@ -169,6 +169,24 @@ namespace MessianicChords.Models
             IsSheetMusic = other.IsSheetMusic;
         }
 
+        /// <summary>
+        /// Gets the song name, including optional Hebrew song name.
+        /// </summary>
+        /// <returns></returns>
+        public string GetSongName()
+        {
+            // Do we have a Hebrew song name as well? Then use "EnglishSongName HebrewSongName" as the format.
+            return this.HebrewSongName switch
+            {
+                var val when string.IsNullOrWhiteSpace(val) => this.Song,
+                _ => $"{this.Song} {this.HebrewSongName}"
+            };
+        }
+
+        /// <summary>
+        /// Returns a string in the format of "Artist - Song Name {optional Hebrew Song name} - {optional key}"
+        /// </summary>
+        /// <returns></returns>
         public string GetDisplayName()
         {
             // Do we have a Hebrew song name as well? Then use "EnglishSongName HebrewSongName" as the format.
