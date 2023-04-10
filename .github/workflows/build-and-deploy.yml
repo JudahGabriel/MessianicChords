@@ -44,9 +44,6 @@ jobs:
           contents: |
             ${{ secrets.PUBLISH_PROFILE }}
           write-mode: overwrite
-        
-      - name: judah test
-        
 
       - name: dotnet publish
         run: dotnet publish -c Release -o Publish /p:PublishProfileFullPath=${{ env.home}}/MessianicChordsOnVm.pubxml /p:password=${{ secrets.DEPLOY_PASSWORD }}
