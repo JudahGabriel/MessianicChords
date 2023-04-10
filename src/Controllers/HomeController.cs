@@ -98,7 +98,10 @@ namespace MessianicChords.Controllers
             await foreach (var doc in dbSession.Advanced.Stream<ChordSheet>())
             {
                 chords.Add(doc);
-                artists.Add(doc.Artist);
+                if (!string.IsNullOrEmpty(doc.Artist))
+                {
+                    artists.Add(doc.Artist);
+                }
             }
             var lastUpdatedChordDate = chords
                 .OrderByDescending(c => c.LastUpdated)
