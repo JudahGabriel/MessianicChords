@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://api.messianicchords.com/sitemap
+Sitemap: https://messianicchords.com/sitemap

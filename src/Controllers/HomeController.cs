@@ -84,11 +84,6 @@ namespace MessianicChords.Controllers
             if (chordSheet != null)
             {
                 model.UpdateFromChordSheet(chordSheet);
-                logger.LogError("Zanz tried and succeeded to load chord sheet {id}. desc is {desc}", id, model.Description);
-            }
-            else
-            {
-                logger.LogError("Zanz tried and failed to load chord sheet {id}", id);
             }
 
             return View("Index", model);
@@ -151,6 +146,12 @@ namespace MessianicChords.Controllers
             Response.RegisterForDispose(docStream);
 
             return File(docStream, "text/xml");
+        }
+
+        [HttpGet(".well-known/apple-app-site-association")]
+        public IActionResult AppleSiteAssociation()
+        {
+            return File("/apple-app-site-association.json", "application/json");
         }
 
         private XmlNode CreateUrlNode(XmlDocument doc, string location, DateTime lastModified, string changeFrequency, double priority)
