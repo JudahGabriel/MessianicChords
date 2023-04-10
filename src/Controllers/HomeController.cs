@@ -126,12 +126,15 @@ namespace MessianicChords.Controllers
             // Append artist pages.
             foreach (var artist in artists)
             {
-                var artistLastModified = chords
-                    .Where(c => string.Equals(c.Artist, artist, StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(c => c.LastUpdated)
-                    .Select(c => c.LastUpdated)
-                    .FirstOrDefault();
-                urlSet.AppendChild(CreateUrlNode(xmlDoc, $"https://messianicchords.com/artist/{Uri.EscapeDataString(artist)}", artistLastModified, "monthly", 0.4));
+                if (!string.IsNullOrEmpty(artist))
+                {
+                    var artistLastModified = chords
+                        .Where(c => string.Equals(c.Artist, artist, StringComparison.OrdinalIgnoreCase))
+                        .OrderByDescending(c => c.LastUpdated)
+                        .Select(c => c.LastUpdated)
+                        .FirstOrDefault();
+                    urlSet.AppendChild(CreateUrlNode(xmlDoc, $"https://messianicchords.com/artist/{Uri.EscapeDataString(artist)}", artistLastModified, "monthly", 0.4));
+                }
             }
 
             // Append chord detail pages
