@@ -23,7 +23,7 @@ jobs:
         env:
           CI: true
         run: |
-          cd ClientApp
+          cd src\ClientApp
           npm install
           npm run build
           cd ..
