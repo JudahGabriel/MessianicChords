@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29318.209
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04B949DD-295C-4CAB-A631-975F750BBFDC}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessianicChords.Api", "Api\MessianicChords.Api.csproj", "{88D1B075-BDA1-460F-B0FA-794DBCBF5331}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessianicChords", "src\MessianicChords.csproj", "{88D1B075-BDA1-460F-B0FA-794DBCBF5331}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
