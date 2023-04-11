@@ -41,7 +41,7 @@ namespace MessianicChords.Models
         }
 
         /// <summary>
-        /// Updates the home view model to include title, description, etc. of a specific chord sheet.
+        /// Updates the home view model to include title, description, etc. for chords for a specific artist.
         /// </summary>
         /// <param name="chordSheet"></param>
         public void UpdateFromArtist(string artistName)
@@ -50,6 +50,32 @@ namespace MessianicChords.Models
             this.Keywords = $"{artistName} chords, {this.Keywords}";
             this.Title = $"Chord charts by {artistName} - Messianic Chords";
             this.SocialCardUrl = new Uri($"https://messianicchords.com/artist/{Uri.EscapeDataString(artistName)}");
+        }
+
+        /// <summary>
+        /// Updates the home view model to include title, description, etc. for a browse page.
+        /// </summary>
+        /// <param name="order">Must be 'newest', 'songs', 'artists', or 'random'.</param>
+        public void UpdateFromBrowse(string order)
+        {
+            if (order != "newest" && order != "songs" && order != "artists" && order != "random")
+            {
+                throw new ArgumentException("Order must be 'newest', 'songs', 'artists', or 'random'", nameof(order));
+            }
+
+            this.Description = $"Browse chord charts for songs by {order}";
+            this.Title = $"Browse chord charts by {order} - Messianic Chords";
+            this.SocialCardUrl = new Uri($"https://messianicchords.com/browse/{Uri.EscapeDataString(order)}");
+        }
+
+        /// <summary>
+        /// Updates the home view model to update title, description, etc. for the about page.
+        /// </summary>
+        public void UpdateFromAbout()
+        {
+            this.Description = $"About - Messianic Chords";
+            this.Title = $"About - Messianic Chords";
+            this.SocialCardUrl = new Uri($"https://messianicchords.com/about");
         }
     }
 }

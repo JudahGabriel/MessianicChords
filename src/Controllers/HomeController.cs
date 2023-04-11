@@ -126,6 +126,61 @@ namespace MessianicChords.Controllers
             return View("Index", model);
         }
 
+        /// <summary>
+        /// Server side rendering for browse endpoints (/browse/newest, /browse/songs, /browse/artists, /browse/random)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("browse/{order}")]
+        public async Task<IActionResult> Browse(string order)
+        {
+            // Development? Return our simple dev-index.html file.
+            if (this.webHost.IsDevelopment())
+            {
+                return File("/dev-index.html", "text/html");
+            }
+
+            if (order != "newest" && order != "songs" && order != "artists" && order != "random")
+            {
+                return Redirect("/");
+            }
+
+            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
+            if (resources == null)
+            {
+                return StatusCode(500, "Error fetching fingerprinted resources.");
+            }
+
+            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            model.UpdateFromBrowse(order);
+
+            return View("Index", model);
+        }
+
+        // <summary>
+        /// Server side rendering for /about.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("about")]
+        public async Task<IActionResult> About()
+        {
+            // Development? Return our simple dev-index.html file.
+            if (this.webHost.IsDevelopment())
+            {
+                return File("/dev-index.html", "text/html");
+            }
+
+            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
+            if (resources == null)
+            {
+                return StatusCode(500, "Error fetching fingerprinted resources.");
+            }
+
+            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            model.UpdateFromAbout();
+
+            return View("Index", model);
+        }
+
         [HttpGet("sitemap")]
         public async Task<IActionResult> Sitemap()
         {
