@@ -46,4 +46,4 @@ jobs:
           write-mode: overwrite
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o Publish /p:PublishProfileFullPath=${{ env.home }}/MessianicChordsOnVm.pubxml /p:username=${{ secrets.DEPLOY_USERNAME }} /p:password=${{ secrets.DEPLOY_PASSWORD }}
+        run: dotnet publish -c Release -o Publish /p:PublishProfileFullPath=${{ env.home }}/MessianicChordsOnVm.pubxml /p:username=${{ secrets.DEPLOY_USERNAME }} /p:password=${{ secrets.DEPLOY_PASSWORD }} /p:verbosity=diag
