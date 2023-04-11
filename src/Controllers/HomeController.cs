@@ -4,6 +4,7 @@ using MessianicChords.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
@@ -84,6 +85,42 @@ namespace MessianicChords.Controllers
             if (chordSheet != null)
             {
                 model.UpdateFromChordSheet(chordSheet);
+            }
+
+            return View("Index", model);
+        }
+
+        /// <summary>
+        /// Server side rendering for artist
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("artist/{artistName}")]
+        public async Task<IActionResult> Artist(string artistName)
+        {
+            // Development? Return our simple dev-index.html file.
+            if (this.webHost.IsDevelopment())
+            {
+                return File("/dev-index.html", "text/html");
+            }
+
+            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
+            if (resources == null)
+            {
+                return StatusCode(500, "Error fetching fingerprinted resources.");
+            }
+
+            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            var chordSheetByArtist = await dbSession.Query<ChordSheet>()
+                .Where(c => c.Artist == artistName)
+                .FirstOrDefaultAsync();
+            if (chordSheetByArtist != null)
+            {
+                model.UpdateFromArtist(chordSheetByArtist.Artist);
+            }
+            else
+            {
+                return Redirect("/");
             }
 
             return View("Index", model);

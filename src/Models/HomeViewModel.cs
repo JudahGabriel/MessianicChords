@@ -39,5 +39,17 @@ namespace MessianicChords.Models
             this.Title = $"Chord chart for {chordSheet.GetSongName()} by {chordSheet.Artist} - Messianic Chords";
             this.SocialCardUrl = new Uri($"https://messianicchords.com/{chordSheet.Id}");
         }
+
+        /// <summary>
+        /// Updates the home view model to include title, description, etc. of a specific chord sheet.
+        /// </summary>
+        /// <param name="chordSheet"></param>
+        public void UpdateFromArtist(string artistName)
+        {
+            this.Description = $"Chord charts for songs by {artistName}";
+            this.Keywords = $"{artistName} chords, {this.Keywords}";
+            this.Title = $"Chord charts by {artistName} - Messianic Chords";
+            this.SocialCardUrl = new Uri($"https://messianicchords.com/artist/{Uri.EscapeDataString(artistName)}");
+        }
     }
 }
