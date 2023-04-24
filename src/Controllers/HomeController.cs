@@ -47,7 +47,7 @@ namespace MessianicChords.Controllers
             // Development? Return our simple dev-index.html file.
             if (this.webHost.IsDevelopment())
             {
-                return File("/dev-index.html", "text/html");
+                return File("/dev-index.html", "text/html"); 
             }
 
             var resources = await this.fingerprintedResourceService.GetResourcesAsync();
