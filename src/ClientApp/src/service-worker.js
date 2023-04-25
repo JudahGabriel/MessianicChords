@@ -24,7 +24,7 @@ self.addEventListener("message", event => {
  */
 function isCachableApiRoute(e, cacheableRoutes) {
   const host = e.url.host?.toLowerCase() || "";
-  const isApiRoute = host === "api.messianicchords.com";
+  const isApiRoute = host === "messianicchords.com";
   const relativePath = e.url.pathname.toLowerCase();
   return isApiRoute && cacheableRoutes.some(apiUrl => relativePath === apiUrl);
 }

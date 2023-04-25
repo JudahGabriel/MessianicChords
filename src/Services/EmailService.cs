@@ -141,7 +141,7 @@ namespace MessianicChords.Services
 
         private static string CreateApproveRejectLink(ChordSubmission submission, bool approved, string token)
         {
-            return $"https://api.messianicchords.com/chords/ApproveRejectSubmission?submissionId={Uri.EscapeDataString(submission.Id ?? string.Empty)}&approved={approved}&token={token}";
+            return $"https://messianicchords.com/chords/ApproveRejectSubmission?submissionId={Uri.EscapeDataString(submission.Id ?? string.Empty)}&approved={approved}&token={token}";
         }
 
         private SendGridMessage CreateEmail(string subject, EmailAddress to, string? plainText, string html)
