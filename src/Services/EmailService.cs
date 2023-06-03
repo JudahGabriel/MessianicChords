@@ -38,11 +38,15 @@ namespace MessianicChords.Services
         /// <returns></returns>
         public async Task SendChordSubmissionEmail(ChordSubmission submission, ChordSheet? original, string token)
         {
+            logger.LogError("Zanz - sending chord submission email {submissionId}", submission.Id);
             var htmlBody = original == null ?
                 await this.GetNewChordsEmailHtml(submission, token) :
                 await this.GetUpdatedChordsEmailHtml(submission, original, token);
+            logger.LogError("Zanz created chord submission body {body}", htmlBody);
             var email = this.CreateEmail("MessianicChords: chord chart edit awaiting your approval", new EmailAddress(settings.UploadedAttachmentEmailRecipient), null, htmlBody);
+            logger.LogError("zanz created chord submission email {recipient}", settings.UploadedAttachmentEmailRecipient);
             await this.SendEmail(email);
+            logger.LogError("zanz successfully sent email");
         }
 
         private async Task<string> GetNewChordsEmailHtml(ChordSubmission submission, string token)
