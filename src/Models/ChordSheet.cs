@@ -14,7 +14,7 @@ namespace MessianicChords.Models
         /// <summary>
         /// The Hebrew name of the song. For use where songs are named in Hebrew.
         /// </summary>
-        public string? HebrewSongName { get; set; }
+        public string? HebrewSongName { get; set; } = string.Empty;
 
         /// <summary>
         /// The performing artist of this arragement of the song.

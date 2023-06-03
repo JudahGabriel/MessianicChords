@@ -8,7 +8,7 @@ using Raven.Client.Documents.Session;
 
 namespace MessianicChords.Controllers
 {
-    [Route("chordsubmissions")]
+    [Route("chordSubmissions")]
     public class ChordSubmissionsController : Controller
     {
         private readonly IAsyncDocumentSession dbSession;
@@ -23,8 +23,13 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet("review")]
-        public async Task<IActionResult> Review(string id)
+        public async Task<IActionResult> Review(string id, [FromQuery]string token)
         {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest("No token specified.");
+            }
+
             if (!id.StartsWith("ChordSubmissions/", StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("Invalid ID");
@@ -33,12 +38,13 @@ namespace MessianicChords.Controllers
             var submission = await this.dbSession.LoadRequiredAsync<ChordSubmission>(id);
             if (string.IsNullOrEmpty(submission.EditedChordSheetId))
             {
-                return View("ReviewNew", submission);
+                var reviewNewChordModel = new ReviewNewChordSubmission(submission, token);
+                return View("ReviewNew", reviewNewChordModel);
             }
 
             var original = await this.dbSession.LoadRequiredAsync<ChordSheet>(submission.EditedChordSheetId);
-            var model = new EditedChordSubmission(submission, original);
-            return View("ReviewEdited", model);
+            var reviewEditedChordModel = new ReviewEditedChordSubmission(submission, original, token);
+            return View("ReviewEdited", reviewEditedChordModel);
         }
     }
 }

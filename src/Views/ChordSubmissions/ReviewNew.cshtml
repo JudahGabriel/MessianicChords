@@ -1,45 +1,48 @@
-﻿@page
-@using MessianicChords.Api.Models;
-@model ChordSubmission
+﻿@using MessianicChords.Api.Models;
+@{
+    Layout = null;
+}
+@model ReviewNewChordSubmission
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
     <title>Review new chord chart submission - Messianic Chords</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 <body>
     <h1>New Chords available</h1>
     <p>Someone uploaded new chords sheets to Messianic Chords.</p>
-    <h2>Title: @Model.Song @Model.HebrewSongName</h2>
-    <h3>Artist: @Model.Artist</h3>
-    <h3>Authors: @string.Join(", ", Model.Authors)</h3>
+    <h2>Title: @Model.NewChordChart.Song @Model.NewChordChart.HebrewSongName</h2>
+    <h3>Artist: @Model.NewChordChart.Artist</h3>
+    <h3>Authors: @string.Join(", ", Model.NewChordChart.Authors)</h3>
     <p>
         Chords:
         <br />
-        <pre style="font-family: monospace">@Model.Chords</pre>
+        <pre style="font-family: monospace">@Model.NewChordChart.Chords</pre>
     </p>
-    <p>Attachments: @Html.Raw(Model.SavedAttachments.Select(a => a.ToHtmlLink()))</p>
+    <p>Attachments: @Html.Raw(Model.NewChordChart.SavedAttachments.Select(a => a.ToHtmlLink()))</p>
     <p>
         Links: 
-        @foreach (var link in Model.Links)
+        @foreach (var link in Model.NewChordChart.Links)
         {
             <br />
             <a href="@link">@link</a>
         }
     </p>
-    <p>Key: @Model.Key</p>
-    <p>Capo: @Model.Capo</p>
-    <p>Scripture: @Model.Scripture</p>
-    <p>Copyright: @Model.Copyright</p>
-    <p>CCLI: @Model.CcliNumber</p>
-    <p>Year: @Model.Year</p>
-    <p>Sheet music: @Model.IsSheetMusic</p>
-    <p>About: @Model.About</p>
+    <p>Key: @Model.NewChordChart.Key</p>
+    <p>Capo: @Model.NewChordChart.Capo</p>
+    <p>Scripture: @Model.NewChordChart.Scripture</p>
+    <p>Copyright: @Model.NewChordChart.Copyright</p>
+    <p>CCLI: @Model.NewChordChart.CcliNumber</p>
+    <p>Year: @Model.NewChordChart.Year</p>
+    <p>Sheet music: @Model.NewChordChart.IsSheetMusic</p>
+    <p>About: @Model.NewChordChart.About</p>
     <br />
     <br />
     <h2>
-        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.Id ?? string.Empty)&approved=true&token=@Request.Query["token"].ToString()'>Approve</a> 
+        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.NewChordChart.Id ?? string.Empty)&approved=true&token=@Model.Token'>Approve</a>
         or 
-        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.Id ?? string.Empty)&approved=false&token=@Request.Query["token"].ToString()'>Reject</a>
+        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.NewChordChart.Id ?? string.Empty)&approved=false&token=@Model.Token'>Reject</a>
     </h2>
 </body>
 </html>

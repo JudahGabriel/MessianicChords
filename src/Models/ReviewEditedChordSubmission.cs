@@ -2,15 +2,17 @@
 
 namespace MessianicChords.Models
 {
-    public class EditedChordSubmission
+    public class ReviewEditedChordSubmission
     {
-        public EditedChordSubmission(ChordSubmission updated, ChordSheet original)
+        public ReviewEditedChordSubmission(ChordSubmission updated, ChordSheet original, string token)
         {
             this.Original = original;
             this.Updated = updated;
+            this.Token = token;
         }
 
         public ChordSubmission Updated { get; set; }
         public ChordSheet Original { get; set; }
+        public string Token { get; set; }
     }
 }
