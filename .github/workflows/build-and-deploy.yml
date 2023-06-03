@@ -33,6 +33,14 @@ jobs:
         with:
           dotnet-version: '6.0.x'
           include-prerelease: true
+                    
+      - name: Write appsettings.Production.json
+        uses: DamianReeves/write-file-action@v1.2
+        with:
+          path: ${{ github.workspace }}/src/appsettings.Production.json
+          contents: |
+            ${{ secrets.APPSETTINGSPRODUCTION }}
+          write-mode: overwrite
           
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -44,6 +52,6 @@ jobs:
           contents: |
             ${{ secrets.PUBLISH_PROFILE }}
           write-mode: overwrite
-
+          
       - name: dotnet publish
         run: dotnet publish -c Release -o Publish /p:PublishProfileFullPath=${{ env.home }}/MessianicChordsOnVm.pubxml
