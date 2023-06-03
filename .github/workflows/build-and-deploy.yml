@@ -34,6 +34,23 @@ jobs:
           dotnet-version: '6.0.x'
           include-prerelease: true
           
+      - name: Test
+        uses: the-coding-turtle/ga-file-list@v0.2
+        with:
+          directory: ${{ github.workspace }}
+          
+      - name: Write appsettings.Production.json
+        uses: DamianReeves/write-file-action@v1.2
+        with:
+          path: ${{ github.workspace }}/appsettings.Production.json
+          contents: |
+            ${{ secrets.APPSETTINGSPRODUCTION }}
+          write-mode: overwrite
+          
+      - name: Test output
+        run: |
+          echo ${{ github.workspace }}
+          
       - name: Build with dotnet
         run: dotnet build --configuration Release
           
@@ -43,14 +60,6 @@ jobs:
           path: ${{ env.home }}/MessianicChordsOnVm.pubxml
           contents: |
             ${{ secrets.PUBLISH_PROFILE }}
-          write-mode: overwrite
-          
-      - name: Write appsettings.Production.json
-        uses: DamianReeves/write-file-action@v1.2
-        with:
-          path: ${{ github.workspace }}/appsettings.Production.json
-          contents: |
-            ${{ secrets.APPSETTINGSPRODUCTION }}
           write-mode: overwrite
           
       - name: dotnet publish
