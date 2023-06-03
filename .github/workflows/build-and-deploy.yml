@@ -45,8 +45,13 @@ jobs:
             ${{ secrets.PUBLISH_PROFILE }}
           write-mode: overwrite
           
-      - name: Dump workspace directory
-        run: echo ${{ github.workspace }}
-
+      - name: Write appsettings.Production.json
+        uses: DamianReeves/write-file-action@v1.2
+        with:
+          path: ${{ github.workspace }}/appsettings.Production.json
+          contents: |
+            ${{ secrets.APPSETTINGSPRODUCTION }}
+          write-mode: overwrite
+          
       - name: dotnet publish
         run: dotnet publish -c Release -o Publish /p:PublishProfileFullPath=${{ env.home }}/MessianicChordsOnVm.pubxml
