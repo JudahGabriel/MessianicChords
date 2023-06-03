@@ -42,10 +42,6 @@ jobs:
             ${{ secrets.APPSETTINGSPRODUCTION }}
           write-mode: overwrite
           
-      - name: Test output
-        run: |
-          echo ${{ github.workspace }}/src
-          
       - name: Build with dotnet
         run: dotnet build --configuration Release
           
