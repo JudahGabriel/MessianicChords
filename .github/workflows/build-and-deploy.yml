@@ -33,12 +33,7 @@ jobs:
         with:
           dotnet-version: '6.0.x'
           include-prerelease: true
-          
-      - name: Test
-        uses: the-coding-turtle/ga-file-list@v0.2
-        with:
-          directory: ${{ github.workspace }}
-          
+                    
       - name: Write appsettings.Production.json
         uses: DamianReeves/write-file-action@v1.2
         with:
