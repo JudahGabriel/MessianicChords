@@ -38,15 +38,11 @@ namespace MessianicChords.Services
         /// <returns></returns>
         public async Task SendChordSubmissionEmail(ChordSubmission submission, ChordSheet? original, string token)
         {
-            logger.LogError("Zanz - sending chord submission email {submissionId}", submission.Id);
             var htmlBody = original == null ?
                 await this.GetNewChordsEmailHtml(submission, token) :
                 await this.GetUpdatedChordsEmailHtml(submission, original, token);
-            logger.LogError("Zanz created chord submission body {body}", htmlBody);
             var email = this.CreateEmail("MessianicChords: chord chart edit awaiting your approval", new EmailAddress(settings.UploadedAttachmentEmailRecipient), null, htmlBody);
-            logger.LogError("zanz created chord submission email {recipient}", settings.UploadedAttachmentEmailRecipient);
             await this.SendEmail(email);
-            logger.LogError("zanz successfully sent email");
         }
 
         private async Task<string> GetNewChordsEmailHtml(ChordSubmission submission, string token)
@@ -161,10 +157,26 @@ namespace MessianicChords.Services
             return email;
         }
 
-        private Task SendEmail(SendGridMessage email)
+        private async Task SendEmail(SendGridMessage email)
         {
             var client = new SendGrid.SendGridClient(settings.SendGridKey);
-            return client.SendEmailAsync(email);
+            try
+            {
+                var result = await client.SendEmailAsync(email);
+                if (result.IsSuccessStatusCode)
+                {
+                    logger.LogInformation("Email sent successfully, status code {statusCode}", result.StatusCode);
+                }
+                else
+                {
+                    logger.LogError("Email failed to send. Status code {code} was non-successful.", result.StatusCode);
+                }
+            }
+            catch (Exception error)
+            {
+                logger.LogError(error, "Email sending failed due to exception.", error);
+                throw;
+            }
         }
     }
 }

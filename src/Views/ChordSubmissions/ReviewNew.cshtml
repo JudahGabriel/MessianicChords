@@ -1,0 +1,45 @@
+﻿@page
+@using MessianicChords.Api.Models;
+@model ChordSubmission
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>Review new chord chart submission - Messianic Chords</title>
+</head>
+<body>
+    <h1>New Chords available</h1>
+    <p>Someone uploaded new chords sheets to Messianic Chords.</p>
+    <h2>Title: @Model.Song @Model.HebrewSongName</h2>
+    <h3>Artist: @Model.Artist</h3>
+    <h3>Authors: @string.Join(", ", Model.Authors)</h3>
+    <p>
+        Chords:
+        <br />
+        <pre style="font-family: monospace">@Model.Chords</pre>
+    </p>
+    <p>Attachments: @Html.Raw(Model.SavedAttachments.Select(a => a.ToHtmlLink()))</p>
+    <p>
+        Links: 
+        @foreach (var link in Model.Links)
+        {
+            <br />
+            <a href="@link">@link</a>
+        }
+    </p>
+    <p>Key: @Model.Key</p>
+    <p>Capo: @Model.Capo</p>
+    <p>Scripture: @Model.Scripture</p>
+    <p>Copyright: @Model.Copyright</p>
+    <p>CCLI: @Model.CcliNumber</p>
+    <p>Year: @Model.Year</p>
+    <p>Sheet music: @Model.IsSheetMusic</p>
+    <p>About: @Model.About</p>
+    <br />
+    <br />
+    <h2>
+        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.Id ?? string.Empty)&approved=true&token=@Request.Query["token"].ToString()'>Approve</a> 
+        or 
+        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.Id ?? string.Empty)&approved=false&token=@Request.Query["token"].ToString()'>Reject</a>
+    </h2>
+</body>
+</html>

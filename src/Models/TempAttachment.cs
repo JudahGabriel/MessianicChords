@@ -17,7 +17,7 @@ namespace MessianicChords.Api.Models
             return $"<a href='{CdnUri}'>{GetHtmlLinkLabelFromUntrusted()}</a>";
         }
 
-        private string GetHtmlLinkLabelFromUntrusted()
+        public string GetHtmlLinkLabelFromUntrusted()
         {
             var baseName = string.IsNullOrWhiteSpace(UntrustedUserFileName) ? CdnFileName : UntrustedUserFileName;
             var safeName = new string(UntrustedUserFileName

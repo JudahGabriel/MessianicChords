@@ -1,0 +1,177 @@
+﻿@page
+@using MessianicChords.Api.Models;
+@model EditedChordSubmission
+@functions {
+    string GetUnchangedClass(string? updated, string? original)
+    {
+        if (original == updated)
+        {
+            return "unchanged";
+        }
+
+        return "";
+    }
+
+    string GetUnchangedClass(int? updated, int? original)
+    {
+        if (original == updated)
+        {
+            return "unchanged";
+        }
+
+        return "";
+    }
+
+    string GetUnchangedClass<T>(IEnumerable<T> updated, IEnumerable<T> original)
+    {
+        if (updated.SequenceEqual(original))
+        {
+            return "unchanged";
+        }
+
+        return "";
+    }
+}
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>Review edited chord chart - Messianic Chords</title>
+    <style>
+        .unchanged {
+            opacity: 0.5
+        }
+    </style>
+</head>
+<body>
+    <h1>A chord chart has been edited on Messianic Chords and requires your approval.</h1>
+    <p>Someone edited the chord charts for <a href="https://messianicchords.com/@Model.Original.Id">@Model.Original.Artist - @Model.Original.GetSongName()</a>.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>New</th>
+                <th>Old</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="@GetUnchangedClass(Model.Updated.Song, Model.Original.Song)">
+                <td>Title</td>
+                <td>@Model.Updated.Song</td>
+                <td>@Model.Original.Song</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.HebrewSongName, Model.Original.HebrewSongName)">
+                <td>Hebrew Title</td>
+                <td>@Model.Updated.HebrewSongName</td>
+                <td>@Model.Original.HebrewSongName</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Artist, Model.Original.Artist)">
+                <td>Artist</td>
+                <td>@Model.Updated.Artist</td>
+                <td>@Model.Original.Artist</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Authors, Model.Original.Authors)">
+                <td>Authors</td>
+                <td>
+                    @foreach(var author in Model.Updated.Authors)
+                    {
+                        <p>@author</p>
+                    }
+                </td>
+                <td>
+                    @foreach (var author in Model.Original.Authors)
+                    {
+                        <p>@author</p>
+                    }
+                </td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Chords, Model.Original.Chords)">
+                <td>Chords</td>
+                <td>
+                    <pre style="font-family: monospace">@Model.Updated.Chords</pre>
+                </td>
+                <td>
+                    <pre style="font-family: monospace">@Model.Original.Chords</pre>
+                </td>
+            </tr>
+            <tr class="@(Model.Updated.SavedAttachments.Count > 0 ? "" : "unchanged")">
+                <td>Attachments</td>
+                <td>
+                    @foreach (var attachment in Model.Updated.SavedAttachments)
+                    {
+                        <p>
+                            <a href="@attachment.CdnUri" target="_blank">@attachment.GetHtmlLinkLabelFromUntrusted()</a>
+                        </p>
+                    }
+                </td>
+                <td></td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Links, Model.Original.Links)">
+                <td>Links</td>
+                <td>
+                    @foreach (var link in Model.Updated.Links)
+                    {
+                        <p>
+                            <a href="@link" target="_blank">@link</a>
+                        </p>
+                    }
+                </td>
+                <td>
+                    @foreach (var link in Model.Original.Links)
+                    {
+                        <p>
+                            <a href="@link" target="_blank">@link</a>
+                        </p>
+                    }
+                </td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Key, Model.Original.Key)">
+                <td>Key</td>
+                <td>@Model.Updated.Key</td>
+                <td>@Model.Original.Key</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Capo, Model.Original.Capo)">
+                <td>Capo</td>
+                <td>@Model.Updated.Capo</td>
+                <td>@Model.Original.Capo</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Scripture, Model.Original.Scripture)">
+                <td>Scripture</td>
+                <td>@Model.Updated.Scripture</td>
+                <td>@Model.Original.Scripture</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Copyright, Model.Original.Copyright)">
+                <td>Copyright</td>
+                <td>@Model.Updated.Copyright</td>
+                <td>@Model.Original.Copyright</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.CcliNumber, Model.Original.CcliNumber)">
+                <td>CCLI</td>
+                <td>@Model.Updated.CcliNumber</td>
+                <td>@Model.Original.CcliNumber</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Year, Model.Original.Year)">
+                <td>Year</td>
+                <td>@Model.Updated.Year</td>
+                <td>@Model.Original.Year</td>
+            </tr>
+            <tr class="@(Model.Updated.IsSheetMusic != Model.Original.IsSheetMusic ? "" : "unchanged")">
+                <td>Is sheet music</td>
+                <td>@(Model.Updated.IsSheetMusic ? "✅" : "❎")</td>
+                <td>@(Model.Original.IsSheetMusic ? "✅" : "❎")</td>
+            </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.About, Model.Original.About)">
+                <td>About</td>
+                <td>@Model.Updated.About</td>
+                <td>@Model.Original.About</td>
+            </tr>
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <h2>
+        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.Updated.Id ?? string.Empty)&approved=true&token=@Request.Query["token"].ToString()'>Approve</a>
+        or
+        <a href='/chords/ApproveRejectSubmission?submissionId=@Uri.EscapeDataString(Model.Updated.Id ?? string.Empty)&approved=false&token=@Request.Query["token"].ToString()'>Reject</a>
+    </h2>
+</body>
+</html>
