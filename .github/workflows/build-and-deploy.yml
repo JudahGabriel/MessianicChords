@@ -37,14 +37,14 @@ jobs:
       - name: Write appsettings.Production.json
         uses: DamianReeves/write-file-action@v1.2
         with:
-          path: ${{ github.workspace }}/appsettings.Production.json
+          path: ${{ GITHUB_WORKSPACE }}/src/appsettings.Production.json
           contents: |
             ${{ secrets.APPSETTINGSPRODUCTION }}
           write-mode: overwrite
           
       - name: Test output
         run: |
-          echo ${{ github.workspace }}
+          echo ${{ GITHUB_WORKSPACE }}
           
       - name: Build with dotnet
         run: dotnet build --configuration Release
