@@ -91,6 +91,17 @@ namespace MessianicChords.Controllers
         }
 
         /// <summary>
+        /// Server side rendering for chord edit.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("chordsheets/{id}/edit")]
+        public Task<IActionResult> ChordEdit(string id)
+        {
+            return ChordDetails(id);
+        }
+
+        /// <summary>
         /// Server side rendering for artist
         /// </summary>
         /// <param name="id"></param>

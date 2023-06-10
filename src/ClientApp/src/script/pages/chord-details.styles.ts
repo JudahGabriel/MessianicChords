@@ -220,4 +220,10 @@ export const chordDetailStyles = css`
             display: block;
         }
     }
+
+    .sidebar {
+        margin-top: 13px;
+        margin-bottom: 16px;
+        padding-left: 0;
+    }
 `;

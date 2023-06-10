@@ -101,7 +101,7 @@ export class ChordDetails extends BootstrapBase {
         }
 
         return html`
-            <section class="chord-details-page container mx-auto">
+            <section class="container mx-auto">
                 <div class="text-center">
                     ${content}
                 </div>
@@ -160,9 +160,9 @@ export class ChordDetails extends BootstrapBase {
 
     renderChordDetails(chord: ChordSheet): TemplateResult {
         return html`
-            <!-- Song details -->
+            <!-- Song name and artist -->
             <div class="row d-print-none">
-                <div class="col-12 col-lg-8 offset-lg-2">
+                <div class="col-12 col-lg-12">
                     <div class="d-flex justify-content-between align-items-center mb-sm-4">
                         <h1 class="song-name">${chord.song}</h1>
                         <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span>
@@ -175,9 +175,9 @@ export class ChordDetails extends BootstrapBase {
                 </div>
             </div>
 
-            <!-- Song details -->
+            <!-- Song toolbar -->
             <div class="row d-print-none">
-                <div class="col-12 col-lg-8 offset-lg-2">
+                <div class="col-12 col-lg-8">
                     <div class="btn-toolbar">
                         <div class="btn-group" role="group" aria-label="Chord chart toolbar">
                             <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download" aria-label="Download">
@@ -198,9 +198,24 @@ export class ChordDetails extends BootstrapBase {
                 </div>
             </div>
 
+            <!-- Chords and sidebar -->
             <div class="row">
-                <div class="col-12 col-lg-8 offset-lg-2">
+                <div class="col-12 col-lg-8">
                     ${this.renderChordPreviewer(chord)}
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        Song
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                    </div>
                 </div>
             </div>
             <p style="display: none">

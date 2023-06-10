@@ -1,6 +1,7 @@
 
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import litcss from 'rollup-plugin-lit-css';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +15,6 @@ export default defineConfig({
       base: "/",
       scope: "/",
       registerType: "autoUpdate",
-      //injectRegister: false,
       injectRegister: "inline",
       manifest: false,
       strategies: 'injectManifest', // inject the file manifest into the service worker
@@ -27,6 +27,7 @@ export default defineConfig({
         type: 'module',
         enabled: true // enable service worker in dev mode
       }
-    })
+    }),
+    litcss()
   ]
 })
