@@ -27,7 +27,6 @@ export default defineConfig({
         type: 'module',
         enabled: true // enable service worker in dev mode
       }
-    }),
-    litcss()
+    })
   ]
 })

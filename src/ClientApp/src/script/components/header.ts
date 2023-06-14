@@ -1,103 +1,12 @@
-import { css, html, TemplateResult } from 'lit';
+import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { SizeMax } from '../common/constants';
+import { sharedStyles } from '../common/shared.styles';
+import { headerStyles } from './header.styles';
+import { bootstrapUtilities } from '../common/bootstrap-utilities.styles';
 
 @customElement('app-header')
-export class AppHeader extends BootstrapBase {
-  static get styles() {
-    const localStyles = css`
-
-      header {
-        padding: 20px;
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-        header {
-          padding-bottom: 0;
-        }
-      }
-
-      img {
-        margin: 5px 40px 5px 40px;
-        box-shadow: 0 0 10px var(--theme-color);
-        border-radius: 2px;
-        width: 100px;
-        height: 100px;
-        transform: rotateZ(-2deg);
-        transition: 0.2s linear transform;
-      }
-
-      img:hover {
-        transform: rotateZ(4deg);
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-        img {
-          margin: 5px 10px 0 0;
-          width: 50px;
-          height: 50px;
-        }
-      }
-
-      h1 {
-        font-family: var(--title-font);
-        font-size: 2.5em;
-        display: block;
-        margin-top: 7px;
-        margin-bottom: 0;
-        line-height: 65px;
-        text-shadow: 1px 1px 7px silver;
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-        h1 {
-          margin-top: 0;
-          margin-left: 20px;
-          font-size: 1.5em;
-        }
-      }
-
-      h1 a {
-        text-decoration: none;
-        color: var(--theme-color);
-      }
-
-      h2 {
-        font-family: var(--subtitle-font);
-        color: var(--theme-color);
-        margin-top: -5px;
-        font-size: 1em;
-        background: var(--highlight-background);
-        border-radius: var(--highlight-border-radius);
-        box-shadow: var(--highlight-box-shadow);
-        display: inline-block;
-        padding: 8px;
-        transform: rotateZ(-1deg);
-      }
-
-      h2 span {
-        display: inline-block;
-        transform: rotateZ(1deg);
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-        h2 {
-          margin-top: 7px;
-          font-size: 0.9em;
-        }
-      }
-
-      .alert {
-        font-family: var(--subtitle-font);
-      }
-    `;
-
-    return [
-      BootstrapBase.styles,
-      localStyles
-    ];
-  }
+export class AppHeader extends LitElement {
+  static styles = [sharedStyles, bootstrapUtilities, headerStyles];
 
   @state() locationPath: string = "/";
   @state() isOnline: boolean = navigator.onLine;

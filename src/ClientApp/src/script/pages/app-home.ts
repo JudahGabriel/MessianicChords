@@ -1,146 +1,22 @@
-import { css, html, TemplateResult } from 'lit';
+import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import '../components/chord-card';
 import { ChordSheet } from '../models/interfaces';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { SizeMax } from '../common/constants';
 import { ChordService } from '../services/chord-service';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { appHomeStyles } from './app-home.styles';
+import { sharedStyles } from '../common/shared.styles';
+import { bootstrapGridStyles } from '../common/bootstrap-grid.styles';
+import { bootstrapUtilities } from '../common/bootstrap-utilities.styles';
+import '@shoelace-style/shoelace/dist/components/input/input.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
+
 @customElement('app-home')
-export class AppHome extends BootstrapBase {
+export class AppHome extends LitElement {
 
-  static get styles() {
-    const localStyles = css`
-
-      :host {
-        font-family: var(--subtitle-font);
-      }
-
-      @media (max-width: ${SizeMax.Md}px) {
-        .home-page {
-          margin-top: -30px;
-        }
-      }
-
-      .search-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: var(--subtitle-font);
-      }
-
-      /* On phones and tablets, make the search container margin cancel out the parent's padding */
-      @media (max-width: ${SizeMax.Sm}px) {
-          .search-container {
-              margin-left: -20px;
-              margin-right: -20px;
-          }
-      }
-
-      .search-container .search-box-brace {
-          font-size: 100px;
-          padding: 10px;
-          color: brown;
-          text-shadow: 1px 1px 1px gray;
-          vertical-align: text-bottom;
-      }
-
-      #search-box {
-          line-height: 50px;
-          width: 500px;
-          border: 1px solid rgba(0, 0, 0, 0.0976563);
-          height: 100px;
-          padding-left: 10px;
-          color: #0b0974;
-          font-size: 32px;
-          margin-top: 20px;
-      }
-
-      #search-box::placeholder {
-          color: rgb(192, 192, 192) !important;
-          font-style: italic;
-          font-family: serif;
-          font-size: 24px !important;
-      }
-
-
-      @media (max-width: ${SizeMax.Xs}px) {
-          #search-box {
-              width: 90%;
-          }
-      }
-
-      nav a {
-        color: var(--theme-color);
-        text-decoration: none;
-      }
-
-      nav span {
-        font-family: var(--subtitle-font);
-      }
-
-      .new-chords {
-        justify-content: center;
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .new-chords-placeholder-container {
-        width: 400px;
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-        .new-chords-placeholder-container {
-          width: 100%;
-        }
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-          .new-chords {
-              flex-direction: column;
-              align-items: center;
-              margin-bottom: 10px;
-          }
-      }
-
-      .new-chords a {
-          padding-left: 5px;
-          padding-right: 5px;
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-          .new-chords a {
-              text-overflow: ellipsis
-              overflow: hidden;
-              white-space: nowrap;
-              width: 100%;
-              display: inline-block;
-              max-width: 300px;
-              padding: 4px;
-          }
-      }
-
-      .loading-block {
-        text-align: center;
-        margin: 50px;
-      }
-
-      .search-results-container {
-        margin-top: 50px;
-      }
-
-      @media (max-width: ${SizeMax.Xs}px) {
-        margin-top: 20px;
-      }
-    `;
-
-    return [
-      super.styles,
-      localStyles
-    ];
-  }
+  static styles = [sharedStyles, bootstrapGridStyles, bootstrapUtilities, appHomeStyles];
 
   @state() newChords: ChordSheet[] = [];
   @state() isLoading = false;
@@ -226,10 +102,17 @@ export class AppHome extends BootstrapBase {
       <section class="home-page container">
 
         <div class="search-container">
-          <span class="search-box-brace">{</span>
-          <input id="search-box" class="form-control" type="text" placeholder="Type a song, artist, or partial lyric"
-            @input="${this.searchTextChanged}" autofocus value="${this.searchText.value}" />
-          <span class="search-box-brace">}</span>
+          <sl-input
+            id="search-box"
+            type="search"
+            placeholder="Type a song, artist, or partial lyric"
+            autofocus
+            clearable
+            pill
+            size="large"
+            value="${this.searchText.value}"
+            @input="${this.searchTextChanged}">
+          </sl-input>
         </div>
         <nav class="text-center ${navClass}">
           <span>Browse:</span>
@@ -293,16 +176,14 @@ export class AppHome extends BootstrapBase {
     const title = newChordSheet.key ?
       html`${songName} - ${newChordSheet.key}` :
       html`${songName}`;
-    const separator = index != this.newChords.length - 1 ?
-      html`<span class="bar-separator d-none d-sm-inline">&nbsp;|&nbsp;</span>` :
-      html``;
+    // const separator = index != this.newChords.length - 1 ?
+    //   html`<span class="bar-separator d-none d-sm-inline">&nbsp;|&nbsp;</span>` :
+    //   html``;
     return html`
-      <div class="d-inline-block">
-        <a class="fw-bold" href="/${newChordSheet.id}">
-          ${title}
-        </a>
-        ${separator}
+      <div class="d-flex gap-1">
+        <sl-button class="new-chord-link text-truncate" variant="text" href="${newChordSheet.id}">${title}</sl-button>
       </div>
+
     `;
   }
 

@@ -1,26 +1,12 @@
-import { css, html } from 'lit';
+import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { BootstrapBase } from '../common/bootstrap-base';
+import { footerStyles } from './footer.styles';
+import { sharedStyles } from '../common/shared.styles';
+import { bootstrapUtilities } from '../common/bootstrap-utilities.styles';
 
 @customElement('app-footer')
-export class AppFooter extends BootstrapBase {
-    static get styles() {
-        const localStyles = css`
-            :host {
-                font-family: var(--subtitle-font);
-            }
-
-            a {
-                color: var(--theme-color);
-                text-decoration: none;
-            }
-        `;
-
-        return [
-            BootstrapBase.styles,
-            localStyles
-        ];
-    }
+export class AppFooter extends LitElement {
+    static styles = [sharedStyles, bootstrapUtilities, footerStyles];
 
     render() {
         return html`
