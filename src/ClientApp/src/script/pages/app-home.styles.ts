@@ -17,6 +17,8 @@ export const appHomeStyles = css`
     justify-content: center;
     align-items: center;
     font-family: var(--subtitle-font);
+    margin-top: var(--sl-spacing-large);
+    margin-bottom: var(--sl-spacing-large);
   }
 
   /* On phones and tablets, make the search container margin cancel out the parent's padding */
@@ -31,14 +33,6 @@ export const appHomeStyles = css`
       width: 500px;
       color: #0b0974;
   }
-
-  #search-box::placeholder {
-      color: rgb(192, 192, 192) !important;
-      font-style: italic;
-      font-family: serif;
-      font-size: 24px !important;
-  }
-
 
   @media (max-width: ${SizeMax.Xs}px) {
       #search-box {
@@ -61,8 +55,12 @@ export const appHomeStyles = css`
     align-items: center;
   }
 
+  .new-chords sl-divider {
+    height: 1em;
+  }
+
   .new-chords-placeholder-container {
-    width: 400px;
+    width: 80%;
   }
 
   @media (max-width: ${SizeMax.Xs}px) {
@@ -114,5 +112,12 @@ export const appHomeStyles = css`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    padding-left: var(--sl-spacing-x-small);
+    padding-right: var(--sl-spacing-x-small);
+  }
+
+  .browse-by-container sl-divider {
+    height: 1em;
+
   }
 `;

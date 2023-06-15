@@ -16,6 +16,12 @@ export const sharedStyles = css`
         font-weight: normal;
     }
 
+    sl-button[variant="text"]::part(label) {
+        font-weight: bold;
+        font-family: var(--subtitle-font);
+        color: var(--theme-color);
+    }
+
     a {
         transition: 0.4s linear color;
     }

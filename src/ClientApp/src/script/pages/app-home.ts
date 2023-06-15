@@ -12,6 +12,8 @@ import { bootstrapGridStyles } from '../common/bootstrap-grid.styles';
 import { bootstrapUtilities } from '../common/bootstrap-utilities.styles';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
+import '@shoelace-style/shoelace/dist/components/skeleton/skeleton.js';
+import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -100,7 +102,6 @@ export class AppHome extends LitElement {
     const navClass = this.searchResults.length > 0 ? "d-none" : "";
     return html`
       <section class="home-page container">
-
         <div class="search-container">
           <sl-input
             id="search-box"
@@ -114,22 +115,31 @@ export class AppHome extends LitElement {
             @input="${this.searchTextChanged}">
           </sl-input>
         </div>
-        <nav class="text-center ${navClass}">
-          <span>Browse:</span>
-          <br class="d-block d-sm-none" />
-          <a class="fw-bold" href="/browse/newest">Newest</a>
-          <span class="bar-separator">&nbsp;|&nbsp;</span>
-          <a class="fw-bold" href="/browse/songs">By song</a>
-          <span class="bar-separator">&nbsp;|&nbsp;</span>
-          <a class="fw-bold" href="/browse/artists">By artist</a>
-          <span class="bar-separator">&nbsp;|&nbsp;</span>
-          <a class="fw-bold" href="/browse/random">Random</a>
 
-          <div class="new-chords text-center mt-2 d-flex">
-            <span>New chords:</span>
-            ${this.renderNewChords()}
-            <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length===0}>Load
-              more...</button>
+        <nav class="text-center ${navClass}">
+          <div class="row">
+            <div class="col-6 offset-md-3">
+              <div class="browse-by-container d-flex gap-1 justify-content-center align-items-center">
+                <span>Browse:</span>
+                <a class="fw-bold" href="/browse/newest">Newest</a>
+                <sl-divider vertical></sl-divider>
+                <a class="fw-bold" href="/browse/songs">By song</a>
+                <sl-divider vertical></sl-divider>
+                <a class="fw-bold" href="/browse/artists">By artist</a>
+                <sl-divider vertical></sl-divider>
+                <a class="fw-bold" href="/browse/random">Random</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col new-chords text-center mt-2 d-flex">
+              <span>New chords:</span>
+              ${this.renderNewChords()}
+              <button class="btn btn-light ms-2" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length===0}>
+                Load more...
+              </button>
+            </div>
           </div>
 
           <div class="d-flex justify-content-center">
@@ -161,10 +171,9 @@ export class AppHome extends LitElement {
   renderNewChordsPlaceholder(): TemplateResult {
     return html`
       <div class="new-chords-placeholder-container placeholder-glow row ms-sm-2 my-1 my-sm-auto">
-        <span class="placeholder col-4 mx-2 d-none d-sm-block"></span>
-        <span class="placeholder col-3 mx-2 d-none d-sm-block"></span>
-        <span class="placeholder col-4 mr-1 d-none d-sm-block"></span>
-        <span class="placeholder col-12 d-block d-sm-none"></span>
+        <sl-skeleton effect="pulse" class="col-3"></sl-skeleton>
+        <sl-skeleton effect="pulse" class="col-5"></sl-skeleton>
+        <sl-skeleton effect="pulse" class="col-4"></sl-skeleton>
       </div>
     `;
   }
@@ -180,10 +189,8 @@ export class AppHome extends LitElement {
     //   html`<span class="bar-separator d-none d-sm-inline">&nbsp;|&nbsp;</span>` :
     //   html``;
     return html`
-      <div class="d-flex gap-1">
         <sl-button class="new-chord-link text-truncate" variant="text" href="${newChordSheet.id}">${title}</sl-button>
-      </div>
-
+        <sl-divider vertical></sl-divider>
     `;
   }
 
