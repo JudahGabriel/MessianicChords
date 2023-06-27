@@ -6,6 +6,7 @@
       "declaration": true,
       "emitDeclarationOnly": true,
       "strict": true,
+      "outDir": "./types",
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noImplicitReturns": true,

@@ -1,8 +1,7 @@
 import { RouterLocation } from "@vaadin/router";
-import { css, html, TemplateResult } from "lit";
+import { html, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { BootstrapBase } from "../common/bootstrap-base";
-import { SizeMax } from "../common/constants";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from 'lit/directives/repeat.js';
@@ -111,11 +110,11 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderPrintableScreenshots(): TemplateResult {
-        // If we have screenshots, render them but hidden.
+        // If the chord chart is not in the new plain text format and we have screenshots, render them but hidden.
         // This accomplishes 2 purposes:
         //  1. Fetches the screenshots, making them available offline and enabling offline rendering of this page.
         //  2. Makes printing easier. Printing iframes is fraught with issues. Printing images isn't.
-        if (!this.chord || !this.hasScreenshots) {
+        if (!this.chord || !this.hasScreenshots || !!this.chord.chords) {
             return html``;
         }
 
@@ -159,9 +158,13 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderChordDetails(chord: ChordSheet): TemplateResult {
+        // For printing, we have special handling for the header (title and author).
+        // - If the chord chart is in the new format, include the header in the print.
+        // - If the chord chart isn't in the new format, don't include the header in the print.
+        const headerClass = !!chord.chords ? "" : "d-print-none";
         return html`
-            <!-- Song name and artist -->
-            <div class="row d-print-none">
+            <!-- Song details -->
+            <div class="row ${headerClass}">
                 <div class="col-12 col-lg-12">
                     <div class="d-flex justify-content-between align-items-center mb-sm-4">
                         <h1 class="song-name">${chord.song}</h1>
