@@ -1,4 +1,5 @@
 export class ApiServiceBase {
+    // @ts-ignore
     protected readonly apiUrl = import.meta.env.VITE_API_URL;
 
     protected async getJson<T>(url: string, args?: Object): Promise<T> {
