@@ -164,7 +164,7 @@ export class AppHome extends LitElement {
     }
 
     return html`
-      ${repeat(this.newChords, c => c.id, (c, index) => this.renderNewChordLink(c, index))}
+      ${repeat(this.newChords, c => c.id, c => this.renderNewChordLink(c))}
     `;
   }
 
@@ -178,7 +178,7 @@ export class AppHome extends LitElement {
     `;
   }
 
-  renderNewChordLink(newChordSheet: ChordSheet, index: number): TemplateResult {
+  renderNewChordLink(newChordSheet: ChordSheet): TemplateResult {
     const songName = [newChordSheet.song, newChordSheet.hebrewSongName]
       .filter(s => !!s)
       .join(' ');

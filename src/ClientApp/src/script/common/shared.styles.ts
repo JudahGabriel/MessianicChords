@@ -1,5 +1,5 @@
 import { css } from "lit";
-import { BreakpointMax, BreakpointMin, mediaQuery } from "./breakpoints";
+import { BreakpointMax, mediaQuery } from "./breakpoints";
 
 export const sharedStyles = css`
     :host {

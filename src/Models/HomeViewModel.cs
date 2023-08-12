@@ -8,14 +8,9 @@ namespace MessianicChords.Models
     /// </summary>
     public class HomeViewModel
     {
-        public HomeViewModel(Uri indexJsUrl, Uri? indexCssUrl)
+        public HomeViewModel()
         {
-            this.IndexJsUrl = indexJsUrl;
-            this.IndexCssUrl = indexCssUrl;
         }
-
-        public Uri IndexJsUrl { get; init; }
-        public Uri? IndexCssUrl { get; init; }
         public string Title { get; set; } = "MessianicChords";
         public string Description { get; set; } = "Guitar chords, lyrics, and sheet music for Messianic Jewish and Hebrew Roots music";
         public string Keywords { get; set; } = "chords, guitar chords, messianic, messianic jewish, messianic jewish music, messianic jewish guitar chords, messianic jewish lyrics, hebrew roots music, hebrew roots guitar chords, hebrew roots lyrics";

@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "ms-dotnettools.csharp",
+        "runem.lit-plugin",
+        "bierner.lit-html",
+        "dbaeumer.vscode-eslint"
+    ]
+}

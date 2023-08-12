@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "prestart": "node aspnetcore-https && node aspnetcore-react",
-    "dev": "vite --open",
-    "dev-task": "vite",
+    "dev-server": "vite --host localhost --port 7777 --strictPort",
+    "dev": "npm run dev-server",
     "build": "tsc && vite build",
-    "start": "npm run build && vite preview",
-    "start-remote": "vite --host"
+    "start": "npm run dev",
+    "start-remote": "vite --host",
+    "preview": "vite build --mode preview && vite preview"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +25,7 @@
     "workbox-routing": "^6.5.2"
   },
   "devDependencies": {
+    "eslint": "^8.47.0",
     "rollup-plugin-lit-css": "^4.0.1",
     "typescript": "^4.7.3",
     "vite": "^2.9.16",

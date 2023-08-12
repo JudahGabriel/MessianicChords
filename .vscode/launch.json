@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (web)",
+      "type": "coreclr",
+      "requireExactSource": false,
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/bin/Debug/net7.0/MessianicChords.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src",
+      "stopAtEntry": false,
+      "launchSettingsProfile": "MessianicChords",
+      "launchSettingsFilePath": "${workspaceFolder}/src/Properties/launchSettings.json",
+      "serverReadyAction": {
+        "action": "startDebugging",
+        "name": "Launch Edge",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5050"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/src/Views"
+      }
+    },
+    {
+      "name": "Launch Edge",
+      "url": "http://localhost:5050/",
+      "request": "launch",
+      "type": "msedge",
+      "webRoot": "${workspaceFolder}/src/ClientApp",
+      "sourceMaps": true,
+      "trace": true,
+      "preLaunchTask": "npm: dev - src/Web",
+      "postDebugTask": "Close tasks"
+    }
+  ],
+}

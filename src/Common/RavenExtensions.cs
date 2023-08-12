@@ -38,8 +38,8 @@ namespace MessianicChords.Common
                  options.Settings = settings;
 
                  // password is stored in azure vault.
-                 var certString = configuration.GetValue<string>(settings.CertFilePath);
-                 if (certString != null)
+                 var certString = settings.CertFilePath != null ? configuration.GetValue<string>(settings.CertFilePath) : null;
+                 if (!string.IsNullOrEmpty(certString))
                  {
                      var certificate = Convert.FromBase64String(certString);
                      options.Certificate = new X509Certificate2(certificate);

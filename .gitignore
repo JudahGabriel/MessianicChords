@@ -126,7 +126,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings 
+# TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
@@ -188,16 +188,7 @@ FakesAssemblies/
 
 appsettings.Development.json
 appsettings.Production.json
-Web/dist
-/Api/wwwroot/workbox.mjs
-/Api/wwwroot/web.config
-/Api/wwwroot/service-worker.js.map
-/Api/wwwroot/service-worker.js
-/Api/wwwroot/robots.txt
-/Api/wwwroot/offline.html
-/Api/wwwroot/manifest.json
-/Api/wwwroot/index.html
-/Api/wwwroot/code
-/Api/wwwroot/assets-raw-creatives
-/Api/wwwroot/assets
-/Api/wwwroot/apple-app-site-association.json
+/src/Api/wwwroot/service-worker.js
+/src/Api/wwwroot/manifest.json
+/src/Api/wwwroot/index.html
+/src/API/wwwroot/assets/code/

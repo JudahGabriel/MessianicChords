@@ -54,7 +54,6 @@ namespace MessianicChords
             services.AddHostedService<GoogleDriveRavenSyncService>();
             services.AddHostedService<ThumbnailFetcher>();
             services.AddHostedService<ScreenshotGenerator>();
-            services.AddSingleton<FingerprintedResourceService>();
             services.AddHttpClient();
 
             services.AddControllersWithViews();
@@ -66,6 +65,18 @@ namespace MessianicChords
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // In dev mode, we load static files from /ClientApp/public
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+                        Path.Combine(env.ContentRootPath, "ClientApp/public")
+                    )
+                });
+            }
+            else
+            {
+                app.UseStaticFiles();
             }
 
             app.UseStaticFiles();
@@ -78,6 +89,8 @@ namespace MessianicChords
                     "http://localhost:8000", 
                     "http://localhost:3000",
                     "https://localhost:44365",
+                    "http://localhost:7777",
+                    "https://localhost:7777",
                     "https://messianicchords.com", 
                     "https://www.messianicchords.com"
                 )

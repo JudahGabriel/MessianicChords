@@ -1,4 +1,4 @@
-import { css, CSSResult, CSSResultGroup, unsafeCSS } from "lit";
+import { css, CSSResultGroup, unsafeCSS } from "lit";
 
 /**
  * Mobile breakpoints for minimum device widths. Intended for use in CSS responsive media queries.

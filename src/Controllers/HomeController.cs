@@ -3,6 +3,7 @@ using MessianicChords.Models;
 using MessianicChords.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
@@ -22,18 +23,15 @@ namespace MessianicChords.Controllers
     {
         private readonly IAsyncDocumentSession dbSession;
         private readonly IWebHostEnvironment webHost;
-        private readonly FingerprintedResourceService fingerprintedResourceService;
         private readonly ILogger<HomeController> logger;
 
         public HomeController(
             IAsyncDocumentSession dbSession, 
             IWebHostEnvironment webHost, 
-            FingerprintedResourceService fingerprintedResourceService,
             ILogger<HomeController> logger)
         {
             this.dbSession = dbSession;
             this.webHost = webHost;
-            this.fingerprintedResourceService = fingerprintedResourceService;
             this.logger = logger;
         }
 
@@ -41,22 +39,12 @@ namespace MessianicChords.Controllers
         /// Server side rendering for home page.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("/")]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        [Route("/")]
+        [Route("{*url}")]
+        public IActionResult Index()
         {
-            // Development? Return our simple dev-index.html file.
-            if (this.webHost.IsDevelopment())
-            {
-                return File("/dev-index.html", "text/html"); 
-            }
-
-            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
-            if (resources == null)
-            {
-                return StatusCode(500, "Error fetching fingerprinted resources.");
-            }
-
-            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            var model = new HomeViewModel();
             return View("Index", model);
         }
 
@@ -68,37 +56,15 @@ namespace MessianicChords.Controllers
         [HttpGet("chordsheets/{id}")]
         public async Task<IActionResult> ChordDetails(string id)
         {
-            // Development? Return our simple dev-index.html file.
-            if (this.webHost.IsDevelopment())
-            {
-                return File("/dev-index.html", "text/html");
-            }
-
-            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
-            if (resources == null)
-            {
-                return StatusCode(500, "Error fetching fingerprinted resources.");
-            }
-
-            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            var model = new HomeViewModel();
             var chordSheet = await dbSession.LoadOptionalAsync<ChordSheet>("chordsheets/" + id);
-            if (chordSheet != null)
+            if (chordSheet == null)
             {
-                model.UpdateFromChordSheet(chordSheet);
+                return Redirect("/");
             }
 
+            model.UpdateFromChordSheet(chordSheet);
             return View("Index", model);
-        }
-
-        /// <summary>
-        /// Server side rendering for chord edit.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("chordsheets/{id}/edit")]
-        public Task<IActionResult> ChordEdit(string id)
-        {
-            return ChordDetails(id);
         }
 
         /// <summary>
@@ -109,31 +75,16 @@ namespace MessianicChords.Controllers
         [HttpGet("artist/{artistName}")]
         public async Task<IActionResult> Artist(string artistName)
         {
-            // Development? Return our simple dev-index.html file.
-            if (this.webHost.IsDevelopment())
-            {
-                return File("/dev-index.html", "text/html");
-            }
-
-            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
-            if (resources == null)
-            {
-                return StatusCode(500, "Error fetching fingerprinted resources.");
-            }
-
-            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            var model = new HomeViewModel();
             var chordSheetByArtist = await dbSession.Query<ChordSheet>()
                 .Where(c => c.Artist == artistName)
                 .FirstOrDefaultAsync();
-            if (chordSheetByArtist != null)
-            {
-                model.UpdateFromArtist(chordSheetByArtist.Artist);
-            }
-            else
+            if (chordSheetByArtist == null)
             {
                 return Redirect("/");
             }
 
+            model.UpdateFromArtist(chordSheetByArtist.Artist);
             return View("Index", model);
         }
 
@@ -142,28 +93,15 @@ namespace MessianicChords.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("browse/{order}")]
-        public async Task<IActionResult> Browse(string order)
+        public IActionResult Browse(string order)
         {
-            // Development? Return our simple dev-index.html file.
-            if (this.webHost.IsDevelopment())
-            {
-                return File("/dev-index.html", "text/html");
-            }
-
             if (order != "newest" && order != "songs" && order != "artists" && order != "random")
             {
                 return Redirect("/");
             }
 
-            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
-            if (resources == null)
-            {
-                return StatusCode(500, "Error fetching fingerprinted resources.");
-            }
-
-            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            var model = new HomeViewModel();
             model.UpdateFromBrowse(order);
-
             return View("Index", model);
         }
 
@@ -172,23 +110,10 @@ namespace MessianicChords.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("about")]
-        public async Task<IActionResult> About()
+        public IActionResult About()
         {
-            // Development? Return our simple dev-index.html file.
-            if (this.webHost.IsDevelopment())
-            {
-                return File("/dev-index.html", "text/html");
-            }
-
-            var resources = await this.fingerprintedResourceService.GetResourcesAsync();
-            if (resources == null)
-            {
-                return StatusCode(500, "Error fetching fingerprinted resources.");
-            }
-
-            var model = new HomeViewModel(resources.IndexJs, resources.IndexCss);
+            var model = new HomeViewModel();
             model.UpdateFromAbout();
-
             return View("Index", model);
         }
 

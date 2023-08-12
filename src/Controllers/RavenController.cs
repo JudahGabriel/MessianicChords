@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace MessianicChords.Controllers
 {
     [ServiceFilter(typeof(RavenSaveChangesFilter))]
-    public abstract class RavenController : ControllerBase
+    public abstract class RavenController : Controller
     {
         private readonly IAsyncDocumentSession dbSession;
         protected readonly ILogger logger;
