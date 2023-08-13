@@ -19,14 +19,15 @@ export const sharedStyles = css`
     sl-button[variant="text"]::part(label) {
         font-weight: bold;
         font-family: var(--subtitle-font);
+        font-size: 16px;
         color: var(--theme-color);
     }
 
-    a {
+    a, sl-button[variant="text"] {
         transition: 0.4s linear color;
     }
 
-    a:hover {
+    a:hover, sl-button[variant="text"]:hover {
         color: brown;
     }
 

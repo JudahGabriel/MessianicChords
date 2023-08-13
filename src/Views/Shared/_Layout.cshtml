@@ -48,9 +48,10 @@
     <meta property="og:description" content="@Model.Description" />
     <meta property="og:image" content="@Model.SocialCardImage" />
 
-    <script type="module" src="https://unpkg.com/@@fluentui/web-components" crossorigin="anonymous"></script>
+    @* Shoelace light mode and dark mode CSS *@
+    <link rel="stylesheet" media="(prefers-color-scheme:light)" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.7.0/cdn/themes/light.css" />
+    <link rel="stylesheet" media="(prefers-color-scheme:dark)" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.7.0/cdn/themes/light.css" onload="document.documentElement.classList.add('sl-theme-dark');" />
         
-    @*<script type="module" crossorigin="anonymous" src="@Model.IndexJsUrl"></script>*@
     @* In production and staging environments, use our real index files *@
     <environment include="Production,Staging">
         <link rel="stylesheet" asp-href-include="~/code/index-*.css">
@@ -78,8 +79,9 @@
             --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
         }
 
-        fast-design-system-provider {
-            color: black;
+        body {
+            width: calc(100vw - (8px * 2));
+            height: calc(100vh - (8px * 2));
         }
     </style>
 </head>

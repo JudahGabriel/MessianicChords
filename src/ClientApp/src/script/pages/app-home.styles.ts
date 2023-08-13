@@ -1,123 +1,126 @@
 import { css } from "lit";
 import { SizeMax } from "../common/constants";
-import { mediaQueryMobile } from "../common/breakpoints";
+import { tabletsAndSmaller, phonesOnly } from "../common/breakpoints";
+
 export const appHomeStyles = css`
-:host {
-    font-family: var(--subtitle-font);
-  }
-
-  @media (max-width: ${SizeMax.Md}px) {
-    .home-page {
-      margin-top: -30px;
+    :host {
+        font-family: var(--subtitle-font);
     }
-  }
 
-  .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: var(--subtitle-font);
-    margin-top: var(--sl-spacing-large);
-    margin-bottom: var(--sl-spacing-large);
-  }
+    ${tabletsAndSmaller()} {
+        .home-page {
+            margin-top: -30px;
+        }
+    }
 
-  /* On phones and tablets, make the search container margin cancel out the parent's padding */
-  @media (max-width: ${SizeMax.Sm}px) {
-      .search-container {
-          margin-left: -20px;
-          margin-right: -20px;
-      }
-  }
+    .search-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: var(--subtitle-font);
+        margin-top: var(--sl-spacing-large);
+        margin-bottom: var(--sl-spacing-large);
+    }
 
-  #search-box::part(input) {
-      width: 500px;
-      color: #0b0974;
-  }
+    /* On phones and tablets, make the search container margin cancel out the parent's padding */
+    @media (max-width: ${SizeMax.Sm}px) {
+        .search-container {
+            margin-left: -20px;
+            margin-right: -20px;
+        }
+    }
 
-  @media (max-width: ${SizeMax.Xs}px) {
-      #search-box {
-          width: 90%;
-      }
-  }
+    #search-box::part(input) {
+        width: 500px;
+        color: #0b0974;
+        text-align: center;
+    }
 
-  nav a {
-    color: var(--theme-color);
-    text-decoration: none;
-  }
+    @media (max-width: ${SizeMax.Xs}px) {
+        #search-box {
+            width: 90%;
+        }
+    }
 
-  nav span {
-    font-family: var(--subtitle-font);
-  }
+    nav a {
+        color: var(--theme-color);
+        text-decoration: none;
+    }
 
-  .new-chords {
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-  }
+    nav span {
+        font-family: var(--subtitle-font);
+    }
 
-  .new-chords sl-divider {
-    height: 1em;
-  }
+    .new-chords, .browse-by-container {
+        min-height: 32px;
+    }
 
-  .new-chords-placeholder-container {
-    width: 80%;
-  }
+    .new-chords {
+        justify-content: center;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25em;
+    }
 
-  @media (max-width: ${SizeMax.Xs}px) {
+    .new-chords sl-divider {
+        height: 1em; 
+        --spacing: 0;
+    }
+
+    ${phonesOnly()} {
+        .new-chords {
+            flex-direction: column;
+            gap: 0.5em;
+            align-items: center;
+        }
+
+        .new-chords sl-divider {
+            display: none;
+        }
+    }
+
     .new-chords-placeholder-container {
-      width: 100%;
+        width: 80%;
     }
-  }
 
-  @media (max-width: ${SizeMax.Xs}px) {
-      .new-chords {
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 10px;
-      }
-  }
+    ${phonesOnly()} {
+        .new-chords-placeholder-container {
+            width: 100%;
+        }
+    }
 
-  .new-chords a {
-      padding-left: 5px;
-      padding-right: 5px;
-  }
+    ${phonesOnly()} {
+        .new-chords a {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            display: inline-block;
+            max-width: 300px;
+        }
+    }
 
-  ${mediaQueryMobile()} {
-      .new-chords a {
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-          width: 100%;
-          display: inline-block;
-          max-width: 300px;
-          padding: 4px;
-      }
-  }
+    .load-more-chords-btn::part(base) {
+        height: 20px;
+        font-size: 16px;
+    }
 
-  .loading-block {
-    text-align: center;
-    margin: 50px;
-  }
+    .load-more-chords-btn::part(label) {
+        padding: 0;
+        font-weight: bold;
+    }
 
-  .search-results-container {
-    margin-top: 50px;
-  }
+    .loading-block {
+        text-align: center;
+        margin: 50px;
+    }
 
-  ${mediaQueryMobile()} {
-    margin-top: 20px;
-  }
+    .search-results-container {
+        margin-top: 50px;
+    }
 
-  .new-chord-link::part(label) {
-    max-width: 250px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    padding-left: var(--sl-spacing-x-small);
-    padding-right: var(--sl-spacing-x-small);
-  }
-
-  .browse-by-container sl-divider {
-    height: 1em;
-
-  }
+    .browse-by-container sl-divider {
+        height: 1em;
+        --spacing: 0;
+    }
 `;

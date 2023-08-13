@@ -32,7 +32,7 @@ namespace MessianicChords.Migrations
                 var matchingChordSheet = chordSheets.FirstOrDefault(c => c.GoogleDocId == gDoc.Id);
                 if (matchingChordSheet != null)
                 {
-                    session.Advanced.Patch<ChordSheet, string>(matchingChordSheet.Id, c => c.GoogleDocResourceKey, gDoc.ResourceKey ?? string.Empty);
+                    session.Advanced.Patch<ChordSheet, string?>(matchingChordSheet.Id, c => c.GoogleDocResourceKey, gDoc.ResourceKey ?? string.Empty);
                 }
             }
 

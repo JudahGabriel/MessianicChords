@@ -61,6 +61,21 @@ export const enum BreakpointMax {
 
 }
 
+/** CSS media query for phones */
+export function phonesOnly(): CSSResultGroup {
+    return mediaQuery(BreakpointMax.xs);
+}
+
+/** CSS media query for tablets and phones */
+export function tabletsAndSmaller(): CSSResultGroup {
+    return mediaQuery(BreakpointMax.md);
+}
+
+/** CSS media query for desktops and larger screens */
+export function desktopsAndLarger(): CSSResultGroup {
+    return mediaQuery(BreakpointMin.lg);
+}
+
 /**
  * Creates a CSS media query for the specified breakpoint size. Meant for use in *.styles.ts files.
  * For example, mediaQuery(BreakpointMin.sm) will create a CSS media query that matches xs and sm screen sizes such as phones.
@@ -75,14 +90,6 @@ export function mediaQuery(size: BreakpointMin | BreakpointMax | number): CSSRes
     }
 
     return css`@media(max-width: ${size}px)`;
-}
-
-export function mediaQueryMobile(): CSSResultGroup {
-    return mediaQuery(BreakpointMax.xs);
-}
-
-export function mediaQueryTablet(): CSSResultGroup {
-    return mediaQuery(BreakpointMax.md);
 }
 
 /**
