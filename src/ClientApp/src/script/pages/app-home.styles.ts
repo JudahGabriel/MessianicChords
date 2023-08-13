@@ -79,6 +79,10 @@ export const appHomeStyles = css`
         }
     }
 
+    .new-chords sl-divider:last-of-type {
+        display: none;
+    }
+
     .new-chords-placeholder-container {
         width: 80%;
     }
