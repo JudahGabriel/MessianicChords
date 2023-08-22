@@ -1,5 +1,4 @@
-import { ChordSheet } from "../models/interfaces";
-import { PagedResult } from "../models/paged-result";
+import { ChordSheet, PagedResult } from "../models/interfaces";
 import { ApiServiceBase } from "./api-service-base";
 import type { ChordCache } from "./chord-cache"; // Import types only for now, as we only use the real module if we're offline.
 import { ChordFetchBackend } from "./chord-fetch-backend";
@@ -20,8 +19,15 @@ export class ChordService extends ApiServiceBase {
         return this.getBackend().then(b => b.getByOrderedIndex(index));
     }
 
+    /**
+     * @deprecated This method should no longer be used. Use searchPaged instead.
+     */
     search(query: string): Promise<ChordSheet[]> {
         return this.getBackend().then(b => b.search(query));
+    }
+
+    searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        return this.getBackend().then(b => b.searchPaged(query, skip, take));
     }
 
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
@@ -74,7 +80,7 @@ export class ChordService extends ApiServiceBase {
 /**
  * An implementation of ChordFetchBackend that talks to the API. Used when online.
  */
- class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
+class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
 
     async getById(chordId: string): Promise<ChordSheet> {
         return super.getJson("/chords/get", { id: chordId });
@@ -86,6 +92,15 @@ export class ChordService extends ApiServiceBase {
 
     search(query: string): Promise<ChordSheet[]> {
         return super.getJson("/chords/search", { search: query });
+    }
+
+    searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const args = {
+            search: query,
+            skip,
+            take
+        };
+        return super.getJson("/chords/searchPaged", args);
     }
 
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
@@ -133,18 +148,18 @@ export class ChordService extends ApiServiceBase {
         }
 
         return `${this.apiUrl}/chords/download?id=${chord.id}`;
-     }
+    }
 
-     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
+    submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
         // Create a new form to hold all the chord props and attachments.
         const formData = new FormData();
         const chordProps = Object.entries(chord);
-        for (let [prop,val] of chordProps) {
+        for (const [prop,val] of chordProps) {
             if (val !== null && val !== undefined) {
                 // Is it an array? Append all array values to the form.
                 const arrayVal = Array.isArray(val) ? val as Array<unknown> : null;
                 if (arrayVal) {
-                    arrayVal.forEach(v => formData.append(prop, `${v}`))
+                    arrayVal.forEach(v => formData.append(prop, `${v}`));
                 } else {
                     formData.append(prop, `${val}`);
                 }
@@ -184,13 +199,18 @@ class CacheBackend implements ChordFetchBackend {
         return await cache.search(query);
     }
 
+    async searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const cache = await this.getChordCache();
+        return await cache.searchPaged(query, skip, take);
+    }
+
     async getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         const cache = await this.getChordCache();
         return await cache.getBySongName(skip, take);
     }
 
     async getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-                const cache = await this.getChordCache();
+        const cache = await this.getChordCache();
         return await cache.getByArtistName(artist, skip, take);
     }
 
@@ -218,6 +238,7 @@ class CacheBackend implements ChordFetchBackend {
         return this.chordCache;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
         throw new Error("Can't upload chords while offline.");

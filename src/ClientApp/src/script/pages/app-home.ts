@@ -1,38 +1,40 @@
-import { html, LitElement, TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
-import '../components/chord-card';
-import { ChordSheet } from '../models/interfaces';
-import { ChordService } from '../services/chord-service';
-import { BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { appHomeStyles } from './app-home.styles';
-import { sharedStyles } from '../common/shared.styles';
-import { bootstrapGridStyles } from '../common/bootstrap-grid.styles';
-import { bootstrapUtilities } from '../common/bootstrap-utilities.styles';
-import '@shoelace-style/shoelace/dist/components/input/input.js';
-import '@shoelace-style/shoelace/dist/components/button/button.js';
-import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
-import '@shoelace-style/shoelace/dist/components/skeleton/skeleton.js';
-import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { repeat } from "lit/directives/repeat.js";
+import "../components/chord-collection.js";
+import { ChordSheet } from "../models/interfaces";
+import { ChordService } from "../services/chord-service";
+import { BehaviorSubject } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { appHomeStyles } from "./app-home.styles";
+import { sharedStyles } from "../common/shared.styles";
+import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
+import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
+import "@shoelace-style/shoelace/dist/components/input/input.js";
+import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
+import "@shoelace-style/shoelace/dist/components/divider/divider.js";
+import { PagedList } from "../models/paged-list";
 
-@customElement('app-home')
+@customElement("app-home")
 export class AppHome extends LitElement {
 
     static styles = [sharedStyles, bootstrapGridStyles, bootstrapUtilities, appHomeStyles];
 
     @state() newChords: ChordSheet[] = [];
-    @state() isLoading = false;
-    @state() searchResults: ChordSheet[] = [];
     @state() newChordsSkip = 0;
+    @state() hasSearchResults = false;
+    searchResults = new PagedList<ChordSheet>((skip, take) => this.chordService.searchPaged(this.searchText.value, skip, take));
     readonly chordService = new ChordService();
     readonly searchText = new BehaviorSubject("");
 
     constructor() {
         super();
+
+        this.searchResults.addEventListener("changed", () => this.hasSearchResults = this.searchResults.items.length > 0);
     }
 
-    // Lit callback when component is attached to the DOM
     connectedCallback() {
         super.connectedCallback();
 
@@ -55,13 +57,13 @@ export class AppHome extends LitElement {
     }
 
     searchTextChanged(e: Event) {
-        const searchText = (e.target! as HTMLInputElement).value;
+        const searchText = (e.target as HTMLInputElement).value || "";
         this.searchText.next(searchText);
     }
 
     async fetchNextNewChords() {
         const take = 3;
-        var pagedResult = await this.chordService.getNew(this.newChordsSkip, take);
+        const pagedResult = await this.chordService.getNew(this.newChordsSkip, take);
         this.newChords = pagedResult.results;
         this.newChordsSkip += take;
     }
@@ -70,7 +72,6 @@ export class AppHome extends LitElement {
         if (search) {
             history.pushState({}, "", `?search=${encodeURIComponent(search)}`);
             document.title = `'${search}' search on Messianic Chords`;
-
         } else {
             history.pushState({}, "", "/");
             document.title = "Messianic Chords";
@@ -79,28 +80,18 @@ export class AppHome extends LitElement {
 
     async runSearch(query: string) {
         if (!query) {
-            this.isLoading = false;
-            this.searchResults = [];
+            this.searchResults.reset();
             this.updateSearchQueryString("");
             return;
         }
 
-        this.isLoading = true;
         this.updateSearchQueryString(query);
-        try {
-            const results = await this.chordService.search(query);
-            const isStillWaitingForResults = query === this.searchText.value;
-            if (isStillWaitingForResults) {
-                this.searchResults = results;
-                this.isLoading = false;
-            }
-        } finally {
-            this.isLoading = false;
-        }
+        this.searchResults.reset();
+        this.searchResults.fetch();
     }
 
     render() {
-        const navClass = this.searchResults.length > 0 ? "d-none" : "";
+        const navClass = this.searchResults.items.length > 0 ? "d-none" : "";
         return html`
             <section class="home-page">
                 <div class="search-container">
@@ -146,15 +137,9 @@ export class AppHome extends LitElement {
                     <div class="me-1">Got chords to share?</div>
                     <a class="fw-bold" href="/chordsheets/new">Upload</a>
                 </div>
-
-                
             </nav>
 
-            ${this.renderLoading()}
-
-            <div class="search-results-container w-100 d-flex flex-wrap justify-content-evenly align-items-stretch">
-                ${repeat(this.searchResults, c => c.id, c => this.renderSearchResult(c))}
-            </div>
+            <chord-collection .chords="${this.searchResults}"></chord-collection>
       </section>`;
     }
 
@@ -170,18 +155,18 @@ export class AppHome extends LitElement {
 
     renderNewChordsPlaceholder(): TemplateResult {
         return html`
-      <div class="new-chords-placeholder-container placeholder-glow row ms-sm-2 my-1 my-sm-auto">
-        <sl-skeleton effect="pulse" class="col-3"></sl-skeleton>
-        <sl-skeleton effect="pulse" class="col-5"></sl-skeleton>
-        <sl-skeleton effect="pulse" class="col-4"></sl-skeleton>
-      </div>
-    `;
+            <div class="new-chords-placeholder-container placeholder-glow row ms-sm-2 my-1 my-sm-auto">
+                <sl-skeleton effect="pulse" class="col-3"></sl-skeleton>
+                <sl-skeleton effect="pulse" class="col-5"></sl-skeleton>
+                <sl-skeleton effect="pulse" class="col-4"></sl-skeleton>
+            </div>
+        `;
     }
 
     renderNewChordLink(newChordSheet: ChordSheet): TemplateResult {
         const songName = [newChordSheet.song, newChordSheet.hebrewSongName]
             .filter(s => !!s)
-            .join(' ');
+            .join(" ");
         const title = newChordSheet.key ?
             html`${songName} - ${newChordSheet.key}` :
             html`${songName}`;
@@ -189,26 +174,5 @@ export class AppHome extends LitElement {
             <a class="new-chord-link fw-bold text-truncate" href="${newChordSheet.id}">${title}</a>
             <sl-divider vertical></sl-divider>
         `;
-    }
-
-    renderLoading(): TemplateResult {
-        if (!this.isLoading) {
-            return html``;
-        }
-
-        return html`
-      <div class="loading-block">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <span class="site-text">Searching, one moment...</span>
-      </div>
-    `;
-    }
-
-    renderSearchResult(chordSheet: ChordSheet): TemplateResult {
-        return html`
-      <chord-card .chord="${chordSheet}"></chord-card>
-    `;
     }
 }

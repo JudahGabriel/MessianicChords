@@ -1,18 +1,17 @@
-import { css, html, TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import '../components/chord-card';
-import '../components/chord-card-loading';
-import '../components/load-more-button';
-import { ChordSheet } from '../models/interfaces';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { BrowseSongs } from './browse-songs';
-import { PagedResult } from '../models/paged-result';
-import { repeat } from 'lit/directives/repeat.js';
-import { SizeMax } from '../common/constants';
+import { css, html, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import "../components/chord-card";
+import "../components/chord-card-loading";
+import "../components/load-more-button";
+import { ChordSheet, PagedResult } from "../models/interfaces";
+import { BootstrapBase } from "../common/bootstrap-base";
+import { BrowseSongs } from "./browse-songs";
+import { repeat } from "lit/directives/repeat.js";
+import { SizeMax } from "../common/constants";
 
 // This component is the same as browse songs, only the grouping is by artist, rather than by first letter of song name.
 // So, let's just inherit from BrowseSongs.
-@customElement('browse-artists')
+@customElement("browse-artists")
 export class BrowseArtists extends BrowseSongs {
     @state() artists: string[] = [];
 
@@ -46,7 +45,7 @@ export class BrowseArtists extends BrowseSongs {
     protected firstUpdated(changedProps: Map<string | number | symbol, unknown>): void {
         super.firstUpdated(changedProps);
         this.chordService.getAllArtists()
-           .then(a => this.artists = a);
+            .then(a => this.artists = a);
     }
 
     renderAdditionalContainerContent(): TemplateResult {

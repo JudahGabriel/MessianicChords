@@ -1,18 +1,17 @@
-import { css, html, TemplateResult } from 'lit';
-import { repeat } from 'lit/directives/repeat.js';
-import { customElement } from 'lit/decorators.js';
-import '../components/chord-card';
-import '../components/chord-card-loading';
-import '../components/load-more-button';
-import { ChordSheet } from '../models/interfaces';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { PagedList } from '../models/paged-list';
-import { ChordService } from '../services/chord-service';
-import { PagedResult } from '../models/paged-result';
+import { css, html, TemplateResult } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+import { customElement } from "lit/decorators.js";
+import "../components/chord-card";
+import "../components/chord-card-loading";
+import "../components/load-more-button";
+import { ChordSheet } from "../models/interfaces";
+import { BootstrapBase } from "../common/bootstrap-base";
+import { PagedList } from "../models/paged-list";
+import { ChordService } from "../services/chord-service";
 
 type ChordsByLetter = { [letter: string]: ChordSheet[] };
 
-@customElement('browse-songs')
+@customElement("browse-songs")
 export class BrowseSongs extends BootstrapBase {
 
     readonly chordGrouping: ChordsByLetter = {};
@@ -38,7 +37,7 @@ export class BrowseSongs extends BootstrapBase {
 
     connectedCallback() {
         super.connectedCallback();
-        this.allChords.getNextChunk();
+        this.allChords.fetch();
     }
 
     protected async fetchNextChunk(skip: number, take: number): Promise<PagedResult<ChordSheet>> {

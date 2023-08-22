@@ -1,5 +1,4 @@
-import { ChordSheet } from "../models/interfaces";
-import { PagedResult } from "../models/paged-result";
+import { ChordSheet, PagedResult } from "../models/interfaces";
 
 /**
  * Cache of ChordSheet objects. Used for offline search.
@@ -20,7 +19,7 @@ export class ChordCache {
         const store = await this.openChordsStore("readwrite");
         const doc = this.chordSheetToDbDoc(chord);
         const addRequest = store.put(doc);
-        var result = new Promise<void>((resolve, reject) => {
+        const result = new Promise<void>((resolve, reject) => {
             addRequest.onsuccess = () => resolve();
             addRequest.onerror = e => reject(e);
         });
@@ -37,7 +36,9 @@ export class ChordCache {
         const chordRequest = store.get(chordId);
         const chordTask = new Promise<ChordSheet | null>((resolve, reject) => {
             chordRequest.onsuccess = () => resolve(chordRequest.result as ChordSheet | null);
-            chordRequest.onerror = e => { console.warn("Error fetching chord sheet from indexDB", chordId, e); reject(e); }
+            chordRequest.onerror = e => {
+                console.warn("Error fetching chord sheet from indexDB", chordId, e); reject(e); 
+            };
         });
 
         return await chordTask;
@@ -48,6 +49,19 @@ export class ChordCache {
      */
     public search(query: string): Promise<ChordSheet[]> {
         return this.queryIndexes(query.toLowerCase());
+    }
+
+    /**
+     * Searches the cache for chord sheets matching the specified query.
+     */
+    public async searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const rawResults = await this.queryIndexes(query.toLowerCase());
+        return {
+            skip: skip,
+            take: take,
+            results: rawResults.slice(skip, skip + take),
+            totalCount: rawResults.length
+        };
     }
 
     /**
@@ -122,7 +136,7 @@ export class ChordCache {
             openReq.onsuccess = (e) => {
                 const db = (e.target as any).result as IDBDatabase;
                 resolve(db);
-            }
+            };
 
             openReq.onerror = (e) => reject(`Error opening database: ${e}`);
 
@@ -219,7 +233,12 @@ export class ChordCache {
             cursor.onerror = e => reject(e);
         });
 
-        return new PagedResult<ChordSheet>(skip, take, chordSheets, totalCount);
+        return {
+            skip: skip,
+            take: take,
+            results: chordSheets,
+            totalCount: totalCount
+        };
     }
 
     // private getIndexKeys(indexName: string, query: IDBKeyRange | null, store: IDBObjectStore): Promise<string[]> {
@@ -264,7 +283,7 @@ export class ChordCache {
                 }
             };
             cursorRequest.onerror = e => reject(e);
-        })
+        });
     }
 
     private countTotalStoreResults(store: IDBObjectStore): Promise<number> {
@@ -276,7 +295,7 @@ export class ChordCache {
     }
 
     private generateRandomInteger(min: number, max: number) {
-        return Math.floor(min + Math.random()*(max - min + 1))
+        return Math.floor(min + Math.random()*(max - min + 1));
     }
 
     private generateRandomUniqueInts(min: number, max: number, resultLength: number): number[] {
@@ -309,7 +328,7 @@ export class ChordCache {
             searchTerm3: (terms[2] || "").toLocaleLowerCase(),
             searchTerm4: (terms[3] || "").toLocaleLowerCase(),
             searchTerm5: (terms[4] || "").toLocaleLowerCase()
-        }
+        };
     }
 
     private getWords(input: string): string[] {

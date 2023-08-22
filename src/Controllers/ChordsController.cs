@@ -62,6 +62,7 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet]
+        [Obsolete("Use SearchPaged instead. This remains for temporary backward compat. Delete after deploy.")]
         public async Task<List<ChordSheet>> Search(string search)
         {
             const int maxResults = 25;
@@ -87,6 +88,49 @@ namespace MessianicChords.Controllers
 
             logger.LogInformation("Searched for {term} with {count} results", search, matchingChords.Count);
             return matchingChords;
+        }
+
+        [HttpGet]
+        public async Task<PagedResults<ChordSheet>> SearchPaged(string search, int skip = 0, int take = 25)
+        {
+            var searchWithWildcard = search + "*";
+            var matchingChords = await DbSession.Query<ChordSheet, ChordSheet_Search>()
+                .Statistics(out var stats)
+                .Search(c => c.Song, searchWithWildcard)
+                .Search(c => c.Artist, searchWithWildcard)
+                .Search(c => c.PlainTextContents, searchWithWildcard)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            if (matchingChords.Count > 0 || search.Length <= 2)
+            {
+                logger.LogInformation("Searched for {term} with {count} results", search, matchingChords.Count);
+                return new PagedResults<ChordSheet>
+                {
+                    Results = matchingChords,
+                    Skip = skip,
+                    Take = take,
+                    TotalCount = stats.TotalResults
+                };
+            }
+
+            // No results? See if we can suggest some.
+            var songSuggestionResults = await QuerySuggestions(c => c.Song, search);
+            var artistSuggestionResults = await QuerySuggestions(c => c.Artist, search);
+            var suggestionResults = songSuggestionResults
+                .Concat(artistSuggestionResults)
+                .Skip(skip)
+                .Take(take)
+                .ToList();
+            
+            logger.LogInformation("Searched for {term} found no results, however suggestions returned {count} results", search, suggestionResults.Count);
+            return new PagedResults<ChordSheet>
+            {
+                Results = suggestionResults,
+                Skip = skip,
+                Take = take,
+                TotalCount = songSuggestionResults.Count + artistSuggestionResults.Count
+            };
         }
 
         [HttpGet]

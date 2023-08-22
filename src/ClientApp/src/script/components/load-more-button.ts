@@ -53,7 +53,7 @@ export class LoadMoreButton extends BootstrapBase {
 
     getNextChunk() {
         if (this.list) {
-            this.list.getNextChunk();
+            this.list.fetch();
         }
     }
 }

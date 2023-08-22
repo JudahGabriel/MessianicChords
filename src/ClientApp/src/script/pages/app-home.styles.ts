@@ -119,7 +119,7 @@ export const appHomeStyles = css`
         margin: 50px;
     }
 
-    .search-results-container {
+    chord-collection {
         margin-top: 50px;
     }
 

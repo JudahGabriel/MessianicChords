@@ -30,3 +30,10 @@ export interface ChordSheet {
     scripture: string | null;
     ccliNumber: number | null;
 }
+
+export interface PagedResult<T> {
+    skip: number;
+    take: number;
+    results: T[];
+    totalCount: number;
+}

@@ -1,14 +1,13 @@
-import { RouterLocation } from '@vaadin/router';
-import { css } from 'lit';
-import { customElement } from 'lit/decorators.js';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { ChordSheet } from '../models/interfaces';
-import { PagedResult } from '../models/paged-result';
-import { BrowseArtists } from './browse-artists';
+import { RouterLocation } from "@vaadin/router";
+import { css } from "lit";
+import { customElement } from "lit/decorators.js";
+import { BootstrapBase } from "../common/bootstrap-base";
+import { ChordSheet, PagedResult } from "../models/interfaces";
+import { BrowseArtists } from "./browse-artists";
 
 // This is the same functionality as browse artists page, only with a single artist
 // So, we inherit from that page and just tweak it to display this artist.
-@customElement('artist-songs')
+@customElement("artist-songs")
 export class ArtistSongs extends BrowseArtists {
     location: RouterLocation | null = null;
 

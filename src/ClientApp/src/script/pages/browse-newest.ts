@@ -33,7 +33,7 @@ export class BrowseNewest extends BootstrapBase {
     }
 
     firstUpdated() {
-        this.chords.getNextChunk();
+        this.chords.fetch();
     }
 
     render(): TemplateResult {

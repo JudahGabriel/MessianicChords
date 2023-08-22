@@ -1,19 +1,20 @@
 export class ApiServiceBase {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     protected readonly apiUrl = import.meta.env.VITE_API_URL;
 
-    protected async getJson<T>(url: string, args?: Object): Promise<T> {
+    protected async getJson<T>(url: string, args?: object): Promise<T> {
         const response = await this.getResponse(url, args);
         const json = await response.json() as T;
         return json;
     }
 
-    protected async getString(url: string, args?: Object): Promise<string> {
+    protected async getString(url: string, args?: object): Promise<string> {
         const response = await this.getResponse(url, args);
         return await response.text();
     }
 
-    protected async post<T>(url: string, args?: Object): Promise<T> {
+    protected async post<T>(url: string, args?: object): Promise<T> {
         const absoluteUrl = this.apiUrl + url;
         const postResult = await fetch(absoluteUrl, {
             method: "POST",
@@ -42,11 +43,12 @@ export class ApiServiceBase {
         }
     }
 
-    protected async getResponse(url: string, args?: Object): Promise<Response> {
+    protected async getResponse(url: string, args?: object): Promise<Response> {
         let absoluteUrl = this.apiUrl + url;
         if (args) {
             absoluteUrl += "?";
             const queryParams = Object.entries(args)
+                .filter(e => e[1] !== null && e[1] !== undefined)
                 .map(e => `${e[0]}=${encodeURIComponent(e[1])}`);
             absoluteUrl += queryParams.join("&");
         }
