@@ -52,5 +52,6 @@
       "**/.DS_Store": true,
       "**/Thumbs.db": true,
       "**/node_modules": true
-  }
+},
+"dotnet.defaultSolution": "MessianicChords.sln"
 }
