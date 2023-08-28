@@ -5,6 +5,7 @@
   "scripts": {
     "dev-server": "vite --host localhost --port 7777 --strictPort",
     "dev": "npm run dev-server",
+    "dev-task": "vite --port 5050",
     "build": "tsc && vite build",
     "start": "npm run dev",
     "start-remote": "vite --host",
