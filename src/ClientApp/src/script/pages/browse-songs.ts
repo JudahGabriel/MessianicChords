@@ -4,7 +4,7 @@ import { customElement } from "lit/decorators.js";
 import "../components/chord-card";
 import "../components/chord-card-loading";
 import "../components/load-more-button";
-import { ChordSheet } from "../models/interfaces";
+import { ChordSheet, PagedResult } from "../models/interfaces";
 import { BootstrapBase } from "../common/bootstrap-base";
 import { PagedList } from "../models/paged-list";
 import { ChordService } from "../services/chord-service";
