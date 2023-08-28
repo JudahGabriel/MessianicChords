@@ -131,7 +131,7 @@ export class AppHome extends LitElement {
                     <div class="new-chords d-flex gap-2 justify-content-center align-items-center">
                         ${this.renderNewChords()}
                     </div>
-                </div>
+                </div>                
 
                 <div class="d-flex justify-content-center">
                     <div class="me-1">Got chords to share?</div>
