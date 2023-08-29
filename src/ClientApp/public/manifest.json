@@ -5,6 +5,7 @@
   "short_name": "Messianic Chords",
   "description": "Guitar chords and lyrics for Messianic Jewish music",
   "display": "minimal-ui",
+  "display_override": ["tabbed"],
   "start_url": "/",
   "background_color": "#ffffff",
   "theme_color": "#0b0974",
