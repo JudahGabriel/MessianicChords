@@ -1,5 +1,4 @@
 {
-  "version": "2.0.0",
   "editor.formatOnSave": false,
   "editor.tabSize": 4,
   "editor.insertSpaces": true,
@@ -11,39 +10,7 @@
   "[javascript]": {
       "editor.tabSize": 4
   },
-  "tasks": [
-      {
-          "label": "npm run dev-task",
-          "type": "npm",
-          "script": "dev-task",
-          "isBackground": true,
-          "problemMatcher": {
-              "owner": "custom",
-              "pattern": {
-                  "regexp": "^$"
-              },
-              "background": {
-                  "activeOnStart": true,
-                  "beginsPattern": ".*",
-                  "endsPattern": "ready in .+"
-              }
-          },
-      },
-      {
-          "label": "postdebugKill",
-          "command": "echo ${input:terminate}",
-          "type": "shell",
-          "problemMatcher": []
-      },
-  ],
-  "inputs": [
-      {
-          "id": "terminate",
-          "type": "command",
-          "command": "workbench.action.tasks.terminate",
-          "args": "npm run dev-task"
-      }
-  ],
+
   "files.exclude": {
       "**/.git": true,
       "**/.svn": true,
@@ -52,5 +19,13 @@
       "**/.DS_Store": true,
       "**/Thumbs.db": true,
       "**/node_modules": true
-  }
+},
+
+// allow for linux shell
+"terminal.integrated.automationProfile.linux": {
+    "path": "/usr/bin/bash",
+    "args": ["-i"]
+},
+"dotnet.defaultSolution": "MessianicChords.sln"
+
 }

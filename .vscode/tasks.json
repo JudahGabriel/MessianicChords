@@ -7,7 +7,7 @@
             "path": "src/ClientApp",
             "isBackground": true,
             "label": "npm: install - client",
-            "detail": "npm run intall"
+            "detail": "npm run intall",
         },
         {
             "type": "npm",
@@ -35,7 +35,7 @@
             "detail": "npm run dev-server"
         },
         {
-            "label": "Close tasks",
+            "label": "postdebugKill",
             "command": "echo ${input:terminate}",
             "type": "shell",
             "problemMatcher": []
@@ -56,6 +56,25 @@
                 "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
+        },
+
+        {
+            "label": "npm run dev-task",
+            "type": "npm",
+            "script": "dev-task",
+            "path": "src/ClientApp",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "vite",
+                    "endsPattern": "ready in"
+                }
+            },
         },
     ],
     "inputs": [

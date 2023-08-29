@@ -35,7 +35,26 @@
       "sourceMaps": true,
       "trace": true,
       "preLaunchTask": "npm: dev - src/Web",
-      "postDebugTask": "Close tasks"
+      "postDebugTask": "postdebugKill"
+    },
+
+    {
+        "type": "pwa-chrome",
+        "request": "launch",
+        "name": "Run PWA",
+        "webRoot": "${workspaceFolder}/src/ClientApp",
+        "sourceMaps": true,
+        "trace": true,
+        "url": "http://localhost:5050",
+        // "runtimeArgs": [
+        //     "--app=http://localhost:5050"
+        // ],
+        "sourceMapPathOverrides": {
+            "../../src/ClientApp": "${workspaceFolder}/src/ClientApp",
+            "../../src/ClientApp/*": "${workspaceFolder}/src/ClientApp/*"
+        },
+        "preLaunchTask": "npm run dev-task",
+        "postDebugTask": "postdebugKill"
     }
   ],
 }
