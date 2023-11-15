@@ -1,19 +1,26 @@
 import { RouterLocation } from "@vaadin/router";
-import { html, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { BootstrapBase } from "../common/bootstrap-base";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
-import { repeat } from 'lit/directives/repeat.js';
+import { repeat } from "lit/directives/repeat.js";
 import { ChordCache } from "../services/chord-cache";
 import { ChordChartLine, ChordChartSpan, createChordChartLines } from "../models/chord-chart-line";
 import { Chord } from "../models/chord";
 import { chordDetailStyles } from "./chord-details.styles";
+import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
+import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
+import { sharedStyles } from "../common/shared.styles";
+import "@shoelace-style/shoelace/dist/components/card/card.js";
+import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/icon/icon.js";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
 
-@customElement('chord-details')
-export class ChordDetails extends BootstrapBase {
+@customElement("chord-details")
+export class ChordDetails extends LitElement {
     static get styles() {
-        return [BootstrapBase.styles, chordDetailStyles];
+        return [sharedStyles, bootstrapGridStyles, bootstrapUtilities, chordDetailStyles];
     }
 
     @state() chord: ChordSheet | null = null;
@@ -21,16 +28,12 @@ export class ChordDetails extends BootstrapBase {
     @state() canGoFullScreen: boolean | null = null;
     @state() isWebPublished = false;
     @state() hasScreenshots = false;
-    @state() transpose: number = 0;
+    @state() transpose = 0;
 
     location: RouterLocation | null = null;
     chordChartLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
-
-    constructor() {
-        super();
-    }
 
     firstUpdated() {
         this.canGoFullScreen = !!document.body.requestFullscreen;
@@ -40,7 +43,7 @@ export class ChordDetails extends BootstrapBase {
     }
 
     chordSheetLoaded(chord: ChordSheet) {
-        if (chord == null) {
+        if (!chord) {
             this.chordSheetLoadFailed("Unable to load chord sheet. API return null for " + this.location?.params["id"]);
             return;
         }
@@ -69,7 +72,7 @@ export class ChordDetails extends BootstrapBase {
                         if (chordId) {
                             window.location.href = `/${chordId}?offline-index=${offlineIndex+1}`;
                         }
-                    })
+                    });
 
             }, 3000);
         }
@@ -101,7 +104,7 @@ export class ChordDetails extends BootstrapBase {
 
         return html`
             <section class="container mx-auto">
-                <div class="text-center">
+                <div>
                     ${content}
                 </div>
             </section>
@@ -161,7 +164,7 @@ export class ChordDetails extends BootstrapBase {
         // For printing, we have special handling for the header (title and author).
         // - If the chord chart is in the new format, include the header in the print.
         // - If the chord chart isn't in the new format, don't include the header in the print.
-        const headerClass = !!chord.chords ? "" : "d-print-none";
+        const headerClass = chord.chords ? "" : "d-print-none";
         return html`
             <!-- Song details -->
             <div class="row ${headerClass}">
@@ -203,27 +206,176 @@ export class ChordDetails extends BootstrapBase {
 
             <!-- Chords and sidebar -->
             <div class="row">
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-9">
                     ${this.renderChordPreviewer(chord)}
                 </div>
 
                 <!-- Sidebar -->
-                <div class="sidebar col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        Song
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Special title treatment</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                    </div>
+                <div class="sidebar col-lg-3 d-flex flex-column gap-2">
+                    <sl-card class="card-header w-100">
+                        <div slot="header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>General</span>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                            </div>
+                        </div>
+
+                        <p>
+                            Name: <strong>${chord.song}</strong>
+                        </p>
+                        <p>
+                            Hebrew name: <strong>${chord.hebrewSongName}</strong>
+                        </p>
+                        <p>
+                            Artist: <strong>${chord.artist}</strong>
+                        </p>
+                        <p>
+                            Authors: <strong>${chord.authors.join(", ")}</strong>
+                        </p>
+                    </sl-card>
+
+                    <sl-card class="card-header w-100">
+                        <div slot="header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Media</span>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                            </div>
+                        </div>
+                        <p class="d-flex gap-1 align-items-center">
+                            <span class="fs-5 pe-1 ps-1" lang="he" style="color: #e9dd9a; background-color: #2f3d58">ח</span>
+                            Chavah: 
+                            ${this.renderChavahLink(chord)}
+                        </p>
+                        <p class="d-flex gap-1 align-items-center">
+                            <sl-icon name="youtube" label="Youtube" style="color: red !important;"></sl-icon>
+                            Youtube: 
+                            ${this.renderYoutubeLink(chord)}
+                        </p>
+                        <p class="d-flex gap-1 align-items-center">
+                            <sl-icon name="music-note-list" label="Chordify" style="color: #0a8282"></sl-icon>
+                            <span>Chordify:</span> 
+                             ${this.renderChordifyLink(chord)}
+                        </p>
+                        <p class="d-flex gap-1 align-items-center">
+                            <sl-icon name="file-earmark-text" label="Google Docs" style="color: #387FF5"></sl-icon>
+                            <span>Google Docs:</span> 
+                             ${this.renderGoogleDocsLink(chord)}
+                        </p>
+                        <p>
+                            Other links:
+                        </p>
+                        <ul>
+                            ${repeat(chord.links, l => l, l => this.renderLink(l))}
+                        </ul>
+                    </sl-card>
+
+                    <sl-card class="card-header w-100">
+                        <div slot="header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Arrangement</span>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                            </div>
+                        </div>
+                        <p>
+                            Key: <strong>${chord.key}</strong>
+                        </p>
+                        <p>
+                            Capo: <strong>${chord.capo}</strong>
+                        </p>
+                        <p>
+                            Sheet music: <strong>${chord.isSheetMusic ? "✔️" : "✖️"}</strong>
+                        </p>
+                        <p>
+                            About:
+                        </p>
+                        <blockquote>${chord.about}</blockquote>
+                    </sl-card>
+
+                    <sl-card class="card-header w-100">
+                        <div slot="header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Copyright</span>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                            </div>
+                        </div>
+                        <p>
+                            Copyright: <strong>${chord.copyright} ${chord.year}</strong>
+                        </p>
+                        <p>
+                            CCLI: <strong>${chord.ccliNumber}</strong>
+                        </p>
+                    </sl-card>
                 </div>
             </div>
             <p style="display: none">
                 ${chord.plainTextContents}
             </p>
+        `;
+    }
+
+    renderChavahLink(chord: ChordSheet): TemplateResult {
+        const chavahLink =
+            chord.links.find(url => url.startsWith("https://messianicradio.com") && url.includes("song=songs/")) ||
+                (chord.chavahSongId ? `https://messianicraido.com?song=${chord.chavahSongId}` : null);
+        if (!chavahLink) {
+            return html``;
+        }
+
+        return html`
+            <a href="${chavahLink}" target="_blank">Play this song on Chavah</a>
+        `;
+    }
+
+    renderYoutubeLink(chord: ChordSheet): TemplateResult {
+        const youtubeLink = chord.links.find(l => l.startsWith("https://youtube.com/watch?v="));
+        if (!youtubeLink) {
+            return html``;
+        }
+
+        return html`
+            <a href="${youtubeLink}" target="_blank">Watch this song on Youtube</a>
+        `;
+    }
+
+    renderChordifyLink(chord: ChordSheet): TemplateResult {
+        const chordifyLink = chord.links.find(l => l.startsWith("https://chordify.net/chords/"));
+        if (!chordifyLink) {
+            return html``;
+        }
+
+        return html`
+            <a class="d-flex align-items-center" href="${chordifyLink}" target="_blank" title="Open the Chordify arrangement of this song">
+                Open Chordify arrangement
+            </a>
+        `;
+    }
+
+    renderGoogleDocsLink(chord: ChordSheet): TemplateResult {
+        const gDocPublishedLink = chord.links.find(l => l.startsWith("https://docs.google.com/") && l.endsWith("/pub"));
+        const gDocLink = gDocPublishedLink || chord.links.find(l => l.startsWith("https://docs.google.com"));
+        if (!gDocLink) {
+            return html``;
+        }
+
+        return html`
+            <a class="d-flex align-items-center" href="${gDocLink}" target="_blank">
+                Open on Google Docs
+            </a>
+        `;
+    }
+
+    renderLink(link: string): TemplateResult {
+        // Don't render Chavah, Youtube, Chordify, or Google Docs links.
+        // These are handled separately.
+        if (link.includes("messianicradio.com") || link.includes("youtube.com") || link.includes("chordify.net")) {
+            return html``;
+        }
+
+        const linkText = link.replace("https://", "").replace("http://", "");
+        return html`
+            <li>
+                <a class="text-truncate d-block" href="${link}" target="_blank" rel="noopener">${linkText}</a>
+            </li>
         `;
     }
 
@@ -402,7 +554,7 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderOfflinePreviewer(chord: ChordSheet): TemplateResult {
-        if (chord.screenshots.length == 0) {
+        if (chord.screenshots.length === 0) {
             return html`
                 <div class="alert alert-warning d-inline-block mx-auto" role="alert">
                     ⚠ This chord sheet is not available offline.
@@ -489,7 +641,7 @@ export class ChordDetails extends BootstrapBase {
             this.chordChartLines = createChordChartLines(chord.chords);
         }
 
-         return this.chordChartLines;
+        return this.chordChartLines;
     }
 
     bumpTranspose(increment: 1 | -1) {
