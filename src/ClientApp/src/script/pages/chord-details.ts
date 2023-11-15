@@ -1,7 +1,6 @@
 import { RouterLocation } from "@vaadin/router";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { ifDefined } from "lit/directives/if-defined.js";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from "lit/directives/repeat.js";
@@ -14,6 +13,7 @@ import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 import { sharedStyles } from "../common/shared.styles";
 import "@shoelace-style/shoelace/dist/components/card/card.js";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/button-group/button-group.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
 
@@ -183,8 +183,19 @@ export class ChordDetails extends LitElement {
 
             <!-- Song toolbar -->
             <div class="row d-print-none">
-                <div class="col-12 col-lg-8">
+                <div class="col-12">
+                    
                     <div class="btn-toolbar">
+                        <sl-icon-button name="download" label="Download this chord chart" title="Download this chord chart"></sl-icon-button>
+                        <sl-icon-button name="play-fill" label="Play the audio recording for this song" title="Play the audio recording for this song"></sl-icon-button>
+                        <sl-button-group label="Transpose">
+                            <sl-icon-button name="caret-down-fill"></sl-icon-button>
+                            <sl-icon-button name="caret-up-fill"></sl-icon-button>
+                        </sl-button-group>
+                        <sl-icon-button name="pencil-square" label="Edit" title="Edit this chord chart"></sl-icon-button>
+                        <sl-icon-button name="printer" label="Print" title="Print this chord chart"></sl-icon-button>
+                        
+
                         <div class="btn-group" role="group" aria-label="Chord chart toolbar">
                             <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download" aria-label="Download">
                                 <img src="/assets/bs-icons/save.svg" alt="Download">
@@ -211,7 +222,7 @@ export class ChordDetails extends LitElement {
                 </div>
 
                 <!-- Sidebar -->
-                <div class="sidebar col-lg-3 d-flex flex-column gap-2">
+                <div class="sidebar col-lg-3 d-flex flex-column gap-3">
                     <sl-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
@@ -367,7 +378,7 @@ export class ChordDetails extends LitElement {
     renderLink(link: string): TemplateResult {
         // Don't render Chavah, Youtube, Chordify, or Google Docs links.
         // These are handled separately.
-        if (link.includes("messianicradio.com") || link.includes("youtube.com") || link.includes("chordify.net")) {
+        if (link.includes("messianicradio.com") || link.includes("youtube.com") || link.includes("chordify.net") || link.includes("docs.google.com")) {
             return html``;
         }
 
