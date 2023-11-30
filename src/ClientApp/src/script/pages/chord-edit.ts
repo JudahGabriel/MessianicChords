@@ -491,7 +491,8 @@ export class ChordEdit extends BootstrapBase {
         // Rule: if we have attachments, each attachment must be under 10MB
         const hasChordChart = !!this.chord.chords && !!this.chord.chords.trim();
         const hasGDocLink = this.chord.links.some(l => l.includes("docs.google.com") || l.includes("drive.google.com"));
-        if (!hasChordChart && !hasGDocLink) {
+        const hasAttachment = this.attachments.length > 0;
+        if (!hasChordChart && !hasGDocLink && !hasAttachment) {
             this.invalidFieldName = "chords";
             return false;
         }
