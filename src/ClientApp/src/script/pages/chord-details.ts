@@ -186,6 +186,16 @@ export class ChordDetails extends LitElement {
                 <div class="col-12">
                     
                     <div class="btn-toolbar">
+                        <sl-button>
+                            <div class="d-flex flex-column">
+                                <sl-icon name="download"></sl-icon>
+                                <span>Download</span>
+                            </div>
+                        </sl-button>
+                        <sl-button>
+                            <sl-icon name="download" style="font-size: 20px"></sl-icon>
+                            <span style="font-size: 20px">Download</span>
+                        </sl-button>
                         <sl-icon-button name="download" label="Download this chord chart" title="Download this chord chart"></sl-icon-button>
                         <sl-icon-button name="play-fill" label="Play the audio recording for this song" title="Play the audio recording for this song"></sl-icon-button>
                         <sl-button-group label="Transpose">

@@ -1,49 +1,51 @@
-import { html, LitElement, TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { sharedStyles } from '../common/shared.styles';
-import { headerStyles } from './header.styles';
-import { bootstrapUtilities } from '../common/bootstrap-utilities.styles';
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { sharedStyles } from "../common/shared.styles";
+import { headerStyles } from "./header.styles";
+import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
+import "@shoelace-style/shoelace/dist/components/alert/alert.js";
+import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 
-@customElement('app-header')
+@customElement("app-header")
 export class AppHeader extends LitElement {
-  static styles = [sharedStyles, bootstrapUtilities, headerStyles];
+    static styles = [sharedStyles, bootstrapUtilities, headerStyles];
 
-  @state() locationPath: string = "/";
+  @state() locationPath = "/";
   @state() isOnline: boolean = navigator.onLine;
   @state() hideOfflineAlert = false;
 
   constructor() {
-    super();
+      super();
   }
 
   connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
-    window.addEventListener('online', () => this.isOnline = navigator.onLine);
-    this.listenForOfflineStatusChange();
+      super.connectedCallback();
+      window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
+      window.addEventListener("online", () => this.isOnline = navigator.onLine);
+      this.listenForOfflineStatusChange();
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent))
+      super.disconnectedCallback();
+      window.removeEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
   }
 
   async listenForOfflineStatusChange() {
-    const module = await import("../services/online-detector");
-    const detector = new module.OnlineDetector();
-    detector.checkOnline().then(result => this.isOnline = result);
+      const module = await import("../services/online-detector");
+      const detector = new module.OnlineDetector();
+      detector.checkOnline().then(result => this.isOnline = result);
   }
 
   routeChanged(e: CustomEvent) {
-    this.locationPath = e.detail?.location?.pathname || "";
+      this.locationPath = e.detail?.location?.pathname || "";
   }
 
   get isOnHomePage(): boolean {
-    return this.locationPath === "/" || this.locationPath === "";
+      return this.locationPath === "/" || this.locationPath === "";
   }
 
   render() {
-    return html`
+      return html`
       <header class="d-flex justify-content-center flex-wrap d-print-none">
         <a href="/">
           <img src="/assets/images/128x128.png" alt="Messianic Chords logo" />
@@ -66,7 +68,7 @@ export class AppHeader extends LitElement {
   }
 
   renderLargeSubheader(): TemplateResult {
-    return html`
+      return html`
       <h2 class="d-none d-sm-inline-block">
         <span>Chord charts and lyrics for Messiah's music</span>
       </h2>
@@ -74,11 +76,11 @@ export class AppHeader extends LitElement {
   }
 
   renderPhoneSubheader(): TemplateResult {
-    if (!this.isOnHomePage) {
-      return html``;
-    }
+      if (!this.isOnHomePage) {
+          return html``;
+      }
 
-    return html`
+      return html`
       <h2 class="d-block d-sm-none w-100 text-center">
         <span>Chord charts for Messiah's music</span>
       </h2>
@@ -86,15 +88,15 @@ export class AppHeader extends LitElement {
   }
 
   renderOfflineStatus(): TemplateResult {
-    if (this.isOnline || this.hideOfflineAlert) {
-      return html``;
-    }
+      if (this.isOnline || this.hideOfflineAlert) {
+          return html``;
+      }
 
-    return html`
-      <div class="alert alert-warning alert-dismissible fade show d-inline-block" role="alert">
-        <strong>You're offline.</strong> You can view chord charts you previously viewed while online.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @click="${() => this.hideOfflineAlert = true}"></button>
-      </div>
-    `;
+      return html`
+        <sl-alert variant="primary" open closable class="alert-closable">
+            <sl-icon slot="icon" name="info-circle"></sl-icon>
+            <strong>You're offline.</strong> You can view chord charts you previously viewed while online.
+        </sl-alert>
+      `;
   }
 }
