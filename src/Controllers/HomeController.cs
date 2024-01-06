@@ -42,6 +42,7 @@ namespace MessianicChords.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("/")]
+        [Route("{*url}")] // For any URLs that don't explicitly match other routes (e.g. search), render the SPA.
         public async Task<IActionResult> Index()
         {
             // Development? Return our simple dev-index.html file.
@@ -250,6 +251,12 @@ namespace MessianicChords.Controllers
         public IActionResult AppleSiteAssociation()
         {
             return File("/apple-app-site-association.json", "application/json");
+        }
+
+        [HttpGet(".well-known/assetlinks.json")]
+        public IActionResult DigitalAssetLinks()
+        {
+            return File("/assetlinks.json", "application/json");
         }
 
         private XmlNode CreateUrlNode(XmlDocument doc, string location, DateTime lastModified, string changeFrequency, double priority)

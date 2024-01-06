@@ -30,6 +30,8 @@ export class AppFooter extends BootstrapBase {
                     <span class="bar-separator">|</span>
                     <a href="/about">About us, legal</a>
                     <span class="bar-separator">|</span>
+                    <a href="mailto:contact@messianicchords.com">Contact us</a>
+                    <span class="bar-separator">|</span>
                     <a href="https://blog.judahgabriel.com/2012/01/introducing-messianicchordscom.html">What is this site?</a>
                     <span class="bar-separator">|</span>
                     <a href="https://blog.judahgabriel.com">Author's Blog</a>
