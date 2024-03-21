@@ -223,6 +223,7 @@ export class AppHome extends BootstrapBase {
 
   render() {
     const navClass = this.searchResults.length > 0 ? "d-none" : "";
+    const target = this.isInTabbedPwa ? "_blank" : "_self";
     return html`
       <section class="home-page container">
 
@@ -235,13 +236,13 @@ export class AppHome extends BootstrapBase {
         <nav class="text-center ${navClass}">
           <span>Browse:</span>
           <br class="d-block d-sm-none" />
-          <a class="fw-bold" href="/browse/newest">Newest</a>
+          <a class="fw-bold" href="/browse/newest" target="${target}">Newest</a>
           <span class="bar-separator">&nbsp;|&nbsp;</span>
-          <a class="fw-bold" href="/browse/songs">By song</a>
+          <a class="fw-bold" href="/browse/songs" target="${target}">By song</a>
           <span class="bar-separator">&nbsp;|&nbsp;</span>
-          <a class="fw-bold" href="/browse/artists">By artist</a>
+          <a class="fw-bold" href="/browse/artists" target="${target}">By artist</a>
           <span class="bar-separator">&nbsp;|&nbsp;</span>
-          <a class="fw-bold" href="/browse/random">Random</a>
+          <a class="fw-bold" href="/browse/random" target="${target}">Random</a>
 
           <div class="new-chords text-center mt-2 d-flex">
             <span>New chords:</span>
@@ -253,7 +254,7 @@ export class AppHome extends BootstrapBase {
           <div class="d-flex justify-content-center">
             <div class="site-text">
               Got chords to share?
-              <a class="fw-bold" href="/chordsheets/new">Upload</a>
+              <a class="fw-bold" href="/chordsheets/new" target="${target}">Upload</a>
             </div>
           </div>
         </nav>
@@ -297,9 +298,10 @@ export class AppHome extends BootstrapBase {
     const separator = index != this.newChords.length - 1 ?
       html`<span class="bar-separator d-none d-sm-inline">&nbsp;|&nbsp;</span>` :
       html``;
+    const target = this.isInTabbedPwa ? "_blank" : "_self";
     return html`
       <div class="d-inline-block">
-        <a class="fw-bold" href="/${newChordSheet.id}">
+        <a class="fw-bold" href="/${newChordSheet.id}" target="${target}">
           ${title}
         </a>
         ${separator}
