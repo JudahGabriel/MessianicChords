@@ -324,7 +324,7 @@ export class AppHome extends BootstrapBase {
 
   renderSearchResult(chordSheet: ChordSheet): TemplateResult {
     return html`
-      <chord-card .chord="${chordSheet}"></chord-card>
+      <chord-card .chord="${chordSheet}" ?new-window="${this.isInTabbedPwa}"></chord-card>
     `;
   }
 }
