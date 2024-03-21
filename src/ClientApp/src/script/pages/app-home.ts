@@ -148,6 +148,7 @@ export class AppHome extends BootstrapBase {
   @state() newChordsSkip = 0;
   readonly chordService = new ChordService();
   readonly searchText = new BehaviorSubject("");
+  readonly isInTabbedPwa = window.matchMedia('(display-mode: tabbed)').matches;
 
   constructor() {
     super();

@@ -8,6 +8,7 @@ import { ChordSheet } from '../models/interfaces';
 export class ChordCard extends BootstrapBase {
 
     @property({ type: Object }) chord: ChordSheet | null = null;
+    @property({ type: Boolean, attribute: "new-window" }) newWindow = false;
 
     static get styles(): CSSResultGroup {
         const localStyles = css`
@@ -74,17 +75,19 @@ export class ChordCard extends BootstrapBase {
             return html``;
         }
 
+        const target = this.newWindow ? "_blank" : "_self";
+
         return html`
             <div class="card chord-card">
                 <div class="card-body">
                     <div class="card-title d-flex justify-content-between">
-                        <a class="song-name" href="${this.chord.id}">
+                        <a class="song-name" href="${this.chord.id}" target="${target}">
                             ${this.chord.song}
                         </a>
                         ${this.renderHebrewName()}
                     </div>
                     <h6 class="card-subtitle mb-2 text-muted">
-                        <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist || this.chord.authors[0])}">
+                        <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist || this.chord.authors[0])}" target="${target}">
                             ${this.chord.artist || this.chord.authors.join(", ")}
                         </a>
                     </h6>
