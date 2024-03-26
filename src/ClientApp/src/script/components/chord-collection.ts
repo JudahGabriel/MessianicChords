@@ -16,8 +16,8 @@ import "../components/chord-card";
 export class ChordCollection extends LitElement {
     @property({ type: Object }) chords: PagedList<ChordSheet> | null = null;
     @state() isLoading = false;
-
     readonly chordsChangedHandler = () => this.chordsChanged();
+    readonly isInTabbedPwa = window.matchMedia('(display-mode: tabbed)').matches;
 
     static styles = [sharedStyles, bootstrapUtilities, chordCollectionStyles];
 
@@ -80,7 +80,7 @@ export class ChordCollection extends LitElement {
 
     private renderChordCard(chordSheet: ChordSheet): TemplateResult {
         return html`
-            <chord-card .chord="${chordSheet}"></chord-card>
+            <chord-card .chord="${chordSheet}" ?new-window="${this.isInTabbedPwa}"></chord-card>
         `;
     }
 
