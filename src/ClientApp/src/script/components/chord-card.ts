@@ -8,8 +8,8 @@ import "@shoelace-style/shoelace/dist/components/card/card.js";
 
 @customElement("chord-card")
 export class ChordCard extends LitElement {
-
     @property({ type: Object }) chord: ChordSheet | null = null;
+    @property({ type: Boolean, attribute: "new-window" }) newWindow = false;
 
     static styles = [sharedStyles, bootstrapUtilities, chordCardStyles];
 
@@ -18,11 +18,12 @@ export class ChordCard extends LitElement {
             return html``;
         }
 
+        const target = this.newWindow ? "_blank" : "_self";
         return html`
             <sl-card class="card chord-card">
                 <div slot="header">
                     <div class="card-title d-flex justify-content-between">
-                        <a class="song-name" href="${this.chord.id}">
+                        <a class="song-name" href="${this.chord.id}" target="${target}">
                             ${this.chord.song}
                         </a>
                         ${this.renderHebrewName()}
@@ -30,7 +31,7 @@ export class ChordCard extends LitElement {
                 </div>
 
                 <h6 class="card-subtitle mb-2 text-muted">
-                    <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist || this.chord.authors[0])}">
+                    <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist || this.chord.authors[0])}" target="${target}">
                         ${this.chord.artist || this.chord.authors.join(", ")}
                     </a>
                 </h6>
@@ -40,9 +41,10 @@ export class ChordCard extends LitElement {
     }
 
     renderHebrewName(): TemplateResult {
+        const target = this.newWindow ? "_blank" : "_self";
         if (this.chord && this.chord.hebrewSongName) {
             return html`
-                <a class="hebrew-song-name" href="/${this.chord.id}" lang="he">
+                <a class="hebrew-song-name" href="/${this.chord.id}" target="${target}" lang="he">
                     ${this.chord.hebrewSongName}
                 </a>`;
         }
