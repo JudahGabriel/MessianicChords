@@ -28,6 +28,7 @@ export class AppHome extends LitElement {
     searchResults = new PagedList<ChordSheet>((skip, take) => this.chordService.searchPaged(this.searchText.value, skip, take));
     readonly chordService = new ChordService();
     readonly searchText = new BehaviorSubject("");
+    readonly isInTabbedPwa = window.matchMedia('(display-mode: tabbed)').matches;
 
     constructor() {
         super();
@@ -92,6 +93,7 @@ export class AppHome extends LitElement {
 
     render() {
         const navClass = this.searchResults.items.length > 0 ? "d-none" : "";
+        const target = this.isInTabbedPwa ? "_blank" : "_self";
         return html`
             <section class="home-page">
                 <div class="search-container">
@@ -113,13 +115,13 @@ export class AppHome extends LitElement {
                 <div class="d-flex flex-column">
                     <span>Browse</span>
                     <div class="browse-by-container d-flex gap-2 justify-content-center align-items-center">
-                        <a class="fw-bold" href="/browse/newest">New</a>
+                        <a class="fw-bold" href="/browse/newest" target="${target}">New</a>
                         <sl-divider vertical></sl-divider>
-                        <a class="fw-bold" href="/browse/songs">Songs</a>
+                        <a class="fw-bold" href="/browse/songs" target="${target}">Songs</a>
                         <sl-divider vertical></sl-divider>
-                        <a class="fw-bold" href="/browse/artists">Artists</a>
+                        <a class="fw-bold" href="/browse/artists" target="${target}">Artists</a>
                         <sl-divider vertical></sl-divider>
-                        <a class="fw-bold" href="/browse/random">Random</a>
+                        <a class="fw-bold" href="/browse/random" target="${target}">Random</a>
                     </div>
                 </div>
 
@@ -135,7 +137,7 @@ export class AppHome extends LitElement {
 
                 <div class="d-flex justify-content-center">
                     <div class="me-1">Got chords to share?</div>
-                    <a class="fw-bold" href="/chordsheets/new">Upload</a>
+                    <a class="fw-bold" href="/chordsheets/new" target="${target}">Upload</a>
                 </div>
             </nav>
 
@@ -164,6 +166,7 @@ export class AppHome extends LitElement {
     }
 
     renderNewChordLink(newChordSheet: ChordSheet): TemplateResult {
+        const target = this.isInTabbedPwa ? "_blank" : "_self";
         const songName = [newChordSheet.song, newChordSheet.hebrewSongName]
             .filter(s => !!s)
             .join(" ");
@@ -171,7 +174,7 @@ export class AppHome extends LitElement {
             html`${songName} - ${newChordSheet.key}` :
             html`${songName}`;
         return html`
-            <a class="new-chord-link fw-bold text-truncate" href="${newChordSheet.id}">${title}</a>
+            <a class="new-chord-link fw-bold text-truncate" href="${newChordSheet.id}" target="${target}">${title}</a>
             <sl-divider vertical></sl-divider>
         `;
     }
