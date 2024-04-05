@@ -16,6 +16,11 @@ import "@shoelace-style/shoelace/dist/components/button/button.js";
 import "@shoelace-style/shoelace/dist/components/button-group/button-group.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
+import "@shoelace-style/shoelace/dist/components/details/details.js";
+import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
+import "@shoelace-style/shoelace/dist/components/tab/tab.js";
+import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {
@@ -28,7 +33,7 @@ export class ChordDetails extends LitElement {
     @state() canGoFullScreen: boolean | null = null;
     @state() isWebPublished = false;
     @state() hasScreenshots = false;
-    @state() transpose = 0;
+    @state() transpose = 0;    
 
     location: RouterLocation | null = null;
     chordChartLines: ChordChartLine[] | null = null;
@@ -58,7 +63,7 @@ export class ChordDetails extends LitElement {
         ]
             .filter(n => !!n)
             .join(" ");
-        document.title = `${chordName} chords and lyrics on Messianic Chords`;
+        document.title = `${chordName} by ${chord.artist || chord.authors[0] || "Unknown"} - guitar chord chart and lyrics`;
 
         // Offline helper: see if we have a offline index query string.
         // If so, fetch the next chord sheet in the list and load that in a moment.
@@ -78,7 +83,7 @@ export class ChordDetails extends LitElement {
         }
     }
 
-    chordSheetLoadFailed(error: any) {
+    chordSheetLoadFailed(error: unknown) {
         // Couldn't load the chord sheet from the network? See if it's in our local cache.
         const chordId = this.location?.params["id"] as string;
         if (!chordId) {
@@ -169,7 +174,7 @@ export class ChordDetails extends LitElement {
             <!-- Song details -->
             <div class="row ${headerClass}">
                 <div class="col-12 col-lg-12">
-                    <div class="d-flex justify-content-between align-items-center mb-sm-4">
+                    <div class="d-flex justify-content-between align-items-baseline mb-sm-4">
                         <h1 class="song-name">${chord.song}</h1>
                         <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span>
                         <h5 class="artist-author-name">
@@ -184,55 +189,90 @@ export class ChordDetails extends LitElement {
             <!-- Song toolbar -->
             <div class="row d-print-none">
                 <div class="col-12">
-                    
                     <div class="btn-toolbar">
-                        <sl-button>
-                            <div class="d-flex flex-column">
-                                <sl-icon name="download"></sl-icon>
-                                <span>Download</span>
-                            </div>
-                        </sl-button>
-                        <sl-button>
-                            <sl-icon name="download" style="font-size: 20px"></sl-icon>
-                            <span style="font-size: 20px">Download</span>
-                        </sl-button>
-                        <sl-icon-button name="download" label="Download this chord chart" title="Download this chord chart"></sl-icon-button>
-                        <sl-icon-button name="play-fill" label="Play the audio recording for this song" title="Play the audio recording for this song"></sl-icon-button>
-                        <sl-button-group label="Transpose">
-                            <sl-icon-button name="caret-down-fill"></sl-icon-button>
-                            <sl-icon-button name="caret-up-fill"></sl-icon-button>
+                        <sl-button-group>
+
+                            <sl-tooltip content="Play the audio recording for this song" hoist>
+                                <sl-button size="large" @click="${this.playMedia}">
+                                    <sl-icon name="play-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="Download this chord chart" hoist>
+                                <sl-button size="large" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
+                                    <sl-icon name="download"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="View fullscreen" hoist>
+                                <sl-button size="large" @click="${this.goFullscreen}">
+                                    <sl-icon name="fullscreen"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
                         </sl-button-group>
-                        <sl-icon-button name="pencil-square" label="Edit" title="Edit this chord chart"></sl-icon-button>
-                        <sl-icon-button name="printer" label="Print" title="Print this chord chart"></sl-icon-button>
+
+                        <sl-button-group>
+                            <sl-tooltip content="Print this chord chart" hoist>
+                                <sl-button size="large" @click="${this.print}">
+                                    <sl-icon name="printer"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="Edit this chord chart" hoist>
+                                <sl-button size="large" href="/${chord.id}/edit" target="_blank">
+                                    <sl-icon name="pencil-square"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                        </sl-button-group>
+                        
+                        <sl-button-group label="Transpose">
+                            <sl-tooltip content="Transpose the chords up a half-step" hoist>
+                                <sl-button size="large" @click="${() => this.bumpTranspose(1)}">
+                                    <sl-icon name="caret-up-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                            <sl-tooltip content="Transpose half-steps" hoist>
+                                <sl-button class="transpose-value" disabled size="large" @click="${() => this.bumpTranspose(-1)}">
+                                    ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
+                                </sl-button>
+                            </sl-tooltip>
+                            <sl-tooltip content="Transpose the chords down a half-step" hoist>
+                                <sl-button size="large" @click="${() => this.bumpTranspose(-1)}">
+                                    <sl-icon name="caret-down-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                        </sl-button-group>
+                    </div>
                         
 
-                        <div class="btn-group" role="group" aria-label="Chord chart toolbar">
-                            <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download" aria-label="Download">
-                                <img src="/assets/bs-icons/save.svg" alt="Download">
-                            </a>
-                            <button type="button" class="btn btn-light" title="Print" @click="${this.print}" aria-label="Print">
-                                <img src="/assets/bs-icons/printer.svg" alt="Print">
-                            </button>
-                            ${this.renderTransposeButtons(chord)}
-                            ${this.renderPlayButton(chord)}
-                            ${this.renderFullScreenButton()}
-                            ${this.renderOpenInGDriveButton(chord)}
-                            <a href="/${chord.id}/edit" class="btn btn-light" title="Edit chord chart" aria-label="Edit chord chart">
-                                <img src="/assets/bs-icons/pencil-square.svg" alt="Edit" style="transform: translateY(2px)" />
-                            </a>
-                        </div>
-                    </div>
+                    <!-- <div class="btn-group" role="group" aria-label="Chord chart toolbar">
+                        <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download" aria-label="Download">
+                            <img src="/assets/bs-icons/save.svg" alt="Download">
+                        </a>
+                        <button type="button" class="btn btn-light" title="Print" @click="${this.print}" aria-label="Print">
+                            <img src="/assets/bs-icons/printer.svg" alt="Print">
+                        </button>
+                        ${this.renderTransposeButtons(chord)}
+                        ${this.renderPlayButton(chord)}
+                        ${this.renderFullScreenButton()}
+                        ${this.renderOpenInGDriveButton(chord)}
+                        <a href="/${chord.id}/edit" class="btn btn-light" title="Edit chord chart" aria-label="Edit chord chart">
+                            <img src="/assets/bs-icons/pencil-square.svg" alt="Edit" style="transform: translateY(2px)" />
+                        </a>
+                    </div> -->
+                    
                 </div>
             </div>
 
-            <!-- Chords and sidebar -->
             <div class="row">
-                <div class="col-12 col-lg-9">
+                <!-- Chord chart -->
+                <div class="col-12 col-lg-8">
                     ${this.renderChordPreviewer(chord)}
                 </div>
 
                 <!-- Sidebar -->
-                <div class="sidebar col-lg-3 d-flex flex-column gap-3">
+                <div class="sidebar col-lg-4 d-flex flex-column gap-5 d-print-none">
                     <sl-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
@@ -242,7 +282,7 @@ export class ChordDetails extends LitElement {
                         </div>
 
                         <p>
-                            Name: <strong>${chord.song}</strong>
+                            Name: <strong class="text-right">${chord.song}</strong>
                         </p>
                         <p>
                             Hebrew name: <strong>${chord.hebrewSongName}</strong>
@@ -262,8 +302,14 @@ export class ChordDetails extends LitElement {
                                 <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
                             </div>
                         </div>
-                        <p class="d-flex gap-1 align-items-center">
-                            <span class="fs-5 pe-1 ps-1" lang="he" style="color: #e9dd9a; background-color: #2f3d58">ח</span>
+
+                        ${this.renderAudioPlayer(chord)}
+                        <ul class="media-links">
+                            ${repeat(chord.links, l => l, l => this.renderLink(l))}
+                        </ul>
+
+                        <!-- <p class="d-flex gap-1 align-items-center">
+                            <span class="fs-5 pe-2 ps-2" lang="he" style="color: #e9dd9a; background-color: #2f3d58">ח</span>
                             Chavah: 
                             ${this.renderChavahLink(chord)}
                         </p>
@@ -287,7 +333,7 @@ export class ChordDetails extends LitElement {
                         </p>
                         <ul>
                             ${repeat(chord.links, l => l, l => this.renderLink(l))}
-                        </ul>
+                        </ul> -->
                     </sl-card>
 
                     <sl-card class="card-header w-100">
@@ -304,7 +350,7 @@ export class ChordDetails extends LitElement {
                             Capo: <strong>${chord.capo}</strong>
                         </p>
                         <p>
-                            Sheet music: <strong>${chord.isSheetMusic ? "✔️" : "✖️"}</strong>
+                            Type: <strong>${chord.isSheetMusic ? "Sheet music" : "Chord chart"}</strong>
                         </p>
                         <p>
                             About:
@@ -386,16 +432,12 @@ export class ChordDetails extends LitElement {
     }
 
     renderLink(link: string): TemplateResult {
-        // Don't render Chavah, Youtube, Chordify, or Google Docs links.
-        // These are handled separately.
-        if (link.includes("messianicradio.com") || link.includes("youtube.com") || link.includes("chordify.net") || link.includes("docs.google.com")) {
-            return html``;
-        }
-
         const linkText = link.replace("https://", "").replace("http://", "");
         return html`
             <li>
-                <a class="text-truncate d-block" href="${link}" target="_blank" rel="noopener">${linkText}</a>
+                <a class="text-truncate d-block" href="${link}" target="_blank" rel="noopener">
+                    ${linkText}
+                </a>
             </li>
         `;
     }
@@ -672,6 +714,28 @@ export class ChordDetails extends LitElement {
         // If we go outside the scale, wrap to the other side.
         if (this.transpose === 12 || this.transpose === -12) {
             this.transpose = 0;
+        }
+    }
+
+    renderAudioPlayer(chord: ChordSheet): TemplateResult {
+        const chavahLink = chord.links.find(l => l.startsWith("https://messianicradio.com") && l.includes("song=songs/"));
+        if (!chavahLink) {
+            return html``;
+        }
+
+        const chavahUri = new URL(chavahLink);
+        const chavahSongId = chavahUri.searchParams.get("song");
+        if (!chavahSongId) {
+            return html``;
+        }
+
+        return html`<audio controls preload="none" src="https://messianicradio.com/api/songs/getmp3byid?songId=${chavahSongId}"></audio>`;
+    }
+
+    playMedia(): void {
+        const audio = this.shadowRoot?.querySelector("audio");
+        if (audio) {
+            audio.play();
         }
     }
 }

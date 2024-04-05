@@ -6,6 +6,7 @@ export const chordDetailStyles = css`
         --iframe-width: 876px;
         --iframe-page-height: 1100px;
         --soft-gray: rgb(248, 248, 248);
+        font-family: var(--subtitle-font);
     }
 
     .song-name {
@@ -41,20 +42,16 @@ export const chordDetailStyles = css`
 
     .artist-author-name {
         justify-self: end;
-        transform: rotateZ(-1deg);
-        line-height: 45px;
+
+        font-family: var(--title-font);
+        font-size: 1.8em;
+        margin-bottom: -15px;
     }
 
     .artist-author-name a,
     span.artist-author-name {
-        font-family: var(--title-font);
         text-decoration: none;
         color: var(--theme-color);
-        border-radius: var(--highlight-border-radius);
-        background: var(--highlight-background);
-        box-shadow: var(--highlight-box-shadow);
-        padding: 3px 10px;
-        font-size: 0.9em;
     }
 
     @media (max-width: ${SizeMax.Md}px) {
@@ -70,32 +67,14 @@ export const chordDetailStyles = css`
     }
 
     .btn-toolbar {
-        margin-bottom: -40px;
-        transform: translateX(0) translateY(13px);
-        justify-content: end;
-    }
-
-    @media (max-width: ${SizeMax.Md}px) {
-        .btn-toolbar {
-            margin-bottom: 13px;
-            margin-left: -2px;
-            justify-content: start;
+        sl-icon {
+            font-size: 1.5em;
+            transform: translateY(4px);
         }
-    }
 
-    .btn-toolbar img {
-        width: 22px;
-        height: 22px;
-    }
-
-    .btn-toolbar .transpose-btn {
-        position: relative;
-    }
-
-    .btn-toolbar .transpose-btn span {
-        position: absolute;
-        top: 0;
-        right: 0;
+        .transpose-value {
+            min-width: 68px; /** So that changing the transpose value won't change the width of the button */
+        }
     }
 
     iframe {
@@ -224,6 +203,51 @@ export const chordDetailStyles = css`
     .sidebar {
         margin-top: 13px;
         margin-bottom: 16px;
-        padding-left: 0;
+        padding-left: 10px;
+
+        sl-card {
+            --padding: 10px;
+            --border-width: 0;
+            font-family: var(--subtitle-font);
+
+            strong {
+                text-align: right;
+            }
+
+            strong, blockquote {
+                font-family: var(--title-font);
+            }
+        }
+
+        p {
+            margin: 0;
+            min-height: 35px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .media-links {
+            list-style: hebrew;
+        }
+
+        audio {
+            width: 100%;
+        }
+
+        [slot='header'] {
+            background: var(--highlight-background);
+            border-radius: var(--highlight-border-radius);
+            font-family: var(--subtitle-font);
+            color: var(--theme-color);
+            padding-left: 10px;
+            padding-right: 10px;
+            margin-left: -10px; /** Offset the left padding so that the text beneath aligns */
+            margin-right: -10px;
+
+            sl-icon {
+                color: var(--theme-color);
+            }
+        }
     }
 `;
