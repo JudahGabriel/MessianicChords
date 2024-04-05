@@ -122,6 +122,11 @@ namespace MessianicChords.Models
         /// </summary>
         public int? CcliNumber { get; set; }
 
+        /// <summary>
+        /// The number of comments for this chord sheet. Individual comments for this thread can be fetched via CommentThreads/{chordsheetId}
+        /// </summary>
+        public int CommentCount { get; set; }
+
         public void UpdateFrom(ChordSheet other)
         {
             Address = other.Address;
