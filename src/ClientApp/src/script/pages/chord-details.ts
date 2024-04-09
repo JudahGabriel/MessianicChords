@@ -244,23 +244,6 @@ export class ChordDetails extends LitElement {
                             </sl-tooltip>
                         </sl-button-group>
                     </div>
-                        
-
-                    <!-- <div class="btn-group" role="group" aria-label="Chord chart toolbar">
-                        <a href="${this.downloadUrl(chord)}" target="_blank" download="" class="btn btn-light" title="Download" aria-label="Download">
-                            <img src="/assets/bs-icons/save.svg" alt="Download">
-                        </a>
-                        <button type="button" class="btn btn-light" title="Print" @click="${this.print}" aria-label="Print">
-                            <img src="/assets/bs-icons/printer.svg" alt="Print">
-                        </button>
-                        ${this.renderTransposeButtons(chord)}
-                        ${this.renderPlayButton(chord)}
-                        ${this.renderFullScreenButton()}
-                        ${this.renderOpenInGDriveButton(chord)}
-                        <a href="/${chord.id}/edit" class="btn btn-light" title="Edit chord chart" aria-label="Edit chord chart">
-                            <img src="/assets/bs-icons/pencil-square.svg" alt="Edit" style="transform: translateY(2px)" />
-                        </a>
-                    </div> -->
                     
                 </div>
             </div>
@@ -439,70 +422,6 @@ export class ChordDetails extends LitElement {
                     ${linkText}
                 </a>
             </li>
-        `;
-    }
-
-    renderPlayButton(chord: ChordSheet): TemplateResult {
-        const chavahLink =
-            chord.links.find(url => url.startsWith("https://messianicradio.com") && url.includes("song=songs/")) ||
-                (chord.chavahSongId ? `https://messianicraido.com?song=${chord.chavahSongId}` : null);
-        const youtubeLink = chord.links.find(l => l.startsWith("https://youtube.com/watch?v="));
-        const playLink = chavahLink || youtubeLink;
-        if (!playLink) {
-            return html``;
-        }
-
-        const iconName = chavahLink ? "play-circle.svg" : "youtube.svg";
-        return html`
-            <a href="${playLink}" target="_blank" class="btn btn-light" title="Play this song" aria-label="Play this song">
-                <img src="/assets/bs-icons/${iconName}" alt="Play icon">
-            </a>
-        `;
-    }
-
-    renderFullScreenButton(): TemplateResult {
-        if (!this.canGoFullScreen) {
-            return html``;
-        }
-
-        return html`
-            <button type="button" class="btn btn-light" title="View fullscreen" @click="${this.goFullscreen}" aria-label="View fullscreen">
-                <img src="/assets/bs-icons/arrows-fullscreen.svg" alt="Fullscreen">
-            </button>
-        `;
-    }
-
-    renderOpenInGDriveButton(chord: ChordSheet): TemplateResult {
-        // Do we have this thing on Google Drive?
-        const address = chord.publishUri || chord.address;
-        if (!address) {
-            return html``;
-        }
-
-        return html`
-            <a href="${address}" target="_blank" class="btn btn-light" title="Open on Google Drive" aria-label="Open on Google Drive">
-                <img src="/assets/bs-icons/box-arrow-up-right.svg" alt="Open">
-            </a>
-        `;
-    }
-
-    renderTransposeButtons(chord: ChordSheet): TemplateResult {
-        // We can only do this for plain text chord sheets.
-        if (!chord.chords) {
-            return html``;
-        }
-
-        const positiveTransposeClass = this.transpose > 0 ? "d-inline" : "d-none";
-        const negativeTransposeClass = this.transpose < 0 ? "d-inline" : "d-none";
-        return html`
-            <button type="button" class="btn btn-light transpose-btn" title="Transpose down a half-step" aria-label="Transpose down a half-step" @click="${() => this.bumpTranspose(-1)}">
-                <img src="/assets/bs-icons/dash.svg" alt="-" />
-                <span class="text-muted ${negativeTransposeClass}">${this.transpose}</span>
-            </button>
-            <button type="button" class="btn btn-light transpose-btn" title="Transpose up a half-step" aria-label="Transpose down a half-step" @click="${() => this.bumpTranspose(1)}">
-                <img src="/assets/bs-icons/plus.svg" alt="+" />
-                <span class="text-muted ${positiveTransposeClass}">${this.transpose}</span>
-            </button>
         `;
     }
 
