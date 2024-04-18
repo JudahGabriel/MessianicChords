@@ -199,6 +199,7 @@ namespace MessianicChords.Api.Services
                 .ToList();
             submission.Links = allLinks;
             chordSheet.UpdateFrom(submission);
+            chordSheet.LastUpdated = DateTime.UtcNow;
 
             // Is it a new chord sheet (rather than edit of existing one?) If so, we'll need to store it in the database first.
             var isNew = string.IsNullOrWhiteSpace(chordSheet.Id);
