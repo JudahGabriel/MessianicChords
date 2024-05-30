@@ -227,6 +227,21 @@ namespace MessianicChords.Controllers
             return $"Chord chart submission {approvalOrRejection}.";
         }
 
+        /// <summary>
+        /// Gets the list of all plain text chords. Used for caching chords offline quickly.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<List<ChordSheet>> GetPlainTextChords()
+        {
+            var chordCharts = await DbSession.Query<ChordSheet>()
+                .Where(s => s.Chords != null && s.Chords != "")
+                .OrderByDescending(a => a.Artist)
+                .Take(5000)
+                .ToListAsync();
+            return chordCharts;
+        }
+
         private async Task<List<ChordSheet>> QuerySuggestions(System.Linq.Expressions.Expression<Func<ChordSheet, object>> field, string searchText)
         {
             var suggestResults = await DbSession

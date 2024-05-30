@@ -18,13 +18,12 @@ export class ChordCache {
      */
     public async add(chord: ChordSheet): Promise<void> {
         const store = await this.openChordsStore("readwrite");
-        const doc = this.chordSheetToDbDoc(chord);
+        const doc = this.chordSheetToDbDoc(chord);        
         const addRequest = store.put(doc);
-        var result = new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             addRequest.onsuccess = () => resolve();
-            addRequest.onerror = e => reject(e);
+            addRequest.onerror = e => reject(e ?? addRequest.error);
         });
-        await result;
     }
 
     /**
@@ -94,6 +93,25 @@ export class ChordCache {
         const results: ChordSheet[] = [];
         randomChords.forEach(c => results.push(c.results[0]));
         return results;
+    }
+
+    /**
+     * Gets all the chords in the cache.
+     * @param skip The number of chords to skip.
+     * @param take The maximum number of chords to load.
+     * @returns An array containing the chord charts.
+     */
+    public async getAll(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const store = await this.openChordsStore("readonly");
+        const totalCount = await this.countTotalStoreResults(store);
+
+        // If we don't have enough items in the cache, just return what we've got.
+        if (totalCount <= take) {
+            const allResults = await this.getIndexResults(ChordCache.songIndex, null, store);
+            return new PagedResult<ChordSheet>(skip, take, allResults, totalCount);
+        }
+
+        return await this.getIndexResultsPaged(ChordCache.songIndex, null, store, skip, take);
     }
 
     /**
@@ -270,7 +288,7 @@ export class ChordCache {
     private countTotalStoreResults(store: IDBObjectStore): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             const countReq = store.count();
-            countReq.onsuccess = e => resolve((e.target as any).result as number);
+            countReq.onsuccess = () => resolve(countReq.result);
             countReq.onerror = e => reject(e);
         });
     }
@@ -296,14 +314,15 @@ export class ChordCache {
     private chordSheetToDbDoc(chordSheet: ChordSheet): ChordSheetDbDoc {
         const wordsList = [
             ...this.getWords(chordSheet.song),
-            ...this.getWords(chordSheet.artist)
+            ...this.getWords(chordSheet.artist || ""),
+            ...this.getWords((chordSheet.authors || []).join(" "))
         ];
         const termsSet = new Set<string>(wordsList);
         const terms = Array.from(termsSet);
         return {
             ...chordSheet,
             songLowered: chordSheet.song.toLowerCase(),
-            artistLowered: chordSheet.artist.toLowerCase(),
+            artistLowered: (chordSheet.artist || "").toLowerCase(),
             searchTerm1: (terms[0] || "").toLocaleLowerCase(),
             searchTerm2: (terms[1] || "").toLocaleLowerCase(),
             searchTerm3: (terms[2] || "").toLocaleLowerCase(),

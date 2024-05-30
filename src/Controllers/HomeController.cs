@@ -128,7 +128,7 @@ namespace MessianicChords.Controllers
         }
 
         /// <summary>
-        /// Server side rendering for browse endpoints (/browse/newest, /browse/songs, /browse/artists, /browse/random)
+        /// Server side rendering for browse endpoints (/browse/newest, /browse/songs, /browse/artists, /browse/random, /browse/offline)
         /// </summary>
         /// <returns></returns>
         [HttpGet("browse/{order}")]
@@ -140,7 +140,7 @@ namespace MessianicChords.Controllers
                 return File("/dev-index.html", "text/html");
             }
 
-            if (order != "newest" && order != "songs" && order != "artists" && order != "random")
+            if (order != "newest" && order != "songs" && order != "artists" && order != "random" && order != "offline")
             {
                 return Redirect("/");
             }
@@ -257,6 +257,16 @@ namespace MessianicChords.Controllers
         public IActionResult DigitalAssetLinks()
         {
             return File("/assetlinks.json", "application/json");
+        }
+
+        /// <summary>
+        /// Used by the client app to determine if we're online.
+        /// </summary>
+        /// <returns></returns>
+        [HttpHead("ping")]
+        public IActionResult Ping()
+        {
+            return Ok();
         }
 
         private XmlNode CreateUrlNode(XmlDocument doc, string location, DateTime lastModified, string changeFrequency, double priority)

@@ -9,6 +9,7 @@ import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { RouteMatchCallbackOptions } from 'workbox-core';
+import { googleFontsCache } from 'workbox-recipes';
 
 self.addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") {
@@ -71,6 +72,9 @@ pageCache({
     }]
 });
 
+// Google fonts cache recipe: https://developer.chrome.com/docs/workbox/modules/workbox-recipes/#google_fonts_cache
+googleFontsCache();
+
 // Static resource recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#static_resources_cache
 // This is a stale-while-revalidate strategy for CSS, JS, and web workers.
 // By default, this recipe matches styles, scripts, and workers.
@@ -80,7 +84,8 @@ const staticResourceDestinations = [
   "script",
   "worker",
   "font",
-  "media"
+  "media",
+  "stylesheet"
 ]
 staticResourceCache({
   matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination) || e.url?.href.endsWith("dice.mp3"),
@@ -126,10 +131,11 @@ registerRoute(
   e => isCachableApiRoute(e, networkFirstRoutes),
   new NetworkFirst({
     cacheName: "api-cache-network-first",
+    networkTimeoutSeconds: 5,
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 100,
-        maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+        maxEntries: 2000,
+        maxAgeSeconds: 60 * 60 * 24 * 60 // 60 days
       })
     ]
   })

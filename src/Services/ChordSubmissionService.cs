@@ -183,7 +183,7 @@ namespace MessianicChords.Api.Services
             submission.Address = approval.GoogleDocAddress?.ToString() ?? chordSheet.Address;
             submission.GoogleDocId = approval.GoogleDocId ?? chordSheet.GoogleDocId;
             submission.PublishUri = approval.GoogleDocPublishUri ?? chordSheet.PublishUri;
-            submission.Extension = approval.GoogleDocExtension ?? chordSheet.Extension ?? "mc";
+            submission.Extension = !string.IsNullOrWhiteSpace(submission.Chords) ? "mc" : approval.GoogleDocExtension ?? chordSheet.Extension ?? "mc";
             Uri.TryCreate(string.IsNullOrWhiteSpace(submission.ChavahSongId) ? string.Empty : "https://messianicradio.com?song=" + submission.ChavahSongId, UriKind.Absolute, out var chavahUri);
             var allLinks = chordSheet.Links
                 .Concat(submission.Links)

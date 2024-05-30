@@ -59,4 +59,27 @@ export class ApiServiceBase {
 
         return result;
     }
+
+    /**
+     * Makes an HTTP HEAD request to the given URL with the specified timeout.
+     * @param url The URL to make the HEAD request to.
+     * @param timeout The timeout in milliseconds.
+     * @returns A promise that resolves to the response if successful. If the response is a non-OK result, the promise will be rejected.
+     */
+    protected async head(url: string, timeout: number): Promise<Response> {
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => abortController.abort(), timeout);
+        let absoluteUrl = this.apiUrl + url;
+        const response = await fetch(absoluteUrl, { 
+            method: "HEAD", 
+            signal: abortController.signal 
+        });
+        if (!response.ok) {
+            console.error("HTTP HEAD failed", this.apiUrl, response);
+            throw new Error("HTTP HEAD resulted in non-successful status code " + response.status);
+        }
+
+        clearTimeout(timeoutId);
+        return response;
+    }
 }

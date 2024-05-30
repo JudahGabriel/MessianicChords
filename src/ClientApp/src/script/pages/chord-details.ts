@@ -451,6 +451,7 @@ export class ChordDetails extends BootstrapBase {
 
     cacheChordForOfflineSearch(chord: ChordSheet) {
         this.chordCache.add(chord)
+            .then(res => console.info("Added chord chart to the cache", res, chord))
             .catch(cacheError => console.warn("Unable to add chord sheet to offline chord cache due to an error", cacheError));
     }
 

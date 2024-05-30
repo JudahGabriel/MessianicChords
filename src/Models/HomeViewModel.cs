@@ -58,7 +58,7 @@ namespace MessianicChords.Models
         /// <param name="order">Must be 'newest', 'songs', 'artists', or 'random'.</param>
         public void UpdateFromBrowse(string order)
         {
-            if (order != "newest" && order != "songs" && order != "artists" && order != "random")
+            if (order != "newest" && order != "songs" && order != "artists" && order != "random" && order != "offline")
             {
                 throw new ArgumentException("Order must be 'newest', 'songs', 'artists', or 'random'", nameof(order));
             }

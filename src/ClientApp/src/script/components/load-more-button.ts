@@ -35,7 +35,7 @@ export class LoadMoreButton extends BootstrapBase {
 
         return html`
             <button class="btn btn-secondary" type="button" @click="${this.getNextChunk}">
-                Load more...
+                ${new Intl.NumberFormat().format(this.list.items.length)} of ${new Intl.NumberFormat().format(this.list.totalCount || 0)} - Load more...
             </button>
         `;
     }

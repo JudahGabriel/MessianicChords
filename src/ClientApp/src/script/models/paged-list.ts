@@ -36,6 +36,7 @@ export class PagedList<T> {
             this.items.push(...chunk.results);
             this.skip += chunk.results.length;
             this.hasMoreItems = this.items.length < chunk.totalCount;
+            this.totalCount = chunk.totalCount;
         } finally {
             this.isLoading = false;
             this.notifyChanged();

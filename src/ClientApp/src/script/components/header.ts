@@ -2,6 +2,7 @@ import { css, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { BootstrapBase } from '../common/bootstrap-base';
 import { SizeMax } from '../common/constants';
+import { onlineDetector } from '../services/online-detector';
 
 @customElement('app-header')
 export class AppHeader extends BootstrapBase {
@@ -110,7 +111,6 @@ export class AppHeader extends BootstrapBase {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
-    window.addEventListener('online', () => this.isOnline = navigator.onLine);
     this.listenForOfflineStatusChange();
   }
 
@@ -120,9 +120,11 @@ export class AppHeader extends BootstrapBase {
   }
 
   async listenForOfflineStatusChange() {
-    const module = await import("../services/online-detector");
-    const detector = new module.OnlineDetector();
-    detector.checkOnline().then(result => this.isOnline = result);
+    onlineDetector.addEventListener("online-status-changed", e => this.onlineStatusChanged(e as CustomEvent<boolean>));
+  }
+
+  onlineStatusChanged(e: CustomEvent<boolean>) {
+    this.isOnline = e.detail;
   }
 
   routeChanged(e: CustomEvent) {

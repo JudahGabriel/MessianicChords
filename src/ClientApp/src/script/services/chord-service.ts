@@ -3,6 +3,7 @@ import { PagedResult } from "../models/paged-result";
 import { ApiServiceBase } from "./api-service-base";
 import type { ChordCache } from "./chord-cache"; // Import types only for now, as we only use the real module if we're offline.
 import { ChordFetchBackend } from "./chord-fetch-backend";
+import { onlineDetector } from "./online-detector";
 
 export class ChordService extends ApiServiceBase {
 
@@ -56,14 +57,16 @@ export class ChordService extends ApiServiceBase {
         return this.getBackend().then(b => b.submitChordEdit(chord, attachments));
     }
 
+    getPlainTextChords(): Promise<ChordSheet[]> {
+        return this.getBackend().then(b => b.getPlainTextChords());
+    }
+
     private async getBackend(): Promise<ChordFetchBackend> {
         if (this.backend) {
             return this.backend;
         }
 
-        const module = await import("./online-detector");
-        const detector = new module.OnlineDetector();
-        const isOnline = await detector.checkOnline();
+        const isOnline = onlineDetector.onlineStatus;
         this.backend = isOnline ?
             new ApiBackend() :
             new CacheBackend();
@@ -157,6 +160,10 @@ export class ChordService extends ApiServiceBase {
 
         return super.postFormData("/chords/submitEdit", formData);
     }
+
+    async getPlainTextChords(): Promise<ChordSheet[]> {
+        return super.getJson("/chords/getPlainTextChords");
+    }
 }
 
 /**
@@ -221,5 +228,9 @@ class CacheBackend implements ChordFetchBackend {
     // @ts-ignore
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
         throw new Error("Can't upload chords while offline.");
+    }
+
+    async getPlainTextChords(): Promise<ChordSheet[]> {
+        throw new Error("Not supported while offline");
     }
 }
