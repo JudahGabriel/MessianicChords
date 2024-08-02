@@ -29,6 +29,7 @@ export interface ChordSheet {
     year: number | null;
     scripture: string | null;
     ccliNumber: number | null;
+    tags: string[];
 }
 
 export interface PagedResult<T> {

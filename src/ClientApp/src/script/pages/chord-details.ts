@@ -276,6 +276,9 @@ export class ChordDetails extends LitElement {
                         <p>
                             Authors: <strong>${chord.authors.join(", ")}</strong>
                         </p>
+                        <p>
+                            Tags: <strong>${chord.tags.join(", ")}</strong>
+                        </p>
                     </sl-card>
 
                     <sl-card class="card-header w-100">

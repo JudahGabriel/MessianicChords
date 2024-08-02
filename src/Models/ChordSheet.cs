@@ -122,6 +122,11 @@ namespace MessianicChords.Models
         /// </summary>
         public int? CcliNumber { get; set; }
 
+        /// <summary>
+        /// The song tags, containing characteristics like "slow", "hymn", "worship", "Jewish", "liturgy", etc.
+        /// </summary>
+        public List<string> Tags { get; set; } = new();
+
         public void UpdateFrom(ChordSheet other)
         {
             Address = other.Address;
@@ -151,6 +156,7 @@ namespace MessianicChords.Models
             About = other.About ?? this.About;
             Chords = other.Chords ?? this.Chords;
             CcliNumber = other.CcliNumber ?? this.CcliNumber;
+            
         }
 
         public void UpdateGoogleDrivePropsFrom(ChordSheet other)
