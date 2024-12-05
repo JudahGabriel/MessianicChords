@@ -208,6 +208,11 @@ export const chordDetailStyles = css`
         .img-preview {
             min-height: 11in; // Standard page size for PDF and Word docs
         }
+
+        .plain-text-preview .chord {
+            background-color: transparent;
+            box-shadow: none;
+        }
     }
 
     /* We don't display printable screenshots. They're just used for printing. */
