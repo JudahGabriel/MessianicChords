@@ -184,6 +184,11 @@ export const chordDetailStyles = css`
             width: var(--iframe-width);
         }
 
+        .plain-text-preview .chord {
+            background-color: transparent;
+            box-shadow: none;
+        }
+
         .img-preview {
             min-height: 11in; // Standard page size for PDF and Word docs
         }
