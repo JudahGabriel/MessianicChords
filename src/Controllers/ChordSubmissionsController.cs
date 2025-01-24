@@ -1,8 +1,5 @@
-﻿using MessianicChords.Api.Models;
+﻿using MessianicChords.Models;
 using MessianicChords.Common;
-using MessianicChords.Models;
-using MessianicChords.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents.Session;
 

@@ -1,29 +1,22 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace MessianicChords.Api.Services
-{
+namespace MessianicChords.Services;
+
 	/// <summary>
 	/// Service that uses https://pdftopng.net to convert a PDF to a zip file containing one or more PNG files.
 	/// MessianicChords uses this to programmatically take screenshots of PDF documents.
 	/// </summary>
 	public class PdfToPng
-    {
-        private readonly HttpClient http;
-        private readonly ILogger<PdfToPng> logger;
+{
+    private readonly HttpClient http;
+    private readonly ILogger<PdfToPng> logger;
 
-        public PdfToPng(IHttpClientFactory httpFactory, ILogger<PdfToPng> logger)
-        {
-            this.http = httpFactory.CreateClient();
-            this.logger = logger;
-        }
+    public PdfToPng(IHttpClientFactory httpFactory, ILogger<PdfToPng> logger)
+    {
+        this.http = httpFactory.CreateClient();
+        this.logger = logger;
+    }
 
 		/// <summary>
 		/// Converts the specified PDF to a list of PNGs.
@@ -153,4 +146,3 @@ namespace MessianicChords.Api.Services
 		private record UploadPdfResultWithSignature(string FileId);
 		private record ConvertPdfResult(string FileName, string Id, string Path, int Size, string Status);
 	}
-}

@@ -167,7 +167,7 @@ class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
         }
 
         if (attachments.length > 0) {
-            attachments.forEach(a => formData.append("attachments", a, a.name));
+            attachments.forEach(a => formData.append("attachmentUploads", a, a.name));
         }
 
         return super.postFormData("/chords/submitEdit", formData);

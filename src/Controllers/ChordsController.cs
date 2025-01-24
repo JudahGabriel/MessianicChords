@@ -1,22 +1,12 @@
-﻿using MessianicChords.Api.Models;
+﻿using MessianicChords.Models;
 using MessianicChords.Api.Services;
 using MessianicChords.Common;
 using MessianicChords.Data;
-using MessianicChords.Models;
 using MessianicChords.Services;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting.Internal;
-using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MessianicChords.Controllers
 {

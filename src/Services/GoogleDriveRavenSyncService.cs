@@ -1,63 +1,53 @@
-﻿using MessianicChords.Api.Services;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿namespace MessianicChords.Services;
 
-namespace MessianicChords.Services
+/// <summary>
+/// Services that kicks off Google Drive sync services that add new GDrive docs to the 
+/// database, removes deleted GDocs from the database, updates GDocs in the database, 
+/// and fetches any plain text content for GDocs and updates the corresponding docs in Raven.
+/// </summary>
+public class GoogleDriveRavenSyncService : IHostedService, IDisposable
 {
-    /// <summary>
-    /// Services that kicks off Google Drive sync services that add new GDrive docs to the 
-    /// database, removes deleted GDocs from the database, updates GDocs in the database, 
-    /// and fetches any plain text content for GDocs and updates the corresponding docs in Raven.
-    /// </summary>
-    public class GoogleDriveRavenSyncService : IHostedService, IDisposable
+    private readonly ILogger<GoogleDriveRavenSyncService> logger;
+    private readonly GoogleDriveSync driveSync;
+    private readonly GoogleDocPlainTextFetcher plainTextFetcher;
+    private Timer? timer;
+
+    private static readonly TimeSpan syncTime = TimeSpan.FromHours(12);
+
+    public GoogleDriveRavenSyncService(
+        GoogleDriveSync driveSync, 
+        GoogleDocPlainTextFetcher plainTextFetcher,
+        ILogger<GoogleDriveRavenSyncService> logger)
     {
-        private readonly ILogger<GoogleDriveRavenSyncService> logger;
-        private readonly GoogleDriveSync driveSync;
-        private readonly GoogleDocPlainTextFetcher plainTextFetcher;
-        private Timer? timer;
+        this.driveSync = driveSync;
+        this.plainTextFetcher = plainTextFetcher;
+        this.logger = logger;
+    }
 
-        private static readonly TimeSpan syncTime = TimeSpan.FromHours(12);
+    public Task StartAsync(CancellationToken stoppingToken)
+    {
+        timer = new Timer(async _ => await SyncGDocs(), null, TimeSpan.FromSeconds(5), syncTime);
+        return Task.CompletedTask;
+    }
 
-        public GoogleDriveRavenSyncService(
-            GoogleDriveSync driveSync, 
-            GoogleDocPlainTextFetcher plainTextFetcher,
-            ILogger<GoogleDriveRavenSyncService> logger)
-        {
-            this.driveSync = driveSync;
-            this.plainTextFetcher = plainTextFetcher;
-            this.logger = logger;
-        }
+    public Task StopAsync(CancellationToken stoppingToken)
+    {
+        logger.LogInformation("Timed Hosted Service is stopping.");
 
-        public Task StartAsync(CancellationToken stoppingToken)
-        {
-            timer = new Timer(async _ => await SyncGDocs(), null, TimeSpan.FromSeconds(5), syncTime);
-            return Task.CompletedTask;
-        }
+        timer?.Change(Timeout.Infinite, 0);
 
-        public Task StopAsync(CancellationToken stoppingToken)
-        {
-            logger.LogInformation("Timed Hosted Service is stopping.");
+        return Task.CompletedTask;
+    }
 
-            timer?.Change(Timeout.Infinite, 0);
+    public void Dispose()
+    {
+        timer?.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            timer?.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
-        private async Task SyncGDocs()
-        {
-            await driveSync.Start();
-            await plainTextFetcher.Start();
-        }
+    private async Task SyncGDocs()
+    {
+        await driveSync.Start();
+        await plainTextFetcher.Start();
     }
 }
