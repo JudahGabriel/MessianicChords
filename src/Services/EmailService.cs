@@ -1,5 +1,7 @@
-﻿using MessianicChords.Models;
+﻿using MessianicChords.Common;
+using MessianicChords.Models;
 using Microsoft.Extensions.Options;
+using Raven.Client.Documents;
 using SendGrid.Helpers.Mail;
 
 namespace MessianicChords.Services;
@@ -9,11 +11,13 @@ public class EmailService
     private readonly AppSettings settings;
     private readonly IWebHostEnvironment host;
     private readonly ILogger<EmailService> logger;
+    private readonly IDocumentStore db;
 
-    public EmailService(IOptions<AppSettings> options, IWebHostEnvironment host, ILogger<EmailService> logger)
+    public EmailService(IOptions<AppSettings> options, IWebHostEnvironment host, IDocumentStore db, ILogger<EmailService> logger)
     {
         this.settings = options.Value;
         this.host = host;
+        this.db = db;
         this.logger = logger;
     }
 
@@ -61,11 +65,15 @@ public class EmailService
             HtmlContent = html
         };
         email.AddTo(to);
+
         return email;
     }
 
     private async Task SendEmail(SendGridMessage email)
     {
+        // Store the email in the database.
+        var dbEmail = Email.FromSmtpMessage(email);
+
         var client = new SendGrid.SendGridClient(settings.SendGridKey);
         try
         {
@@ -73,16 +81,38 @@ public class EmailService
             if (result.IsSuccessStatusCode)
             {
                 logger.LogInformation("Email sent successfully, status code {statusCode}", result.StatusCode);
+                dbEmail.Sent = DateTimeOffset.UtcNow;
             }
             else
             {
                 logger.LogError("Email failed to send. Status code {code} was non-successful.", result.StatusCode);
+                dbEmail.SendingErrorMessage = $"Email failed to send. Status code {result.StatusCode} was non-successful.";
             }
         }
         catch (Exception error)
         {
-            logger.LogError(error, "Email sending failed due to exception.", error);
+            logger.LogError(error, "Email sending failed due to exception.");
+            dbEmail.SendingErrorMessage = $"Email failed to send due to exception: {error}";
             throw;
+        }
+        finally
+        {
+            await TrySaveDbEmail(dbEmail);
+        }
+    }
+
+    private async Task TrySaveDbEmail(Email dbEmail)
+    {
+        try
+        {
+            var dbSession = db.OpenAsyncSession();
+            await dbSession.StoreAsync(dbEmail);
+            dbSession.SetRavenExpiration(dbEmail, DateTime.UtcNow.AddDays(120));
+            await dbSession.SaveChangesAsync();
+        }
+        catch (Exception dbException)
+        {
+            logger.LogError(dbException, "Unable to save email to database due to error.");
         }
     }
 }
