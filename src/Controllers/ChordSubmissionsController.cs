@@ -13,12 +13,15 @@ namespace MessianicChords.Controllers
     {
         private readonly IAsyncDocumentSession dbSession;
         private readonly ILogger<HomeController> logger;
+        private readonly ChordSubmissionService chordSubmissionService;
 
         public ChordSubmissionsController(
             IAsyncDocumentSession dbSession,
+            ChordSubmissionService chordSubmissionService,
             ILogger<HomeController> logger)
         {
             this.dbSession = dbSession;
+            this.chordSubmissionService = chordSubmissionService;
             this.logger = logger;
         }
 
