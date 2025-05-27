@@ -5,6 +5,7 @@ using MessianicChords.Models;
 using MessianicChords.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,20 @@ namespace MessianicChords.Api.Services
             }            
         }
 
+        /// <summary>
+        /// Gets all chord submissiones.
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        public Task<List<ChordSubmission>> GetAll(int skip, int take)
+        {
+            return dbSession.Query<ChordSubmission>()
+                .OrderByDescending(a => a.Created)
+                .Take(take)
+                .ToListAsync();
+        }
+
         private async Task<ChordSubmission> CreateCore(ChordSubmissionRequest request)
         {
             // We can't have more than 10 attachments.
@@ -88,20 +103,15 @@ namespace MessianicChords.Api.Services
             submission.Id = null;
             submission.EditedChordSheetId = request.Id;
             submission.SavedAttachments = await this.UploadTempAttachments(request);
+            submission.ApproveRejectKey = Guid.NewGuid().ToString();
             await dbSession.StoreAsync(submission);
-
-            // Store an approval/rejection token.
-            var token = Guid.NewGuid().ToString();
-            var approvalToken = new ApprovalToken { Token = token.ToString(), Id = $"ApprovalTokens/{token}" };
-            await dbSession.StoreAsync(approvalToken);
-            dbSession.SetRavenExpiration(approvalToken, DateTime.Now.AddDays(30));
 
             var existingChordSheet = string.IsNullOrWhiteSpace(request.Id) ? null : await dbSession.LoadRequiredAsync<ChordSheet>(request.Id!);
 
             await dbSession.SaveChangesAsync();
 
             // Send off an email to admins.
-            await emailService.SendChordSubmissionEmail(submission, existingChordSheet, approvalToken.Token);
+            await emailService.SendChordSubmissionEmail(submission, existingChordSheet, submission.ApproveRejectKey);
 
             return submission;
         }
@@ -142,12 +152,9 @@ namespace MessianicChords.Api.Services
                 throw submissionNotFoundError;
             }
 
-            var approvalToken = await dbSession.LoadOptionalAsync<ApprovalToken>($"ApprovalTokens/{token}");
-            if (approvalToken == null)
+            if (!string.Equals(token, submission.ApproveRejectKey, StringComparison.OrdinalIgnoreCase))
             {
-                var tokenInvalid = new ArgumentOutOfRangeException(nameof(token), "Couldn't find approval token with that value. The token may be expired or invalid.");
-                tokenInvalid.Data.Add("token", token);
-                throw tokenInvalid;
+                throw new ArgumentException("Wrong approve/reject key");
             }
 
             // Is this a new chord?
@@ -162,11 +169,11 @@ namespace MessianicChords.Api.Services
 
             if (decision.Approved)
             {
-                await this.Approve(decision, submission, chordSheet, approvalToken);
+                await this.Approve(decision, submission, chordSheet);
             }
             else
             {
-                await this.Reject(submission, approvalToken);
+                await this.Reject(submission);
             }
         }
 
@@ -175,7 +182,7 @@ namespace MessianicChords.Api.Services
         /// </summary>
         /// <param name="dbSession"></param>
         /// <returns></returns>
-        private async Task Approve(ChordSubmissionApproval approval, ChordSubmission submission, ChordSheet chordSheet, ApprovalToken token)
+        private async Task Approve(ChordSubmissionApproval approval, ChordSubmission submission, ChordSheet chordSheet)
         {
             // Fill the submission with data from the approval.
             // Then copy the submission to the real chord sheet.
@@ -209,7 +216,6 @@ namespace MessianicChords.Api.Services
 
             // Delete the submission, as its changes have been applied.
             dbSession.Delete(submission);
-            dbSession.Delete(token);
             await dbSession.SaveChangesAsync(); // Save changes now before we delete the files from CDN
             await this.TryDeleteTempAttachments(submission);
         }
@@ -219,10 +225,9 @@ namespace MessianicChords.Api.Services
         /// </summary>
         /// <param name="dbSession"></param>
         /// <returns></returns>
-        private async Task Reject(ChordSubmission submission, ApprovalToken token)
+        private async Task Reject(ChordSubmission submission)
         {
             dbSession.Delete(submission);
-            dbSession.Delete(token);
             await dbSession.SaveChangesAsync();
             await TryDeleteTempAttachments(submission);
         }

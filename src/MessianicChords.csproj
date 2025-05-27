@@ -22,6 +22,7 @@
     <PackageReference Include="RavenDB.StructuredLogger" Version="7.1.0" />
     <PackageReference Include="RavenMigrations" Version="6.0.2" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
+    <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup>
