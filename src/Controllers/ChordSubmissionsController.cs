@@ -5,6 +5,7 @@ using Raven.Client.Documents.Session;
 using MessianicChords.Services;
 using Microsoft.Extensions.Options;
 using System.Xml;
+using System.ServiceModel.Syndication;
 
 namespace MessianicChords.Controllers
 {

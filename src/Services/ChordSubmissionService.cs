@@ -1,6 +1,7 @@
 ﻿using MessianicChords.Models;
 using MessianicChords.Common;
 using Raven.Client.Documents.Session;
+using Raven.Client.Documents;
 
 namespace MessianicChords.Services;
 
@@ -42,6 +43,20 @@ public class ChordSubmissionService
             logger.LogError(error, "Unable to create chord submission due to error.");
             throw;
         }            
+    }
+
+    /// <summary>
+    /// Gets all chord submissiones.
+    /// </summary>
+    /// <param name="skip"></param>
+    /// <param name="take"></param>
+    /// <returns></returns>
+    public Task<List<ChordSubmission>> GetAll(int skip, int take)
+    {
+        return dbSession.Query<ChordSubmission>()
+            .OrderByDescending(a => a.Created)
+            .Take(take)
+            .ToListAsync();
     }
 
     private async Task<ChordSubmission> CreateCore(ChordSubmissionRequest request)
