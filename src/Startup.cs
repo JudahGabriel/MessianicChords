@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.DependencyInjection;
 using Raven.Migrations;
-using Raven.StructuredLog;
+using Raven.StructuredLogger;
 
 namespace MessianicChords
 {

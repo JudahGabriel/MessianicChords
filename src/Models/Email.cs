@@ -13,12 +13,12 @@ public class Email
         return new Email
         {
             Body = smtpEmail.HtmlContent,
-            Bcc = string.Join("; ", smtpEmail.Personalizations.SelectMany(p => p.Bccs.Select(cc => cc.Email))),
-            CC = string.Join("; ", smtpEmail.Personalizations.SelectMany(p => p.Ccs.Select(cc => cc.Email))),
+            Bcc = string.Join("; ", smtpEmail.Personalizations.SelectMany(p => (p.Bccs ?? []).Select(cc => cc.Email))),
+            CC = string.Join("; ", smtpEmail.Personalizations.SelectMany(p => (p.Ccs ?? []).Select(cc => cc.Email))),
             ReplyTo = smtpEmail.From?.ToString(),
             Created = DateTimeOffset.UtcNow,
             Subject = smtpEmail.Subject,
-            To = string.Join("; ", smtpEmail.Personalizations.SelectMany(p => p.Tos.Select(cc => cc.Email))),
+            To = string.Join("; ", smtpEmail.Personalizations.SelectMany(p => (p.Tos ?? []).Select(cc => cc.Email))),
         };
     }
 

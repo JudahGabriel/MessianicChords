@@ -6,7 +6,6 @@ using MessianicChords.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents.Session;
-using Raven.StructuredLog;
 using System;
 using System.Collections.Generic;
 using System.IO;

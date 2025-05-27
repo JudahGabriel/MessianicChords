@@ -16,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Sparrow.Hashing;
 
 namespace MessianicChords.Controllers
 {
@@ -102,7 +101,7 @@ namespace MessianicChords.Controllers
                 Results = chordSheets,
                 Skip = skip,
                 Take = take,
-                TotalCount = stats.TotalResults
+                TotalCount = (int)stats.TotalResults
             };
         }
 
@@ -120,7 +119,7 @@ namespace MessianicChords.Controllers
                 Results = chordSheets,
                 Skip = skip,
                 Take = take,
-                TotalCount = stats.TotalResults
+                TotalCount = (int)stats.TotalResults
             };
         }
 
@@ -139,7 +138,7 @@ namespace MessianicChords.Controllers
                 Results = chordSheets,
                 Skip = skip,
                 Take = take,
-                TotalCount = stats.TotalResults
+                TotalCount = (int)stats.TotalResults
             };
         }
 
@@ -167,7 +166,7 @@ namespace MessianicChords.Controllers
                 Results = chordSheets,
                 Skip = skip,
                 Take = take,
-                TotalCount = stats.TotalResults
+                TotalCount = (int)stats.TotalResults
             };
         }
 

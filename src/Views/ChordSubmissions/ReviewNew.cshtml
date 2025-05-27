@@ -20,7 +20,13 @@
         <br />
         <pre style="font-family: monospace">@Model.NewChordChart.Chords</pre>
     </p>
-    <p>Attachments: @Html.Raw(Model.NewChordChart.SavedAttachments.Select(a => a.ToHtmlLink()))</p>
+    <p>Attachments: 
+        @foreach (var attachment in Model.NewChordChart.SavedAttachments)
+        {
+            <br />
+            <a href="@attachment.CdnUri">@attachment.UntrustedUserFileName</a>
+        }
+    </p>
     <p>
         Links: 
         @foreach (var link in Model.NewChordChart.Links)
