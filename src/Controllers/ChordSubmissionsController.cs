@@ -27,7 +27,7 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet("review")]
-        public async Task<IActionResult> Review(string id, [FromQuery]string token)
+        public async Task<IActionResult> Review(string id, [FromQuery] string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -50,9 +50,8 @@ namespace MessianicChords.Controllers
             var reviewEditedChordModel = new ReviewEditedChordSubmission(submission, original, token);
             return View("ReviewEdited", reviewEditedChordModel);
         }
-    }
 
-    [HttpGet("feed")]
+        [HttpGet("feed")]
         public async Task<IActionResult> RssFeed([FromQuery] string token, [FromServices] IOptions<AppSettings> settings)
         {
             if (token != settings.Value.RssFeedKey)
@@ -80,3 +79,4 @@ namespace MessianicChords.Controllers
             return Content(sw.ToString(), "application/xml");
         }
     }
+}

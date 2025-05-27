@@ -11,6 +11,11 @@ public class ChordSubmission : ChordSheet
     public string? EditedChordSheetId { get; set; }
 
     /// <summary>
+    /// The key used for approval or rejection of the submission.
+    /// </summary>
+    public string? ApproveRejectKey { get; set; }
+
+    /// <summary>
     /// Attachments saved to a temporary location on our CDN.
     /// </summary>
     public List<Attachment> SavedAttachments { get; set; } = [];
