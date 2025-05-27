@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Raven.Client.Documents.Session;
 using System.ServiceModel.Syndication;
 using System.Xml;
-using static System.Net.WebRequestMethods;
 
 namespace MessianicChords.Controllers
 {
