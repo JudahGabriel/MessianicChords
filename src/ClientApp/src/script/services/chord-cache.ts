@@ -10,18 +10,19 @@ export class ChordCache {
     private static readonly chordStore = "chord-store";
     private static readonly songIndex = "songIndex";
     private static readonly artistIndex = "artistIndex";
+    private static readonly recentDateIndex = "recentIndex";
     private static readonly searchTermIndexes = ["search-term-1-index", "search-term-2-index", "search-term-3-index", "search-term-4-index", "search-term-5-index"];
 
     /**
      * Adds a chord sheet to the cache.
      * @param chord The chord sheet to add.
      */
-    public async add(chord: ChordSheet): Promise<void> {
+    public async add(chord: ChordSheet): Promise<ChordSheetDbDoc> {
         const store = await this.openChordsStore("readwrite");
-        const doc = this.chordSheetToDbDoc(chord);        
+        const doc = this.chordSheetToDbDoc(chord);    
         const addRequest = store.put(doc);
-        return new Promise<void>((resolve, reject) => {
-            addRequest.onsuccess = () => resolve();
+        return new Promise<ChordSheetDbDoc>((resolve, reject) => {
+            addRequest.onsuccess = () => resolve(doc);
             addRequest.onerror = e => reject(e ?? addRequest.error);
         });
     }
@@ -33,10 +34,13 @@ export class ChordCache {
      */
     public async get(chordId: string): Promise<ChordSheet | null> {
         const store = await this.openChordsStore("readonly");
-        const chordRequest = store.get(chordId);
+        const chordRequest = store.get(chordId.toLowerCase());
+        
         const chordTask = new Promise<ChordSheet | null>((resolve, reject) => {
-            chordRequest.onsuccess = () => resolve(chordRequest.result as ChordSheet | null);
-            chordRequest.onerror = e => { console.warn("Error fetching chord sheet from indexDB", chordId, e); reject(e); }
+            chordRequest.onsuccess = () => {
+                resolve(chordRequest.result as ChordSheet | null);
+            };
+            chordRequest.onerror = e => { console.warn("Error fetching chord sheet from indexDB", chordId.toLowerCase(), e); reject(e); }
         });
 
         return await chordTask;
@@ -125,9 +129,8 @@ export class ChordCache {
     }
 
     public async getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        // TODO: we need to implement a new created date index.
         const store = await this.openChordsStore("readonly");
-        return await this.getIndexResultsPaged(ChordCache.songIndex, null, store, skip, take);
+        return await this.getIndexResultsPaged(ChordCache.recentDateIndex, null, store, skip, take, "prev");
     }
 
     private openDatabase(): Promise<IDBDatabase> {
@@ -136,7 +139,7 @@ export class ChordCache {
         }
 
         return new Promise<IDBDatabase>((resolve, reject) => {
-            const openReq = indexedDB.open(ChordCache.chordSheetDb, 4);
+            const openReq = indexedDB.open(ChordCache.chordSheetDb, 8);
             openReq.onsuccess = (e) => {
                 const db = (e.target as any).result as IDBDatabase;
                 resolve(db);
@@ -145,8 +148,10 @@ export class ChordCache {
             openReq.onerror = (e) => reject(`Error opening database: ${e}`);
 
             openReq.onupgradeneeded = (e) => {
+                console.log("IndexDB upgrade needed. Running creation script...");
                 try {
-                    this.createDatabase(e);
+                    this.createDatabase(e, openReq.transaction!);
+                    console.log("IndexDB upgrade completed.");
                 } catch (creationError) {
                     reject(creationError);
                 }
@@ -154,14 +159,35 @@ export class ChordCache {
         });
     }
 
-    private createDatabase(e: IDBVersionChangeEvent) {
+    private createDatabase(e: IDBVersionChangeEvent, tx: IDBTransaction) {
         const db = (e.target as any).result as IDBDatabase;
-        const chordStore = db.createObjectStore(ChordCache.chordStore, {
-            keyPath: "id"
+
+        // Create the object store if it doesn't exist yet.
+        let chordStore: IDBObjectStore;
+        if (!db.objectStoreNames.contains(ChordCache.chordStore)) {
+            chordStore = db.createObjectStore(ChordCache.chordStore, {
+                keyPath: "id"
+            });
+            console.log("Offline chord store created in IndexDB");
+        } else {
+            chordStore = tx.objectStore(ChordCache.chordStore);
+        }        
+
+        // Create the indexes.
+        if (!chordStore.indexNames.contains(ChordCache.songIndex)) {
+            chordStore.createIndex(ChordCache.songIndex, "songLowered", { unique: false });
+        }
+        if (!chordStore.indexNames.contains(ChordCache.artistIndex)) {
+            chordStore.createIndex(ChordCache.artistIndex, "artistLowered", { unique: false });
+        }
+        if (!chordStore.indexNames.contains(ChordCache.recentDateIndex)) {
+            chordStore.createIndex(ChordCache.recentDateIndex, "created", { unique: false });
+        }
+        ChordCache.searchTermIndexes.forEach((indexName, i) => {
+            if (!chordStore.indexNames.contains(indexName)) {
+                chordStore.createIndex(indexName, `searchTerm${i + 1}`, { unique: false });
+            }
         });
-        chordStore.createIndex(ChordCache.songIndex, "songLowered", { unique: false });
-        chordStore.createIndex(ChordCache.artistIndex, "artistLowered", { unique: false });
-        ChordCache.searchTermIndexes.forEach((indexName, i) => chordStore.createIndex(indexName, `searchTerm${i+1}`, { unique: false }));
     }
 
     private async openChordsStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
@@ -204,7 +230,7 @@ export class ChordCache {
     }
 
 
-    private async getIndexResultsPaged(indexName: string, query: IDBKeyRange | null, store: IDBObjectStore, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+    private async getIndexResultsPaged(indexName: string, query: IDBKeyRange | null, store: IDBObjectStore, skip: number, take: number, direction: IDBCursorDirection = "next"): Promise<PagedResult<ChordSheet>> {
         const index = store.index(indexName);
         const results: ChordSheet[] = [];
 
@@ -212,7 +238,7 @@ export class ChordCache {
 
         // Query the index.
         let currentSkip = 0;
-        const cursor = index.openCursor(query);
+        const cursor = index.openCursor(query, direction);
         const chordSheets = await new Promise<ChordSheet[]>((resolve, reject) => {
             cursor.onsuccess = e => {
                 const cursorResult = (e.target as any).result as IDBCursorWithValue | null;
@@ -315,11 +341,12 @@ export class ChordCache {
         const wordsList = [
             ...this.getWords(chordSheet.song),
             ...this.getWords(chordSheet.artist || ""),
-            ...this.getWords((chordSheet.authors || []).join(" "))
+            ...this.getWords((chordSheet.authors || []).join(" ")),
+            ...this.getWords(chordSheet.chords || "")
         ];
         const termsSet = new Set<string>(wordsList);
         const terms = Array.from(termsSet);
-        return {
+        const dbDoc = {
             ...chordSheet,
             songLowered: chordSheet.song.toLowerCase(),
             artistLowered: (chordSheet.artist || "").toLowerCase(),
@@ -328,7 +355,11 @@ export class ChordCache {
             searchTerm3: (terms[2] || "").toLocaleLowerCase(),
             searchTerm4: (terms[3] || "").toLocaleLowerCase(),
             searchTerm5: (terms[4] || "").toLocaleLowerCase()
-        }
+        };
+
+        // Make sure the id is lowered, otherwise we won't find chords by ID if the casing differs.
+        dbDoc.id = dbDoc.id.toLowerCase();
+        return dbDoc;
     }
 
     private getWords(input: string): string[] {

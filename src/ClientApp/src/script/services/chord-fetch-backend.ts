@@ -15,5 +15,5 @@ export interface ChordFetchBackend {
     getAllArtists(): Promise<string[]>;
     getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>>;
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void>;
-    getPlainTextChords(): Promise<ChordSheet[]>;
+    getCacheableChords(): Promise<ChordSheet[]>;
 }

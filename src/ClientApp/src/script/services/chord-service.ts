@@ -57,8 +57,8 @@ export class ChordService extends ApiServiceBase {
         return this.getBackend().then(b => b.submitChordEdit(chord, attachments));
     }
 
-    getPlainTextChords(): Promise<ChordSheet[]> {
-        return this.getBackend().then(b => b.getPlainTextChords());
+    getCacheableChords(): Promise<ChordSheet[]> {
+        return this.getBackend().then(b => b.getCacheableChords());
     }
 
     private async getBackend(): Promise<ChordFetchBackend> {
@@ -161,9 +161,9 @@ export class ChordService extends ApiServiceBase {
         return super.postFormData("/chords/submitEdit", formData);
     }
 
-    async getPlainTextChords(): Promise<ChordSheet[]> {
-        return super.getJson("/chords/getPlainTextChords");
-    }
+    getCacheableChords(): Promise<ChordSheet[]> {
+        return super.getJson("/chords/getCacheableChords");
+     }
 }
 
 /**
@@ -230,7 +230,7 @@ class CacheBackend implements ChordFetchBackend {
         throw new Error("Can't upload chords while offline.");
     }
 
-    async getPlainTextChords(): Promise<ChordSheet[]> {
+    async getCacheableChords(): Promise<ChordSheet[]> {
         throw new Error("Not supported while offline");
     }
 }

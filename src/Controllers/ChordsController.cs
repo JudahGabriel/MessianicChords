@@ -227,14 +227,14 @@ namespace MessianicChords.Controllers
         }
 
         /// <summary>
-        /// Gets the list of all plain text chords. Used for caching chords offline quickly.
+        /// Gets the list of all cacheable chords: those that have plain text chord format, or have screenshots. Used for caching chords offline quickly.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<List<ChordSheet>> GetPlainTextChords()
+        public async Task<List<ChordSheet>> GetCacheableChords()
         {
             var chordCharts = await DbSession.Query<ChordSheet>()
-                .Where(s => s.Chords != null && s.Chords != "")
+                .Where(s => (s.Chords != null && s.Chords != "") || s.Screenshots.Count > 0)
                 .OrderByDescending(a => a.Artist)
                 .Take(5000)
                 .ToListAsync();

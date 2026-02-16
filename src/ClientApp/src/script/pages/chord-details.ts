@@ -9,6 +9,7 @@ import { ChordCache } from "../services/chord-cache";
 import { ChordChartLine, ChordChartSpan, createChordChartLines } from "../models/chord-chart-line";
 import { Chord } from "../models/chord";
 import { chordDetailStyles } from "./chord-details.styles";
+import { onlineDetector } from "../services/online-detector";
 
 @customElement('chord-details')
 export class ChordDetails extends BootstrapBase {
@@ -48,7 +49,11 @@ export class ChordDetails extends BootstrapBase {
         this.chord = chord;
         this.isWebPublished = !!chord.publishUri;
         this.hasScreenshots = chord.screenshots.length > 0;
-        this.cacheChordForOfflineSearch(chord);
+
+        if (onlineDetector.onlineStatus) {
+            this.cacheChordForOfflineSearch(chord);
+        }
+
         const chordName = [
             chord.song,
             chord.hebrewSongName
@@ -282,10 +287,10 @@ export class ChordDetails extends BootstrapBase {
             return this.renderPlainTextPreviewer(chord);
         }
 
-        // If we're not online, see if we can render the offline previewer (i.e. the screenshots of the doc)
+        // If we're not online, see if we can render the offline previewer (i.e. plain text or the screenshots of the doc)
         // This is needed because we can't load iframes of other domains (Google Docs) while offline, even with service worker caching.
         let previewer: TemplateResult;
-        if (!navigator.onLine) {
+        if (!onlineDetector.onlineStatus) {
             previewer = this.renderOfflinePreviewer(chord);
         } else {
             switch (chord.extension) {
@@ -387,6 +392,11 @@ export class ChordDetails extends BootstrapBase {
     }
 
     renderOfflinePreviewer(chord: ChordSheet): TemplateResult {
+        // Is it a plain text chord chart? Render that.
+        if (chord.chords) {
+            return this.renderPlainTextPreviewer(chord);
+        }
+
         if (chord.screenshots.length == 0) {
             return html`
                 <div class="alert alert-warning d-inline-block mx-auto" role="alert">
@@ -451,7 +461,7 @@ export class ChordDetails extends BootstrapBase {
 
     cacheChordForOfflineSearch(chord: ChordSheet) {
         this.chordCache.add(chord)
-            .then(res => console.info("Added chord chart to the cache", res, chord))
+            .then(res => console.info("Added chord chart to the cache", res))
             .catch(cacheError => console.warn("Unable to add chord sheet to offline chord cache due to an error", cacheError));
     }
 

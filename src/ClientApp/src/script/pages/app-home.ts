@@ -8,6 +8,7 @@ import { SizeMax } from '../common/constants';
 import { ChordService } from '../services/chord-service';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { onlineDetector } from '../services/online-detector';
 @customElement('app-home')
 export class AppHome extends BootstrapBase {
 
@@ -173,7 +174,9 @@ export class AppHome extends BootstrapBase {
       .subscribe(searchText => this.runSearch(searchText));
 
     // Fetch new chords
-    this.fetchNextNewChords();
+      this.fetchNextNewChords();
+
+      onlineDetector.addEventListener("online-status-changed", () => this.fetchNextNewChords());
   }
 
   searchTextChanged(e: Event) {
