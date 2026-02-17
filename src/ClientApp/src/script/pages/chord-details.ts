@@ -170,6 +170,9 @@ export class ChordDetails extends LitElement {
         // - If the chord chart is in the new format, include the header in the print.
         // - If the chord chart isn't in the new format, don't include the header in the print.
         const headerClass = chord.chords ? "" : "d-print-none";
+        const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
+        const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
+        
         return html`
             <!-- Song details -->
             <div class="row ${headerClass}">
@@ -227,18 +230,18 @@ export class ChordDetails extends LitElement {
                         </sl-button-group>
                         
                         <sl-button-group label="Transpose">
-                            <sl-tooltip content="Transpose the chords up a half-step" hoist>
-                                <sl-button size="large" @click="${() => this.bumpTranspose(1)}">
+                            <sl-tooltip content="${transposeUpTooltip}" hoist>
+                                <sl-button size="large" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
                                     <sl-icon name="caret-up-fill"></sl-icon>
                                 </sl-button>
                             </sl-tooltip>
-                            <sl-tooltip content="Transpose half-steps" hoist>
+                            <sl-tooltip content="Chord transposition" hoist>
                                 <sl-button class="transpose-value" disabled size="large" @click="${() => this.bumpTranspose(-1)}">
                                     ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
                                 </sl-button>
                             </sl-tooltip>
-                            <sl-tooltip content="Transpose the chords down a half-step" hoist>
-                                <sl-button size="large" @click="${() => this.bumpTranspose(-1)}">
+                            <sl-tooltip content="${transposeDownTooltip}" hoist>
+                                <sl-button size="large" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
                                     <sl-icon name="caret-down-fill"></sl-icon>
                                 </sl-button>
                             </sl-tooltip>
@@ -616,7 +619,7 @@ export class ChordDetails extends LitElement {
 
     goFullscreen() {
         const plainTextPreview = this.shadowRoot?.querySelector(".plain-text-preview");
-        const imgPreview = this.shadowRoot?.querySelector("img-preview");
+        const imgPreview = this.shadowRoot?.querySelector(".img-preview img");
         const iframe = this.shadowRoot?.querySelector("iframe");
         (plainTextPreview || imgPreview || iframe)?.requestFullscreen();
     }

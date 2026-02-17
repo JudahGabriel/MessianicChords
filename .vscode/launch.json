@@ -7,7 +7,7 @@
       "requireExactSource": false,
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/bin/Debug/net8.0/MessianicChords.dll",
+      "program": "${workspaceFolder}/src/bin/Debug/net10.0/MessianicChords.dll",
       "args": [],
       "cwd": "${workspaceFolder}/src",
       "stopAtEntry": false,
