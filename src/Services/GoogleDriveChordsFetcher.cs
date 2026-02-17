@@ -60,7 +60,7 @@ public class GoogleDriveChordsFetcher
                 .Select(i => new ChordSheetMetadata
                 {
                     GoogleDocId = i.Id,
-                    LastModified = i.ModifiedTime ?? i.CreatedTime ?? DateTime.UtcNow,
+                    LastModified = (i.ModifiedByMeTimeDateTimeOffset ?? i.CreatedTimeDateTimeOffset ?? DateTimeOffset.UtcNow).UtcDateTime,
                     ResourceKey = i.ResourceKey
                 })
                 .ToArray();

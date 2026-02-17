@@ -9,10 +9,17 @@ export const chordDetailStyles = css`
         font-family: var(--subtitle-font);
     }
 
+    .container {
+        @media (max-width: 575px) {
+            padding: 0;
+        }
+    }
+
     .song-name {
         font-family: var(--title-font);
         font-size: 1.8em;
         margin-bottom: -15px;
+        margin-top: 0;
     }
 
     @media (max-width: ${SizeMax.Md}px) {
@@ -46,6 +53,7 @@ export const chordDetailStyles = css`
         font-family: var(--title-font);
         font-size: 1.8em;
         margin-bottom: -15px;
+        margin-top: 0;
     }
 
     .artist-author-name a,
@@ -70,6 +78,10 @@ export const chordDetailStyles = css`
         sl-icon {
             font-size: 1.5em;
             transform: translateY(4px);
+        }
+
+        sl-button-group {
+            margin-top: 16px;
         }
 
         .transpose-value {

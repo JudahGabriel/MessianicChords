@@ -10,7 +10,7 @@ export class AppFooter extends LitElement {
 
     render() {
         return html`
-            <footer class="d-flex justify-content-center w-100 gap-5 p-2 d-print-none">
+            <footer class="d-flex w-100 d-print-none">
                 <a href="/">Home</a>
                 <a href="/about">About us, legal</a>
                 <a target="_blank" href="https://blog.judahgabriel.com/2012/01/introducing-messianicchordscom.html">What is this site?</a>

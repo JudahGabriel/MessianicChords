@@ -9,7 +9,7 @@ export const indexStyles = css`
 
     ${tabletsAndSmaller()} {
         main {
-            padding-top: 0;
+            padding: 0 0 16px 0;
             margin-top: 30px;
         }
     }

@@ -33,12 +33,14 @@ export class ChordDetails extends LitElement {
     @state() canGoFullScreen: boolean | null = null;
     @state() isWebPublished = false;
     @state() hasScreenshots = false;
-    @state() transpose = 0;    
+    @state() transpose = 0;
+    @state() fontSize = ChordDetails.defaultFontSize;
 
     location: RouterLocation | null = null;
     chordChartLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
+    static readonly defaultFontSize = 16;
 
     firstUpdated() {
         this.canGoFullScreen = !!document.body.requestFullscreen;
@@ -169,10 +171,7 @@ export class ChordDetails extends LitElement {
         // For printing, we have special handling for the header (title and author).
         // - If the chord chart is in the new format, include the header in the print.
         // - If the chord chart isn't in the new format, don't include the header in the print.
-        const headerClass = chord.chords ? "" : "d-print-none";
-        const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
-        const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
-        
+        const headerClass = chord.chords ? "" : "d-print-none";        
         return html`
             <!-- Song details -->
             <div class="row ${headerClass}">
@@ -190,66 +189,7 @@ export class ChordDetails extends LitElement {
             </div>
 
             <!-- Song toolbar -->
-            <div class="row d-print-none">
-                <div class="col-12">
-                    <div class="btn-toolbar">
-                        <sl-button-group>
-
-                            <sl-tooltip content="Play the audio recording for this song" hoist>
-                                <sl-button size="large" @click="${this.playMedia}">
-                                    <sl-icon name="play-fill"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="Download this chord chart" hoist>
-                                <sl-button size="large" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
-                                    <sl-icon name="download"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="View fullscreen" hoist>
-                                <sl-button size="large" @click="${this.goFullscreen}">
-                                    <sl-icon name="fullscreen"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                        </sl-button-group>
-
-                        <sl-button-group>
-                            <sl-tooltip content="Print this chord chart" hoist>
-                                <sl-button size="large" @click="${this.print}">
-                                    <sl-icon name="printer"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="Edit this chord chart" hoist>
-                                <sl-button size="large" href="/${chord.id}/edit" target="_blank">
-                                    <sl-icon name="pencil-square"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                        </sl-button-group>
-                        
-                        <sl-button-group label="Transpose">
-                            <sl-tooltip content="${transposeUpTooltip}" hoist>
-                                <sl-button size="large" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
-                                    <sl-icon name="caret-up-fill"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                            <sl-tooltip content="Chord transposition" hoist>
-                                <sl-button class="transpose-value" disabled size="large" @click="${() => this.bumpTranspose(-1)}">
-                                    ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
-                                </sl-button>
-                            </sl-tooltip>
-                            <sl-tooltip content="${transposeDownTooltip}" hoist>
-                                <sl-button size="large" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
-                                    <sl-icon name="caret-down-fill"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                        </sl-button-group>
-                    </div>
-                    
-                </div>
-            </div>
+            ${this.renderSongToolbar(chord)}
 
             <div class="row">
                 <!-- Chord chart -->
@@ -369,6 +309,93 @@ export class ChordDetails extends LitElement {
         `;
     }
 
+    renderSongToolbar(chord: ChordSheet): TemplateResult {
+        const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
+        const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
+        const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
+        return html`
+            <div class="row d-print-none">
+                <div class="col-12">
+                    <div class="btn-toolbar">
+                        <sl-button-group>
+
+                            <sl-tooltip content="Play the audio recording for this song" hoist>
+                                <sl-button size="${btnSize}" @click="${this.playMedia}">
+                                    <sl-icon name="play-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="Download this chord chart" hoist>
+                                <sl-button size="${btnSize}" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
+                                    <sl-icon name="download"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="View fullscreen" hoist>
+                                <sl-button size="${btnSize}" @click="${this.goFullscreen}">
+                                    <sl-icon name="fullscreen"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                        </sl-button-group>
+
+                        <sl-button-group>
+                            <sl-tooltip content="Print this chord chart" hoist>
+                                <sl-button size="${btnSize}" @click="${this.print}">
+                                    <sl-icon name="printer"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="Edit this chord chart" hoist>
+                                <sl-button size="${btnSize}" href="/${chord.id}/edit" target="_blank">
+                                    <sl-icon name="pencil-square"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                        </sl-button-group>
+                        
+                        <sl-button-group label="Transpose">
+                            <sl-tooltip content="${transposeUpTooltip}" hoist>
+                                <sl-button size="${btnSize}" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
+                                    <sl-icon name="caret-up-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                            <sl-tooltip content="Chord transposition" hoist>
+                                <sl-button class="transpose-value" disabled size="${btnSize}" @click="${() => this.bumpTranspose(-1)}">
+                                    ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
+                                </sl-button>
+                            </sl-tooltip>
+                            <sl-tooltip content="${transposeDownTooltip}" hoist>
+                                <sl-button size="${btnSize}" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
+                                    <sl-icon name="caret-down-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                        </sl-button-group>
+                        
+                        <sl-button-group label="Font Size">
+                            <sl-tooltip content="Decrease font size" hoist>
+                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
+                                    <sl-icon name="dash"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                            <sl-tooltip content="Current font size" hoist>
+                                <sl-button disabled size="${btnSize}">
+                                    ${this.fontSize}px
+                                </sl-button>
+                            </sl-tooltip>
+                            <sl-tooltip content="Increase font size" hoist>
+                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
+                                    <sl-icon name="plus"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+                        </sl-button-group>
+
+                    </div>
+                    
+                </div>
+            </div>
+        `;
+    }
+
     renderChavahLink(chord: ChordSheet): TemplateResult {
         const chavahLink =
             chord.links.find(url => url.startsWith("https://messianicradio.com") && url.includes("song=songs/")) ||
@@ -474,9 +501,8 @@ export class ChordDetails extends LitElement {
 
     renderPlainTextPreviewer(chord: ChordSheet): TemplateResult {
         const lines = this.getChordChartLines(chord);
-        // <p class="plain-text-preview">${chord.chords}</p>
         return html`
-            <p class="plain-text-preview">${repeat(lines, l => lines.indexOf(l), l => this.renderPlainTextLine(l))}</p>
+            <p class="plain-text-preview" style="font-size: ${this.fontSize}px;">${repeat(lines, l => lines.indexOf(l), l => this.renderPlainTextLine(l))}</p>
         `;
     }
 
@@ -619,7 +645,7 @@ export class ChordDetails extends LitElement {
 
     goFullscreen() {
         const plainTextPreview = this.shadowRoot?.querySelector(".plain-text-preview");
-        const imgPreview = this.shadowRoot?.querySelector(".img-preview img");
+        const imgPreview = this.shadowRoot?.querySelector(".img-preview");
         const iframe = this.shadowRoot?.querySelector("iframe");
         (plainTextPreview || imgPreview || iframe)?.requestFullscreen();
     }
@@ -662,5 +688,11 @@ export class ChordDetails extends LitElement {
         if (audio) {
             audio.play();
         }
+    }
+
+    changeFontSize(amount: number) {
+        const newSize = Math.max(6, Math.min(48, this.fontSize + amount));
+        this.fontSize = newSize;
+        this.requestUpdate();
     }
 }

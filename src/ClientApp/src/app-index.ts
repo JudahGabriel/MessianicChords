@@ -44,7 +44,7 @@ export class AppIndex extends LitElement {
 
     render() {
         return html`
-        <div class="container">
+        <div class="containerzanz">
             <app-header></app-header>
 
             <main>
