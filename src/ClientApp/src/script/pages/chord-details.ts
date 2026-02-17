@@ -1,4 +1,4 @@
-import { RouterLocation } from "@vaadin/router";
+import { Router, RouterLocation } from "@vaadin/router";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
@@ -41,6 +41,21 @@ export class ChordDetails extends LitElement {
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
     static readonly defaultFontSize = 16;
+
+    connectedCallback(): void {
+        super.connectedCallback();
+
+        // See if we have a transpose hash in the address bar, e.g. "#transpose=4"
+        if (window.location.hash) {
+            const match = window.location.hash.match(/^#transpose=(-?\d{1,2})$/);
+            if (match) {
+                const transposeVal = parseInt(match[1], 10);
+                if (!isNaN(transposeVal) && transposeVal >= -12 && transposeVal <= 12) {
+                    this.transpose = transposeVal;
+                }
+            }
+        }
+    }
 
     firstUpdated() {
         this.canGoFullScreen = !!document.body.requestFullscreen;
@@ -665,6 +680,12 @@ export class ChordDetails extends LitElement {
         // If we go outside the scale, wrap to the other side.
         if (this.transpose === 12 || this.transpose === -12) {
             this.transpose = 0;
+        }
+
+        if (this.transpose !== 0) {
+            window.location.hash = `#transpose=${this.transpose}`;
+        } else {
+            window.location.hash = "";
         }
     }
 
