@@ -125,7 +125,7 @@ export class ChordDetails extends LitElement {
         }
 
         return html`
-            <section class="container mx-auto">
+            <section class="container">
                 <div>
                     ${content}
                 </div>
@@ -191,9 +191,8 @@ export class ChordDetails extends LitElement {
             <!-- Song details -->
             <div class="row ${headerClass}">
                 <div class="col-12 col-lg-12">
-                    <div class="d-flex justify-content-between align-items-baseline mb-sm-4">
-                        <h1 class="song-name">${chord.song}</h1>
-                        <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span>
+                    <div class="song-artist-and-title-container d-flex justify-content-between align-items-baseline mb-sm-4">
+                        <h1 class="song-name">${chord.song} <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span></h1>
                         <h5 class="artist-author-name">
                             <a href="/artist/${encodeURIComponent(chord.artist || chord.authors[0])}">
                                 ${chord.artist || chord.authors.join(", ")}
@@ -208,7 +207,7 @@ export class ChordDetails extends LitElement {
 
             <div class="row">
                 <!-- Chord chart -->
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-8 chord-chart">
                     ${this.renderChordPreviewer(chord)}
                 </div>
 
@@ -387,9 +386,9 @@ export class ChordDetails extends LitElement {
                         </sl-button-group>
                         
                         <sl-button-group label="Font Size">
-                            <sl-tooltip content="Decrease font size" hoist>
-                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
-                                    <sl-icon name="dash"></sl-icon>
+                            <sl-tooltip content="Increase font size" hoist>
+                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
+                                    <strong>A</strong> <sl-icon name="caret-up-fill"></sl-icon>
                                 </sl-button>
                             </sl-tooltip>
                             <sl-tooltip content="Current font size" hoist>
@@ -397,9 +396,9 @@ export class ChordDetails extends LitElement {
                                     ${this.fontSize}px
                                 </sl-button>
                             </sl-tooltip>
-                            <sl-tooltip content="Increase font size" hoist>
-                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
-                                    <sl-icon name="plus"></sl-icon>
+                            <sl-tooltip content="Decrease font size" hoist>
+                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
+                                    <small font-size="0.85em">A <sl-icon name="caret-down-fill"></sl-icon></small> 
                                 </sl-button>
                             </sl-tooltip>
                         </sl-button-group>

@@ -1,4 +1,5 @@
-﻿@model MessianicChords.Models.HomeViewModel
+﻿@using Google.Apis.Download
+@model MessianicChords.Models.HomeViewModel
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
@@ -87,6 +88,11 @@
         body {
             width: calc(100vw - (8px * 2));
             height: calc(100vh - (8px * 2));
+            
+            @@media print {
+                /* During print, we want to take up the whole page */
+                max-width: 100%;
+            }
         }
     </style>
 </head>

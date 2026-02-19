@@ -37,7 +37,7 @@ export const chordDetailStyles = css`
 
     .hebrew-song-name {
         font-family: "David", var(--title-font);
-        font-size: 2.5em;
+        font-size: 1.3em;
         direction: rtl;
     }
 
@@ -122,6 +122,33 @@ export const chordDetailStyles = css`
             box-shadow: none;
             border: none;
             width: var(--iframe-width);
+        }
+
+        .container {
+            margin: 0;
+            max-width: 100%;
+        }
+
+        .song-artist-and-title-container {
+            gap: 10px;
+            padding-left: 0;
+            transform: translateX(calc(var(--bs-gutter-x) * -0.5)); /* On print, cancel out padding from the parent column */
+
+            .song-name {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+                font-size: 2.5em;
+            }
+        }
+
+        .chord-chart {
+            width: 100%;
+
+            .plain-text-preview {
+                position: absolute;
+                padding-left: 0;
+                padding-top: 0;
+                left: 0;
+            }
         }
     }
 
