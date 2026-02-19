@@ -5,6 +5,10 @@ export const indexStyles = css`
     main {
         padding: 16px;
         margin-bottom: 50px; /** needed to give some spacing between main content and the fixed footer */
+
+        @media print {
+            padding: 0;
+        }
     }
 
     ${tabletsAndSmaller()} {

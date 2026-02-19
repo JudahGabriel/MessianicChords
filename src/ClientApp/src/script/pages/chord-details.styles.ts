@@ -124,6 +124,7 @@ export const chordDetailStyles = css`
             width: var(--iframe-width);
         }
 
+        /** When printing, make our container take up the full page. */
         .container {
             margin: 0;
             max-width: 100%;
@@ -132,11 +133,15 @@ export const chordDetailStyles = css`
         .song-artist-and-title-container {
             gap: 10px;
             padding-left: 0;
-            transform: translateX(calc(var(--bs-gutter-x) * -0.5)); /* On print, cancel out padding from the parent column */
+            
 
-            .song-name {
+            .song-name, .artist-author-name {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
                 font-size: 2.5em;
+            }
+
+            .hebrew-song-name {
+                font-size: 1.1em;
             }
         }
 
@@ -144,10 +149,8 @@ export const chordDetailStyles = css`
             width: 100%;
 
             .plain-text-preview {
-                position: absolute;
                 padding-left: 0;
                 padding-top: 0;
-                left: 0;
             }
         }
     }

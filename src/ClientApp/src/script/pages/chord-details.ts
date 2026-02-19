@@ -80,7 +80,7 @@ export class ChordDetails extends LitElement {
         ]
             .filter(n => !!n)
             .join(" ");
-        document.title = `${chordName} by ${chord.artist || chord.authors[0] || "Unknown"} - guitar chord chart and lyrics`;
+        document.title = `${chordName} by ${chord.artist || chord.authors[0] || "Unknown"} - guitar chord chart and lyrics - MessianicChords.com`;
 
         // Offline helper: see if we have a offline index query string.
         // If so, fetch the next chord sheet in the list and load that in a moment.
@@ -327,6 +327,7 @@ export class ChordDetails extends LitElement {
         const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
+        const fontSizeClass = chord.chords ? "" : "d-none";
         return html`
             <div class="row d-print-none">
                 <div class="col-12">
@@ -385,7 +386,7 @@ export class ChordDetails extends LitElement {
                             </sl-tooltip>
                         </sl-button-group>
                         
-                        <sl-button-group label="Font Size">
+                        <sl-button-group class="${fontSizeClass}" label="Font Size">
                             <sl-tooltip content="Increase font size" hoist>
                                 <sl-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
                                     <strong>A</strong> <sl-icon name="caret-up-fill"></sl-icon>
