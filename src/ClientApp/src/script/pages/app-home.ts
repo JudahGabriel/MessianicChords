@@ -28,7 +28,7 @@ export class AppHome extends LitElement {
     searchResults = new PagedList<ChordSheet>((skip, take) => this.chordService.searchPaged(this.searchText.value, skip, take));
     readonly chordService = new ChordService();
     readonly searchText = new BehaviorSubject("");
-    readonly isInTabbedPwa = window.matchMedia('(display-mode: tabbed)').matches;
+    readonly isInTabbedPwa = window.matchMedia("(display-mode: tabbed)").matches;
 
     constructor() {
         super();

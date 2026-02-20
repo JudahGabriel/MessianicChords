@@ -24,10 +24,6 @@ import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {
-    static get styles() {
-        return [sharedStyles, bootstrapGridStyles, bootstrapUtilities, chordDetailStyles];
-    }
-
     @state() chord: ChordSheet | null = null;
     @state() error: string | null = null;
     @state() canGoFullScreen: boolean | null = null;
@@ -41,6 +37,8 @@ export class ChordDetails extends LitElement {
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
     static readonly defaultFontSize = 16;
+
+    static styles = [sharedStyles, bootstrapGridStyles, bootstrapUtilities, chordDetailStyles];
 
     connectedCallback(): void {
         super.connectedCallback();

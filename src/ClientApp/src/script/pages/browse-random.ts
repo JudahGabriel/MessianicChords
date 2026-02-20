@@ -1,69 +1,75 @@
-import { css, html, TemplateResult } from 'lit';
-import { repeat } from 'lit/directives/repeat.js';
-import { customElement, state } from 'lit/decorators.js';
-import '../components/chord-card';
-import '../components/chord-card-loading';
-import { ChordSheet } from '../models/interfaces';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { ChordService } from '../services/chord-service';
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import "../components/chord-card";
+import "../components/chord-card-loading";
+import { ChordSheet, PagedResult } from "../models/interfaces";
+import { ChordService } from "../services/chord-service";
+import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
+import { browseRandomStyles } from "./browse-random.styles";
+import { sharedStyles } from "../common/shared.styles";
+import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import { SlIcon } from "@shoelace-style/shoelace";
+import { PagedList } from "../models/paged-list";
+import "../components/chord-collection.js";
 
-@customElement('browse-random')
-export class BrowseRandom extends BootstrapBase {
-    @state() chords: ChordSheet[] = [];
+
+@customElement("browse-random")
+export class BrowseRandom extends LitElement {
+    @state() chords = new PagedList<ChordSheet>((skip, take) => this.fetchRandomChords(skip, take));
     @state() isLoading = false;
     readonly chordService = new ChordService();
+    readonly chordsPerRoll = 7;
 
-    static get styles() {
-        const localStyles = css`
-            .dice-1 {
-                transform: rotateZ(-20deg);
-                transition: .2s ease-in-out transform;
-            }
-            .dice-2 {
-                transform: rotateZ(28deg);
-                transition: .2s ease-in-out transform;
-            }
-        `;
+    static styles = [bootstrapGridStyles, sharedStyles, browseRandomStyles];
 
-        return [
-            BootstrapBase.styles,
-            localStyles
-        ];
+    connectedCallback(): void {
+        super.connectedCallback();
+
+        this.chords.fetch();
+        this.chords.addEventListener("changed", () => {
+            console.log("zanz random chords changed", this.chords.isLoading);
+            this.isLoading = this.chords.isLoading;
+        });
+
+        // Fetch the dice-1...dice-6 icons from the icon set, so that they're cached and will show immediately when we roll the dice for the first time.
+        const iconNames = ["dice-1", "dice-2", "dice-3", "dice-4", "dice-5", "dice-6"];
+        iconNames.forEach(name => fetch(`/assets/icons/${name}.svg`));
     }
 
-    constructor() {
-        super();
-    }
+    async fetchRandomChords(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        this.rollDice();
 
-    firstUpdated() {
-        this.loadRandomChords();
-    }
-
-    async loadRandomChords() {
-        if (!this.isLoading) {
-            this.rollDice();
-
-            this.isLoading = true;
-            try {
-                this.chords = await this.chordService.getByRandom(7);
-            } finally {
-                this.isLoading = false;
-            }
-        }
+        const chords = await this.chordService.getByRandom(this.chordsPerRoll);
+        return {
+            results: chords,
+            totalCount: this.chordsPerRoll,
+            skip: skip,
+            take: take,
+        };
     }
 
     rollDice() {
-        const dice1 = this.shadowRoot?.querySelector(".dice-1") as HTMLImageElement;
-        const dice2 = this.shadowRoot?.querySelector(".dice-2") as HTMLImageElement;
+        const diceBlock1 = this.shadowRoot?.querySelector(".dice-block-1") as SlIcon;
+        const diceBlock2 = this.shadowRoot?.querySelector(".dice-block-2") as SlIcon;
+
+        // Set each dice block to a random number between 1 and 6, but make sure the total of the two dice is always 7 (just for fun :-)).
+        const diceBlock1Number = Math.floor(Math.random() * 6) + 1;
+
+        // Set the first dice to that number, and the second dice to 7 - that number (so that the total is always 7 :-)).
+        const diceBlock2Number = 7 - diceBlock1Number;
+
         const audio = new Audio("/assets/audio/dice.mp3");
-        if (dice1) {
-            dice1.style.transform = `rotateZ(${Math.floor(Math.random() * 360 * (Math.random() < .5 ? -1 : 1))}deg)`
+        if (diceBlock1) {
+            diceBlock1.style.transform = `rotateZ(${Math.floor(Math.random() * 360 * (Math.random() < .5 ? -1 : 1))}deg)`;
+            diceBlock1.name = `dice-${diceBlock1Number}`;
         }
-        if (dice2) {
-            dice2.style.transform = `rotateZ(${Math.floor(Math.random() * 360) * (Math.random() < .5 ? -1 : 1)}deg)`
+        if (diceBlock2) {
+            diceBlock2.style.transform = `rotateZ(${Math.floor(Math.random() * 360) * (Math.random() < .5 ? -1 : 1)}deg)`;
+            diceBlock2.name = `dice-${diceBlock2Number}`;
         }
 
-        audio.playbackRate = 0.5 + Math.random();
+        audio.playbackRate = 0.8 + Math.random();
         audio.play();
     }
 
@@ -71,46 +77,26 @@ export class BrowseRandom extends BootstrapBase {
         return html`
             <div class="container">
                 <h3 class="highlight">Random</h3>
-                <button ?disabled="${this.isLoading}" class="btn btn-light" @click="${() => this.loadRandomChords()}">
-                    <img class="dice-1" src="/assets/bs-icons/dice-1.svg" />
-                    <img class="dice-2" src="/assets/bs-icons/dice-6.svg" />
+                <sl-button variant="default" ?disabled="${this.isLoading}" class="btn btn-light" @click="${this.resetAndFetchChords}">
+                    <div slot="prefix">
+                        <sl-icon class="dice-block-1" name="dice-1"></sl-icon>
+                        <sl-icon class="dice-block-2" name="dice-6"></sl-icon>
+                    </div>
                     Roll again
-                </button>
+                </sl-button>
                 ${this.renderMainContent()}
             </div>
         `;
     }
 
     renderMainContent(): TemplateResult {
-        if (this.isLoading) {
-            return this.renderLoading();
-        }
-
-        return this.renderChords(this.chords);
-    }
-
-    renderLoading(): TemplateResult {
-        const items = [1, 2, 3, 4, 5, 6, 7];
         return html`
-            <div class="d-flex flex-wrap justify-content-evenly">
-                ${repeat(items, i => i, () => html`
-                <chord-card-loading></chord-card-loading>
-                `)}
-            </div>
+            <chord-collection .chords="${this.chords}"></chord-collection>
         `;
     }
 
-    renderChords(chords: ChordSheet[]): TemplateResult {
-        return html`
-            <div class="d-flex flex-wrap justify-content-evenly">
-                ${repeat(chords, c => c.id, c => this.renderChord(c))}
-            </div>
-        `;
-    }
-
-    renderChord(chord: ChordSheet | null): TemplateResult {
-        return html`
-            <chord-card .chord="${chord}"></chord-card>
-        `;
+    resetAndFetchChords(): void {
+        this.chords.reset();
+        this.chords.fetch();
     }
 }

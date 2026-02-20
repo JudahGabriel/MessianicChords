@@ -132,8 +132,7 @@ export const chordDetailStyles = css`
 
         .song-artist-and-title-container {
             gap: 10px;
-            padding-left: 0;
-            
+            padding-left: 0;            
 
             .song-name, .artist-author-name {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
@@ -199,6 +198,10 @@ export const chordDetailStyles = css`
     {
         box-shadow: 0 0 3px 0px silver;
         margin-top: 13px;
+    }
+
+    .img-preview img {
+        max-width: 100%;
     }
 
     .plain-text-preview {

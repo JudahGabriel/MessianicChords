@@ -15,9 +15,10 @@ import "../components/chord-card";
 @customElement("chord-collection")
 export class ChordCollection extends LitElement {
     @property({ type: Object }) chords: PagedList<ChordSheet> | null = null;
+    @state() chordList: ChordSheet[] = [];
     @state() isLoading = false;
     readonly chordsChangedHandler = () => this.chordsChanged();
-    readonly isInTabbedPwa = window.matchMedia('(display-mode: tabbed)').matches;
+    readonly isInTabbedPwa = window.matchMedia("(display-mode: tabbed)").matches;
 
     static styles = [sharedStyles, bootstrapUtilities, chordCollectionStyles];
 
@@ -37,13 +38,14 @@ export class ChordCollection extends LitElement {
     }
 
     render(): TemplateResult {
+        console.log("render", this.chords?.items);
         if (!this.chords) {
             return html``;
-        }        
+        }
 
         return html`
             <div class="chords-container w-100 d-flex flex-wrap justify-content-evenly align-items-stretch">
-                ${repeat(this.chords.items, c => c.id, c => this.renderChordCard(c))}
+                ${repeat(this.chordList, c => c.id, c => this.renderChordCard(c))}
                 ${this.renderLoading()}
             </div>
         `;
@@ -86,5 +88,6 @@ export class ChordCollection extends LitElement {
 
     private chordsChanged() {
         this.isLoading = this.chords?.isLoading || false;
+        this.chordList = this.chords?.items || [];
     }
 }
