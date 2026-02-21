@@ -1,32 +1,25 @@
-import { css, html, TemplateResult } from "lit";
+import {  html, LitElement, TemplateResult } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement } from "lit/decorators.js";
 import "../components/chord-card";
 import "../components/chord-card-loading";
 import "../components/load-more-button";
 import { ChordSheet, PagedResult } from "../models/interfaces";
-import { BootstrapBase } from "../common/bootstrap-base";
 import { PagedList } from "../models/paged-list";
 import { ChordService } from "../services/chord-service";
+import { sharedStyles } from "../common/shared.styles";
+import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 
 type ChordsByLetter = { [letter: string]: ChordSheet[] };
 
 @customElement("browse-songs")
-export class BrowseSongs extends BootstrapBase {
+export class BrowseSongs extends LitElement {
 
     readonly chordGrouping: ChordsByLetter = {};
     protected readonly chordService = new ChordService();
     readonly allChords: PagedList<ChordSheet>;
 
-    static get styles() {
-        const localStyles = css`
-        `;
-
-        return [
-            BootstrapBase.styles,
-            localStyles
-        ];
-    }
+    static styles = [bootstrapGridStyles, sharedStyles];
 
     constructor() {
         super();
@@ -107,7 +100,6 @@ export class BrowseSongs extends BootstrapBase {
     }
 
     renderLetterGroup(letter: string): TemplateResult {
-
         const chords = this.chordGrouping[letter];
         if (!chords) {
             return html``;

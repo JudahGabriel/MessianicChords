@@ -129,6 +129,11 @@ public class ChordSheet
     public string? TimingSignature { get; set; }
 
     /// <summary>
+    /// Gets the beats per minute (BPM) of the song, if known. This can be a number ("80") or it may contain a range ("60/90").
+    /// </summary>
+    public string? BeatsPerMinute { get; set; }
+
+    /// <summary>
     /// The file attachments of a chord chart.
     /// </summary>
     public List<Attachment> Attachments { get; set; } = [];

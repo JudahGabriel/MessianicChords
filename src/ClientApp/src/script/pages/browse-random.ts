@@ -27,10 +27,7 @@ export class BrowseRandom extends LitElement {
         super.connectedCallback();
 
         this.chords.fetch();
-        this.chords.addEventListener("changed", () => {
-            console.log("zanz random chords changed", this.chords.isLoading);
-            this.isLoading = this.chords.isLoading;
-        });
+        this.chords.addEventListener("changed", () => this.isLoading = this.chords.isLoading);
 
         // Fetch the dice-1...dice-6 icons from the icon set, so that they're cached and will show immediately when we roll the dice for the first time.
         const iconNames = ["dice-1", "dice-2", "dice-3", "dice-4", "dice-5", "dice-6"];

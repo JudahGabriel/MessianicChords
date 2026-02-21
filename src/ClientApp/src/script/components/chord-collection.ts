@@ -38,7 +38,6 @@ export class ChordCollection extends LitElement {
     }
 
     render(): TemplateResult {
-        console.log("render", this.chords?.items);
         if (!this.chords) {
             return html``;
         }
