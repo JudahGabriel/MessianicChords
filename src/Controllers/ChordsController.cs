@@ -205,10 +205,10 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet]
-        public async Task<FileStreamResult> Download(string id)
+        public async Task<FileStreamResult> Download(string id, string? transposedLyricsBase64 = null)
         {
             var chordSheet = await DbSession.LoadRequiredAsync<ChordSheet>(id);
-            var stream = await GetFileStreamForChordSheet(chordSheet);
+            var stream = await GetFileStreamForChordSheet(chordSheet, transposedLyricsBase64);
             this.Response.RegisterForDispose(stream);
 
             var mimeType = GetMimeTypeFromChordSheetExtension(chordSheet.Extension);
@@ -303,18 +303,28 @@ namespace MessianicChords.Controllers
             };
         }
 
-        private async Task<Stream> GetFileStreamForChordSheet(ChordSheet chordSheet)
+        private async Task<Stream> GetFileStreamForChordSheet(ChordSheet chordSheet, string? transposedLyricsBase64)
         {
             if (!string.IsNullOrWhiteSpace(chordSheet.Chords))
             {
                 // It's plain text. Send them our HTML template.
                 var filePath = Path.Combine(host.ContentRootPath, "App_Data\\plain-text-chord-download-template.html");
                 var fileContents = await System.IO.File.ReadAllTextAsync(filePath);
+
+                // If we have transposed lyrics, use those instead of the original chords.
+                var lyricsAndChords = chordSheet.Chords;
+                if (!string.IsNullOrWhiteSpace(transposedLyricsBase64))
+                {
+                    var transposedLyricsBytes = Convert.FromBase64String(transposedLyricsBase64);
+                    var transposedLyrics = Encoding.UTF8.GetString(transposedLyricsBytes);
+                    lyricsAndChords = transposedLyrics;
+                }
+
                 // Update the template with our real values.
                 var chordDownloadHtml = fileContents
                     .Replace("{{title}}", $"{chordSheet.Song} {chordSheet.HebrewSongName}")
                     .Replace("{{artist}}", chordSheet.Artist)
-                    .Replace("{{chords}}", chordSheet.Chords);
+                    .Replace("{{chords}}", lyricsAndChords);
                 return new MemoryStream(Encoding.UTF8.GetBytes(chordDownloadHtml));
             }
             if (!string.IsNullOrEmpty(chordSheet.GoogleDocId))

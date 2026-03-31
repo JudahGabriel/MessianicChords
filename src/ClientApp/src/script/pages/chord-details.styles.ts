@@ -227,6 +227,7 @@ export const chordDetailStyles = css`
         .plain-text-preview {
             box-shadow: none;
             width: var(--iframe-width);
+            overflow-x: hidden;
         }
 
         .plain-text-preview .chord {

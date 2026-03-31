@@ -50,9 +50,20 @@ export class ChordService extends ApiServiceBase {
         return this.getBackend().then(b => b.getNew(skip, take));
     }
 
-    downloadUrlFor(chord: ChordSheet): string {
+    downloadUrlFor(chord: ChordSheet, transposedChords: string | null | undefined): string {
+        // For things on Google Drive.
         if (chord.downloadUrl) {
             return chord.downloadUrl;
+        }
+
+        // If we have transposed chords, send in the full transposed string to the server as a base64 string.
+        // We use TextEncoder to handle non-ascii characters.
+        if (transposedChords) {
+            const encoder = new TextEncoder();
+            const uint8Array = encoder.encode(transposedChords);
+            const binaryString = String.fromCharCode(...uint8Array);
+            const base64TransposedChords = btoa(binaryString);
+            return `${this.apiUrl}/chords/download?id=${chord.id}&transposedLyricsBase64=${encodeURIComponent(base64TransposedChords)}`;
         }
 
         return `${this.apiUrl}/chords/download?id=${chord.id}`;

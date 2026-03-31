@@ -43,7 +43,7 @@ export class Chord {
         }
 
         // Make sure we match the regex.
-        var inputTrimmed = input.trim();
+        const inputTrimmed = input.trim();
         Chord.chordRegex.lastIndex = 0;
         const chordRegexCaptures = Chord.chordRegex.exec(inputTrimmed);
         const expectedCaptureCount = 6; // full text match + major note + sharp or flat + variation + number + bass note
@@ -77,7 +77,6 @@ export class Chord {
 
         // Combine the variant and number (e.g. maj7, sus4, etc.)
         const fullVariantWithNumbers = [variantWithoutMinor, variantNumber].filter(v => !!v).join("");
-
         return new Chord(chordName, majorNote as Note, isMinor, sharpOrFlat === "#", sharpOrFlat === "b", fullVariantWithNumbers, bassNoteChord);
     }
 

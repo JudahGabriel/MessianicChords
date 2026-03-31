@@ -653,7 +653,13 @@ export class ChordDetails extends LitElement {
     }
 
     downloadUrl(chord: ChordSheet): string {
-        return this.chordService.downloadUrlFor(chord);
+
+        // If we've transposed the chords, we need to send the transposed version into the download URL so that the download will contain the transposed chords.
+        let transposedLyrics = null;
+        if (this.chord?.chords && this.transpose !== 0) {
+            transposedLyrics = this.shadowRoot?.querySelector(".plain-text-preview")?.textContent || null;
+        }
+        return this.chordService.downloadUrlFor(chord, transposedLyrics);
     }
 
     goFullscreen() {
