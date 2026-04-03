@@ -6,10 +6,9 @@ import { BootstrapBase } from "../common/bootstrap-base";
 import { bytesToText, emptyChordSheet, inputEventChecked, inputEventNumber, inputEventValue } from "../common/utils";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
-import '../components/multiple-items-input';
 import { focusOnInvalid } from "../common/focus-on-invalid-directive";
 
-@customElement('chord-edit')
+@customElement("chord-edit")
 export class ChordEdit extends BootstrapBase {
     static get styles() {
         const localStyles = css`
@@ -52,7 +51,7 @@ export class ChordEdit extends BootstrapBase {
         super();
 
         // When any input event fires, reset the validation field.
-        this.addEventListener('input', () => this.invalidFieldName = "");
+        this.addEventListener("input", () => this.invalidFieldName = "");
     }
 
     firstUpdated() {
@@ -351,7 +350,7 @@ export class ChordEdit extends BootstrapBase {
         const errorClass = isTooLarge || isTooMany ? "list-group-item-danger" : "";
         const errorMessage = isTooLarge ? html`<br><br><strong>Attachments must be < 10MB</strong>` :
             isTooMany ? html`<br><br><strong>Too many attachments. Max 10 attachments.</strong>` :
-            html``;
+                html``;
 
         return html`
             <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ${errorClass}">
@@ -371,8 +370,8 @@ export class ChordEdit extends BootstrapBase {
             Submitting...
         `;
         const buttonContents = this.isSubmitting ? submittingHtml : "Submit";
-        return html
-            `<button type="submit" class="btn btn-primary btn-block" ?disabled=${this.isSubmitting} @click="${this.submit}">
+        return html`
+            <button type="submit" class="btn btn-primary btn-block" ?disabled=${this.isSubmitting} @click="${this.submit}">
                 ${buttonContents}
             </button>
         `;
@@ -422,7 +421,7 @@ export class ChordEdit extends BootstrapBase {
         if (pastedText) {
             const chordsElement = this.shadowRoot?.querySelector("#chord-chart-input") as HTMLTextAreaElement;
             if (chordsElement) {
-                chordsElement.value = pastedText.replace(/  /g, " ");
+                chordsElement.value = pastedText.replace(/ {2}/g, " ");
                 e.preventDefault();
             }
         }
@@ -462,13 +461,13 @@ export class ChordEdit extends BootstrapBase {
         if (this.isNewChordSheet) {
             Router.go("/ChordSheets/new/success");
         } else {
-            Router.go(this.chord.id + "/edit/success")
+            Router.go(this.chord.id + "/edit/success");
         }
     }
 
     validateForm(): boolean {
         if (!this.chord) {
-            this.submitError = "Chord is still loading, please wait a moment and try again."
+            this.submitError = "Chord is still loading, please wait a moment and try again.";
             return false;
         }
 
