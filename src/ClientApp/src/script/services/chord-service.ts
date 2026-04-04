@@ -252,6 +252,7 @@ class CacheBackend implements ChordFetchBackend {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
+        console.error("Cannot upload chords while offline", chord, attachments);
         throw new Error("Can't upload chords while offline.");
     }
 }

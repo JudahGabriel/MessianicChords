@@ -1,38 +1,26 @@
 import { Router, RouterLocation } from "@vaadin/router";
-import { css, html, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
-import { BootstrapBase } from "../common/bootstrap-base";
-import { bytesToText, emptyChordSheet, inputEventChecked, inputEventNumber, inputEventValue } from "../common/utils";
+import { bytesToText, emptyChordSheet } from "../common/utils";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
-import { focusOnInvalid } from "../common/focus-on-invalid-directive";
+import "../components/multiple-items-input.js";
+
+import "@shoelace-style/shoelace/dist/components/input/input.js";
+import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
+import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/checkbox/checkbox.js";
+import "@shoelace-style/shoelace/dist/components/alert/alert.js";
+import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
+import "@shoelace-style/shoelace/dist/components/icon/icon.js";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import { chordEditStyles } from "./chord-edti.styles";
 
 @customElement("chord-edit")
-export class ChordEdit extends BootstrapBase {
-    static get styles() {
-        const localStyles = css`
-            :host {
-                font-family: var(--subtitle-font);
-            }
-
-            .chord-chart-text {
-                white-space: pre;
-                height: 9in;
-                overflow: auto;
-                font-family: monospace;
-                font-size: 16px;
-            }
-
-            input::placeholder {
-                color: rgba(0,0,0, 0.3);
-            }
-        `;
-        return [
-            BootstrapBase.styles,
-            localStyles
-        ];
-    }
+export class ChordEdit extends LitElement {
+    static styles = [chordEditStyles];
 
     @state() isNewChordSheet = false;
     @state() chord: ChordSheet | null = null;
@@ -51,6 +39,7 @@ export class ChordEdit extends BootstrapBase {
         super();
 
         // When any input event fires, reset the validation field.
+        this.addEventListener("sl-input", () => this.invalidFieldName = "");
         this.addEventListener("input", () => this.invalidFieldName = "");
     }
 
@@ -75,13 +64,7 @@ export class ChordEdit extends BootstrapBase {
     }
 
     render(): TemplateResult {
-        return html`
-            <div class="row">
-                <div class="col-12 col-lg-6 offset-lg-3">
-                    ${this.renderLoadingOrDetails()}
-                </div>
-            </div>
-        `;
+        return html`${this.renderLoadingOrDetails()}`;
     }
 
     renderLoadingOrDetails(): TemplateResult {
@@ -100,280 +83,262 @@ export class ChordEdit extends BootstrapBase {
         return html`
             <form>
                 <!-- Name and Hebrew name row -->
-                <div class="row">
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="song-name-input" class="form-label" required>Song name</label>
-                            <input
-                                type="text"
-                                class="form-control ${this.invalidFieldName === "name" ? "is-invalid" : ""}"
-                                id="song-name-input"
-                                placeholder="Shema Yisrael"
-                                aria-describedby="song-name-help"
-                                ${focusOnInvalid()}
-                                value="${chord.song}"
-                                @input="${(e: InputEvent) => chord.song = inputEventValue(e)}" />
-                            <div class="invalid-feedback">
-                                Please type a song name.
-                            </div>
-                            <div id="song-name-help" class="form-text">Required. The name of the song.</div>
-                        </div>
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <sl-input
+                            id="song-name-input"
+                            label="Song name"
+                            placeholder="Shema Yisrael"
+                            help-text="Required. The name of the song."
+                            value="${chord.song}"
+                            ?data-user-invalid="${this.invalidFieldName === "name"}"
+                            @sl-input="${(e: Event) => chord.song = (e.target as HTMLInputElement).value}">
+                        </sl-input>
+                        ${this.invalidFieldName === "name" ? html`<small style="color: var(--sl-color-danger-500)">Please type a song name.</small>` : ""}
                     </div>
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="hebrew-song-name-input" class="form-label">Hebrew song name</label>
-                            <input
-                                type="text"
-                                lang="he"
-                                class="form-control ${this.invalidFieldName === "name" ? "is-invalid" : ""}"
-                                id="hebrew-song-name-input"
-                                placeholder="שמע ישראל"
-                                value="${chord.hebrewSongName || ""}"
-                                aria-describedby="hebrew-song-name-help"
-                                @input="${(e: InputEvent) => chord.hebrewSongName = inputEventValue(e)}" />
-                            <div id="hebrew-song-name-help" class="form-text">Optional. The Hebrew name of the song. If specified, this should use Hebrew characters.</div>
-                        </div>
+                    <div class="form-group">
+                        <sl-input
+                            id="hebrew-song-name-input"
+                            label="Hebrew song name"
+                            lang="he"
+                            placeholder="שמע ישראל"
+                            help-text="Optional. The Hebrew name of the song. If specified, this should use Hebrew characters."
+                            value="${chord.hebrewSongName || ""}"
+                            @sl-input="${(e: Event) => chord.hebrewSongName = (e.target as HTMLInputElement).value}">
+                        </sl-input>
                     </div>
                 </div>
 
                 <!-- Artist and author row -->
-                <br />
-                <div class="row">
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="artist-input" class="form-label">Artist</label>
-                            <input
-                                type="text"
-                                class="form-control ${this.invalidFieldName === "artist-authors" ? "is-invalid" : ""}"
-                                id="artist-input"
-                                placeholder="Lamb"
-                                value="${chord.artist}"
-                                aria-describedby="artist-input-help"
-                                ${focusOnInvalid()}
-                                @input="${(e: InputEvent) => chord.artist = inputEventValue(e)}"/>
-                            <div class="invalid-feedback">
-                                You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.
-                            </div>
-                            <div id="artist-input-help" class="form-text">Optional. The artist who performed this arrangement of the song.</div>
-                        </div>
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <sl-input
+                            id="artist-input"
+                            label="Artist"
+                            placeholder="Lamb"
+                            help-text="Optional. The artist who performed this arrangement of the song."
+                            value="${chord.artist}"
+                            ?data-user-invalid="${this.invalidFieldName === "artist-authors"}"
+                            @sl-input="${(e: Event) => chord.artist = (e.target as HTMLInputElement).value}">
+                        </sl-input>
+                        ${this.invalidFieldName === "artist-authors" ? html`<small style="color: var(--sl-color-danger-500)">You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.</small>` : ""}
                     </div>
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="author-input" class="form-label">Authors</label>
-                            <multiple-items-input
-                                placeholder="Joel Chernoff"
-                                help="Optional. The authors of the song. For unknown authors, use Unknown."
-                                add-label="+"
-                                add-tooltip="Add another author"
-                                item-tooltip="Remove this author"
-                                input-id="authors-input"
-                                invalid="${this.invalidFieldName === "artist-authors"}"
-                                .items="${chord.authors}">
-                                <span slot="invalid-feedback">
-                                    You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.
-                                </span>
-                            </multiple-items-input>
-                        </div>
+                    <div class="form-group">
+                        <label>Authors</label>
+                        <multiple-items-input
+                            placeholder="Joel Chernoff"
+                            help="Optional. The authors of the song. For unknown authors, use Unknown."
+                            add-label="+"
+                            add-tooltip="Add another author"
+                            item-tooltip="Remove this author"
+                            input-id="authors-input"
+                            invalid="${this.invalidFieldName === "artist-authors"}"
+                            .items="${chord.authors}">
+                            <span slot="invalid-feedback">
+                                You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.
+                            </span>
+                        </multiple-items-input>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="chord-chart-input" class="form-label">Chord chart</label>
-                    <textarea
-                        type="text"
-                        class="form-control chord-chart-text ${this.invalidFieldName === "chords" ? "is-invalid" : ""}"
+                <div class="form-group">
+                    <sl-textarea
                         id="chord-chart-input"
-                        placeholder="&nbsp;&nbsp;&nbsp;Em&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D&#x0a;Sh'ma Yisrael, sh'ma Yisrael"
-                        aria-describedby="chord-chart-input-help"
-                        ${focusOnInvalid()}
-                        @input="${(e: InputEvent) => chord.chords = inputEventValue(e)}"
-                        @paste="${this.chordsPasted}">${chord.chords || ""}</textarea>
-                    <div class="invalid-feedback">
-                        You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.
-                    </div>
-                    <div id="chord-chart-input-help" class="form-text">
-                        <span class="text-muted">Optional. The chord chart for the song. If omitted, you can instead attach the chord chart file below.</span>
-                    </div>
+                        label="Chord chart"
+                        class="chord-chart-text"
+                        placeholder="${"   Em             D\nSh'ma Yisrael, sh'ma Yisrael"}"
+                        help-text="Optional. The chord chart for the song. If omitted, you can instead attach the chord chart file below."
+                        resize="vertical"
+                        rows="20"
+                        value="${chord.chords || ""}"
+                        ?data-user-invalid="${this.invalidFieldName === "chords"}"
+                        @sl-input="${(e: Event) => chord.chords = (e.target as HTMLTextAreaElement).value}"
+                        @paste="${this.chordsPasted}">
+                    </sl-textarea>
+                    ${this.invalidFieldName === "chords" ? html`<small style="color: var(--sl-color-danger-500)">You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.</small>` : ""}
                 </div>
 
                 <!-- Attachments and links -->
-                <div class="row">
-                    <div class="col-lg-6 col-sm-12">
-                        <div class="mb-3">
-                            <label for="attachments-input" class="form-label">
-                                <img src="/assets/bs-icons/paperclip.svg" width="24" height="24" />
-                                Attachments
-                            </label>
-                            <input class="form-control" type="file" id="attachments-input" multiple aria-describedby="attachments-input-help" @input="${this.addAttachments}" />
-                            <div id="attachments-input-help" class="form-text"><span class="text-muted">Optional. Attachments for the chord sheet. For example, a chord chart file (.pdf, .docx, .jpg, etc.), an audio recording of the song, piano sheet music, or other related files.</span></div>
-                            <ul class="list-group mt-3">
-                                ${repeat(this.attachments, a => this.attachments.indexOf(a), a => this.renderAttachment(a))}
-                            </ul>
-                        </div>
+                <div class="form-row form-row-2">
+                    <div class="form-group">
+                        <label>
+                            <sl-icon name="paperclip"></sl-icon>
+                            Attachments
+                        </label>
+                        <input type="file" id="attachments-input" multiple @input="${this.addAttachments}" />
+                        <div class="help-text">Optional. Attachments for the chord sheet. For example, a chord chart file (.pdf, .docx, .jpg, etc.), an audio recording of the song, piano sheet music, or other related files.</div>
+                        <ul class="attachment-list">
+                            ${repeat(this.attachments, a => this.attachments.indexOf(a), a => this.renderAttachment(a))}
+                        </ul>
                     </div>
-                    <div class="col-lg-6 col-sm-12">
-                        <div class="mb-3">
-                            <label for="links-input" class="form-label">
-                                <img src="/assets/bs-icons/link.svg" width="24" height="24" />
-                                Links
-                            </label>
-                            <multiple-items-input
-                                placeholder="youtube.com/watch?v=EHnd21bzcaI"
-                                aria-label="Links"
-                                help="Optional. Links to YouTube videos, Chavah Messianic Radio songs, or other relevant resources for this song."
-                                add-label="+"
-                                add-tooltip="Add another link"
-                                item-tooltip="Remove this link"
-                                input-id="links-input"
-                                type="url"
-                                .items="${chord.links}"
-                                @itemschanged="${this.linksChanged}">
-                            </multiple-items-input>
-                        </div>
+                    <div class="form-group">
+                        <label>
+                            <sl-icon name="link"></sl-icon>
+                            Links
+                        </label>
+                        <multiple-items-input
+                            placeholder="youtube.com/watch?v=EHnd21bzcaI"
+                            aria-label="Links"
+                            help="Optional. Links to YouTube videos, Chavah Messianic Radio songs, or other relevant resources for this song."
+                            add-label="+"
+                            add-tooltip="Add another link"
+                            item-tooltip="Remove this link"
+                            input-id="links-input"
+                            type="url"
+                            .items="${chord.links}"
+                            @itemschanged="${this.linksChanged}">
+                        </multiple-items-input>
                     </div>
                 </div>
 
-                <!-- Key, capo, and sheet music row -->
-                <div class="row">
-                    <div class="col-4">
-                        <div class="mb-3">
-                            <label for="key-input" class="form-label">Key</label>
-                            <input type="text" class="form-control" id="key-input" placeholder="Em" value="${chord.key || ""}" aria-describedby="key-input-help" @input="${(e: InputEvent) => chord.key = inputEventValue(e)}" />
-                            <div id="key-input-help" class="form-text">Optional. The musical key in which this song is played.</div>
-                        </div>
+                <!-- Key, capo, and scripture row -->
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <sl-input
+                            id="key-input"
+                            label="Key"
+                            placeholder="Em"
+                            help-text="Optional. The musical key in which this song is played."
+                            value="${chord.key || ""}"
+                            @sl-input="${(e: Event) => chord.key = (e.target as HTMLInputElement).value}">
+                        </sl-input>
                     </div>
-                    <div class="col-4">
-                        <div class="mb-3">
-                            <label for="capo-input" class="form-label">Capo</label>
-                            <input type="number" class="form-control" id="capo-input" placeholder="0" min="0" max="20" value="${chord.capo || ""}" aria-describedby="capo-input-help" @input="${(e: InputEvent) => chord.capo = inputEventNumber(e) || 0}" />
-                            <div id="capo-input-help" class="form-text">Optional. The ideal guitar capo number used when playing this song.</div>
-                        </div>
+                    <div class="form-group">
+                        <sl-input
+                            id="capo-input"
+                            label="Capo"
+                            type="number"
+                            placeholder="0"
+                            min="0"
+                            max="20"
+                            help-text="Optional. The ideal guitar capo number used when playing this song."
+                            value="${chord.capo || ""}"
+                            @sl-input="${(e: Event) => chord.capo = parseInt((e.target as HTMLInputElement).value) || 0}">
+                        </sl-input>
                     </div>
-                    <div class="col-4">
-                        <div class="mb-3">
-                            <label for="scripture-input" class="form-label">Scripture</label>
-                            <input type="text" class="form-control" id="scripture-input" placeholder="Deuteronomy 6:4" value="${chord.scripture || ""}" aria-describedby="scripture-input-help" @input="${(e: InputEvent) => chord.scripture = inputEventValue(e)}" />
-                            <div id="scripture-input-help" class="form-text">Optional. The segment of Scripture relevant to this song.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-4 col-sm-12">
-                        <div class="mb-3">
-                            <label for="copyright-input" class="form-label">Copyright</label>
-                            <input type="text" class="form-control" id="copyright-input" placeholder="Messianic Publishing Company" value="${chord.copyright || ""}" aria-describedby="copyright-input-help" @input="${(e: InputEvent) => chord.copyright = inputEventValue(e)}" />
-                            <div id="copyright-input-help" class="form-text">Optional. The copyright of the song.</div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-12">
-                        <div class="mb-3">
-                            <label for="copyright-input" class="form-label">CCLI</label>
-                            <input type="number" class="form-control" id="ccli-input" placeholder="7112570" value="${chord.ccliNumber || ""}" aria-describedby="ccli-input-help" @input="${(e: InputEvent) => chord.ccliNumber = inputEventNumber(e)}" />
-                            <div id="ccli-input-help" class="form-text">Optional. The Christian Copyright Licensing International (CCLI) number of the song.</div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-12">
-                        <div class="mb-3">
-                            <label for="year-input" class="form-label">Year</label>
-                            <input type="number" class="form-control" id="year-input" placeholder="1978" value="${chord.year || ""}" aria-describedby="year-input-help" @input="${(e: InputEvent) => chord.year = inputEventNumber(e)}" />
-                            <div id="year-input-help" class="form-text">Optional. The year the song was authored.</div>
-                        </div>
+                    <div class="form-group">
+                        <sl-input
+                            id="scripture-input"
+                            label="Scripture"
+                            placeholder="Deuteronomy 6:4"
+                            help-text="Optional. The segment of Scripture relevant to this song."
+                            value="${chord.scripture || ""}"
+                            @sl-input="${(e: Event) => chord.scripture = (e.target as HTMLInputElement).value}">
+                        </sl-input>
                     </div>
                 </div>
 
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input mt-4" id="sheet-music-input" aria-describedby="sheet-music-help" @input="${(e: InputEvent) => chord.isSheetMusic = inputEventChecked(e)}">
-                    <label class="form-check-label mt-4" for="sheet-music-input">Contains sheet music</label>
-                    <div id="sheet-music-help" class="form-text">If the attachments for this song contains musical notation files. <a href="/ChordSheets/4803" target="_blank">Example</a>.</div>
+                <!-- Copyright, CCLI, Year row -->
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <sl-input
+                            id="copyright-input"
+                            label="Copyright"
+                            placeholder="Messianic Publishing Company"
+                            help-text="Optional. The copyright of the song."
+                            value="${chord.copyright || ""}"
+                            @sl-input="${(e: Event) => chord.copyright = (e.target as HTMLInputElement).value}">
+                        </sl-input>
+                    </div>
+                    <div class="form-group">
+                        <sl-input
+                            id="ccli-input"
+                            label="CCLI"
+                            type="number"
+                            placeholder="7112570"
+                            help-text="Optional. The Christian Copyright Licensing International (CCLI) number of the song."
+                            value="${chord.ccliNumber || ""}"
+                            @sl-input="${(e: Event) => chord.ccliNumber = parseInt((e.target as HTMLInputElement).value) || null}">
+                        </sl-input>
+                    </div>
+                    <div class="form-group">
+                        <sl-input
+                            id="year-input"
+                            label="Year"
+                            type="number"
+                            placeholder="1978"
+                            help-text="Optional. The year the song was authored."
+                            value="${chord.year || ""}"
+                            @sl-input="${(e: Event) => chord.year = parseInt((e.target as HTMLInputElement).value) || null}">
+                        </sl-input>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="chord-chart-input" class="form-label">About</label>
-                    <textarea
-                        type="text"
-                        class="form-control"
+                <div class="form-group">
+                    <sl-checkbox
+                        id="sheet-music-input"
+                        @sl-change="${(e: Event) => chord.isSheetMusic = (e.target as HTMLInputElement).checked}">
+                        Contains sheet music
+                    </sl-checkbox>
+                    <div class="help-text">If the attachments for this song contains musical notation files. <a href="/ChordSheets/4803" target="_blank">Example</a>.</div>
+                </div>
+
+                <div class="form-group">
+                    <sl-textarea
                         id="about-input"
+                        label="About"
                         rows="3"
                         placeholder="This song is based on..."
-                        aria-describedby="about-input-help"
-                        @input="${(e: InputEvent) => chord.about = inputEventValue(e)}">${chord.about || ""}</textarea>
-                    <div id="chord-chart-input-help" class="form-text"><span class="text-muted">Optional. Additional information about the song, lyrics, or chord chart.</span></div>
+                        help-text="Optional. Additional information about the song, lyrics, or chord chart."
+                        value="${chord.about || ""}"
+                        @sl-input="${(e: Event) => chord.about = (e.target as HTMLTextAreaElement).value}">
+                    </sl-textarea>
                 </div>
 
-                <div class="d-grid gap-2">
-                    ${this.renderSubmitButton()}
-                </div>
+                ${this.renderSubmitButton()}
                 ${this.renderSubmitError()}
-
             </form>
         `;
     }
 
     renderLoading(): TemplateResult {
         return html`
-            <div class="gx-2 row loading-name-artist">
-                <div class="placeholder-glow col-6 col-sm-4 offset-sm-2">
-                    <span class="placeholder w-100 d-inline-block"></span>
-                </div>
-                <div class="placeholder-glow col-6 col-sm-4">
-                    <span class="placeholder w-100 d-inline-block"></span>
-                </div>
-            </div>
-
-            <div class="mx-auto">
-                <div class="w-100 h-100"></div>
+            <div class="loading-skeleton">
+                <sl-skeleton effect="pulse"></sl-skeleton>
+                <sl-skeleton effect="pulse"></sl-skeleton>
             </div>
         `;
     }
 
     renderError(): TemplateResult {
         return html`
-            <div class="alert alert-warning d-inline-block mx-auto" role="alert">
+            <sl-alert variant="warning" open>
+                <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
                 Woops, we hit a problem loading this chord chart.
-                <a href="${window.location.href}" class="alert-link">
-                    Try again
-                </a>
-                <hr>
-                <p class="mb-0">
-                    Additional error details: ${this.error}
-                </p>
-            </div>
+                <a href="${window.location.href}">Try again</a>
+                <br><br>
+                Additional error details: ${this.error}
+            </sl-alert>
         `;
     }
 
     renderAttachment(attachment: File): TemplateResult {
         const name = attachment.name;
-        const sizeTemplate = typeof attachment === "string" ? html`` : html`<small class="text-muted">(${bytesToText(attachment.size)})</small>`;
+        const sizeTemplate = typeof attachment === "string" ? html`` : html`<small class="size-label">(${bytesToText(attachment.size)})</small>`;
         const isTooLarge = attachment.size > ChordEdit.maxAttachmentSizeInBytes;
         const isTooMany = this.attachments.indexOf(attachment) > 9;
-        const errorClass = isTooLarge || isTooMany ? "list-group-item-danger" : "";
+        const errorClass = isTooLarge || isTooMany ? "attachment-item-error" : "";
         const errorMessage = isTooLarge ? html`<br><br><strong>Attachments must be < 10MB</strong>` :
             isTooMany ? html`<br><br><strong>Too many attachments. Max 10 attachments.</strong>` :
                 html``;
 
         return html`
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ${errorClass}">
+            <li class="attachment-item ${errorClass}">
                 <span class="text-break">
                     ${name}
                     ${sizeTemplate}
                     ${errorMessage}
                 </span>
-                <button type="button" class="btn-close" aria-label="Close" @click="${() => this.removeAttachment(attachment)}"></button>
+                <sl-icon-button name="x-lg" label="Remove" @click="${() => this.removeAttachment(attachment)}"></sl-icon-button>
             </li>
         `;
     }
 
     renderSubmitButton(): TemplateResult {
-        const submittingHtml = html`
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Submitting...
-        `;
-        const buttonContents = this.isSubmitting ? submittingHtml : "Submit";
         return html`
-            <button type="submit" class="btn btn-primary btn-block" ?disabled=${this.isSubmitting} @click="${this.submit}">
-                ${buttonContents}
-            </button>
+            <sl-button variant="primary" ?loading=${this.isSubmitting} ?disabled=${this.isSubmitting} @click="${this.submit}">
+                Submit
+            </sl-button>
         `;
     }
 
@@ -384,9 +349,10 @@ export class ChordEdit extends BootstrapBase {
 
         return html`
             <br>
-            <div class="alert alert-danger" role="alert">
-                <img src="/assets/bs-icons/exclamation-circle-fill.svg" /> ${this.submitError}
-            </div>
+            <sl-alert variant="danger" open>
+                <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+                ${this.submitError}
+            </sl-alert>
         `;
     }
 
@@ -419,7 +385,7 @@ export class ChordEdit extends BootstrapBase {
 
         const pastedText = e.clipboardData?.getData("text");
         if (pastedText) {
-            const chordsElement = this.shadowRoot?.querySelector("#chord-chart-input") as HTMLTextAreaElement;
+            const chordsElement = this.shadowRoot?.querySelector("#chord-chart-input") as any;
             if (chordsElement) {
                 chordsElement.value = pastedText.replace(/ {2}/g, " ");
                 e.preventDefault();

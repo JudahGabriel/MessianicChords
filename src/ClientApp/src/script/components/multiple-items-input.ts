@@ -1,59 +1,94 @@
-import { css, html, TemplateResult } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { guid, inputEventValue } from '../common/utils';
-import { createRef, ref } from 'lit/directives/ref.js';
-import { focusOnInvalid } from '../common/focus-on-invalid-directive';
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { repeat } from "lit/directives/repeat.js";
+import { guid } from "../common/utils";
+import { createRef, ref } from "lit/directives/ref.js";
 
-@customElement('multiple-items-input')
-export class MultipleItemsInput extends BootstrapBase {
+import "@shoelace-style/shoelace/dist/components/input/input.js";
+import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+
+@customElement("multiple-items-input")
+export class MultipleItemsInput extends LitElement {
     @state() id = guid();
-    @property() items: string[] = [];
-    @property() placeholder: string = "";
-    @property({ attribute: 'aria-label' }) ariaLabel = "";
-    @property({ attribute: 'help' }) help = "";
+    @property({ type: Array }) items: string[] = [];
+    @property() placeholder = "";
+    @property({ attribute: "aria-label" }) ariaLabel = "";
+    @property({ attribute: "help" }) help = "";
     @property() value = "";
-    @property({ attribute: 'add-label' }) addLabel = "+";
-    @property({ attribute: 'add-tooltip' }) addTooltip = "Add another";
-    @property({ attribute: 'item-tooltip' }) itemTooltip = "Remove this item";
-    @property({ attribute: 'input-id' }) inputId = `input-${this.id}`;
+    @property({ attribute: "add-label" }) addLabel = "+";
+    @property({ attribute: "add-tooltip" }) addTooltip = "Add another";
+    @property({ attribute: "item-tooltip" }) itemTooltip = "Remove this item";
+    @property({ attribute: "input-id" }) inputId = `input-${this.id}`;
     @property() invalid: string | null | undefined = undefined;
     @property() type: "text" | "url" | undefined = undefined;
     inputRef = createRef<HTMLInputElement>();
 
     static get styles() {
-        const localStyles = css`
-        `;
+        return css`
+            .input-row {
+                display: flex;
+                gap: var(--sl-spacing-x-small);
+                align-items: flex-end;
+            }
 
-        return [
-            BootstrapBase.styles,
-            localStyles
-        ];
+            .input-row sl-input {
+                flex: 1;
+            }
+
+            .item-list {
+                list-style: none;
+                padding: 0;
+                margin-top: var(--sl-spacing-small);
+            }
+
+            .item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: var(--sl-spacing-small) var(--sl-spacing-medium);
+                border: 1px solid var(--sl-color-neutral-200);
+                border-radius: var(--sl-border-radius-medium);
+                margin-bottom: var(--sl-spacing-x-small);
+            }
+
+            .text-break {
+                word-break: break-all;
+            }
+
+            .help-text {
+                font-size: var(--sl-font-size-small);
+                color: var(--sl-color-neutral-500);
+                margin-top: var(--sl-spacing-x-small);
+            }
+
+            .invalid-text {
+                color: var(--sl-color-danger-500);
+                font-size: var(--sl-font-size-small);
+                margin-top: var(--sl-spacing-x-small);
+            }
+        `;
     }
 
     render(): TemplateResult {
         return html`
-            <div class="input-group">
-                <input
+            <div class="input-row">
+                <sl-input
                     id="${this.inputId}"
-                    class="form-control ${this.invalid === "true" ? "is-invalid" : ""}"
                     value="${this.value}"
                     placeholder="${this.items.length === 0 ? this.placeholder : ""}"
                     aria-label="${this.ariaLabel}"
-                    aria-describedby="help-text-${this.id}"
-                    @input="${(e: InputEvent) => this.value = inputEventValue(e)}"
-                    @change="${this.inputChanged}"
+                    ?data-user-invalid="${this.invalid === "true"}"
+                    @sl-input="${(e: Event) => this.value = (e.target as HTMLInputElement).value}"
+                    @sl-change="${this.inputChanged}"
                     @keydown="${this.handleKeyDown}"
-                    ${ref(this.inputRef)}
-                    ${focusOnInvalid()} />
-                <button class="btn btn-outline-secondary" type="button" id="add-item-btn-${this.id}" @click="${this.addButtonClicked}" title="${this.addTooltip}">
+                    ${ref(this.inputRef)}>
+                </sl-input>
+                <sl-button variant="default" id="add-item-btn-${this.id}" @click="${this.addButtonClicked}" title="${this.addTooltip}">
                     ${this.addLabel}
-                </button>
-                <div class="invalid-feedback">
-                    <slot name="invalid-feedback"></slot>
-                </div>
+                </sl-button>
             </div>
+            ${this.invalid === "true" ? html`<div class="invalid-text"><slot name="invalid-feedback"></slot></div>` : ""}
             ${this.renderItems()}
             ${this.renderHelpText()}
         `;
@@ -72,7 +107,7 @@ export class MultipleItemsInput extends BootstrapBase {
 
             // Are we a URL type? Ensure it starts with http:// or https://.
             if (this.type === "url") {
-                var trimmedValueLower = trimmedValue.toLowerCase();
+                const trimmedValueLower = trimmedValue.toLowerCase();
                 if (!trimmedValueLower.startsWith("https://") && !trimmedValueLower.startsWith("http://")) {
                     trimmedValue = "https://" + trimmedValue;
                 }
@@ -97,7 +132,7 @@ export class MultipleItemsInput extends BootstrapBase {
         }
 
         return html`
-            <ul class="list-group mt-3">
+            <ul class="item-list">
                 ${repeat(this.items, l => l, l => this.renderItem(l))}
             </ul>
         `;
@@ -109,9 +144,7 @@ export class MultipleItemsInput extends BootstrapBase {
         }
 
         return html`
-            <div id="help-text-${this.id}" class="form-text">
-                <span class="text-muted">${this.help}</span>
-            </div>
+            <div id="help-text-${this.id}" class="help-text">${this.help}</div>
         `;
     }
 
@@ -123,9 +156,9 @@ export class MultipleItemsInput extends BootstrapBase {
             html`<a href="${item}" target="_blank">${textContent}</a>` :
             textContent;
         return html`
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <li class="item">
                 ${content}
-                <button type="button" class="btn-close" aria-label="Close" @click="${() => this.removeItem(item)}" title="${this.itemTooltip}"></button>
+                <sl-icon-button name="x-lg" label="Remove" @click="${() => this.removeItem(item)}" title="${this.itemTooltip}"></sl-icon-button>
             </li>
         `;
     }
