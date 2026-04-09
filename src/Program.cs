@@ -1,8 +1,10 @@
 using MessianicChords.Api.Common;
 using MessianicChords.Models;
 using MessianicChords.Services;
+using Microsoft.AspNetCore.Identity;
 using Raven.Client.Documents;
 using Raven.DependencyInjection;
+using Raven.Identity;
 using Raven.Migrations;
 using Raven.StructuredLogger;
 
@@ -28,6 +30,18 @@ public class Program
         builder.Services.AddRavenDbAsyncSession();
         builder.Services.AddRavenDbMigrations();
         builder.Services.AddRavenStructuredLogger();
+
+        // Add Raven Identity
+        builder.Services
+            .AddIdentity<AppUser, Raven.Identity.IdentityRole>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+            })
+            .AddDefaultTokenProviders()
+            .AddRavenDbIdentityStores<AppUser>(); // Use Raven for users and roles.
+
         builder.Services.AddScoped<EmailService>();
         builder.Services.AddScoped<RavenSaveChangesFilter>();
         builder.Services.AddTransient<GoogleDriveChordsFetcher>();
