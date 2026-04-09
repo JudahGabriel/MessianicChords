@@ -2,6 +2,12 @@ import { css } from "lit";
 import { tabletsAndSmaller } from "./script/common/breakpoints";
 
 export const indexStyles = css`
+    @media print {
+        app-header {
+            display: none;
+        }
+    }
+
     main {
         padding: 16px;
         margin-bottom: 50px; /** needed to give some spacing between main content and the fixed footer */

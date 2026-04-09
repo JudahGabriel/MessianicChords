@@ -1,7 +1,7 @@
 import { css } from "lit";
 import { BreakpointMax, mediaQuery } from "../common/breakpoints";
 
-export const headerStyles = css`
+export const homeJumbotronStyles = css`
       header {
         padding: 20px;
       }

@@ -1,14 +1,14 @@
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
-import { headerStyles } from "./header.styles";
+import { homeJumbotronStyles } from "./home-jumbotron.styles";
 import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 import "@shoelace-style/shoelace/dist/components/alert/alert.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 
-@customElement("app-header")
-export class AppHeader extends LitElement {
-    static styles = [sharedStyles, bootstrapUtilities, headerStyles];
+@customElement("home-jumbotron")
+export class HomeJumbotron extends LitElement {
+    static styles = [sharedStyles, bootstrapUtilities, homeJumbotronStyles];
 
   @state() locationPath = "/";
   @state() isOnline: boolean = navigator.onLine;

@@ -34,6 +34,7 @@ export const appHomeStyles = css`
         width: 500px;
         color: #0b0974;
         text-align: center;
+        padding-left: 85px;
     }
 
     @media (max-width: ${SizeMax.Xs}px) {

@@ -85,13 +85,13 @@ export class AppHome extends LitElement {
             this.updateSearchQueryString("");
             return;
         }
-
+            
         this.updateSearchQueryString(query);
         this.searchResults.reset();
         this.searchResults.fetch();
     }
 
-    render() {
+    render(): TemplateResult {
         const navClass = this.searchResults.items.length > 0 ? "d-none" : "";
         const target = this.isInTabbedPwa ? "_blank" : "_self";
         return html`
@@ -106,7 +106,8 @@ export class AppHome extends LitElement {
                     pill
                     size="large"
                     value="${this.searchText.value}"
-                    @input="${this.searchTextChanged}">
+                    @input="${this.searchTextChanged}"
+                    @sl-clear="${this.searchTextChanged}">
                 </sl-input>
             </div>
 

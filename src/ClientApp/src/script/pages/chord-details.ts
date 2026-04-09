@@ -680,7 +680,7 @@ export class ChordDetails extends LitElement {
     bumpTranspose(increment: 1 | -1) {
         this.transpose += increment;
 
-        // 12 half-steps in the musical scale (A, Bb, B, C, C#, D, D#, E, E#, F, F#, G)
+        // 12 half-steps in the musical scale (A, Bb, B, C, C#, D, D#, E, F, F#, G, G#)
         // If we go outside the scale, wrap to the other side.
         if (this.transpose === 12 || this.transpose === -12) {
             this.transpose = 0;
