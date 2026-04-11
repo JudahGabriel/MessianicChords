@@ -1,4 +1,5 @@
-﻿using MessianicChords.Models;
+﻿using MessianicChords.Common;
+using MessianicChords.Models;
 using MessianicChords.Models.Account;
 using MessianicChords.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -124,7 +125,8 @@ namespace MessianicChords.Controllers
             var result = new Models.Account.SignInResult
             {
                 Status = SignInStatusFromResult(signInResult, model.Email),
-                User = mapper.Map<UserViewModel>(user)
+                User = new UserViewModel(user)
+                //User = mapper.Map<UserViewModel>(user)
             };
 
             // If we've successfully signed in, store the json web token in the user.
@@ -207,22 +209,7 @@ namespace MessianicChords.Controllers
                 DbSession.Advanced.Evict(user);
             }
 
-            return Ok(mapper.Map<UserViewModel>(user));
-        }
-
-        /// <summary>
-        /// Clear Notifications for the authorized user.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<int> ClearNotifications()
-        {
-            var user = await GetUserOrThrow();
-            var count = user.Notifications.Count;
-
-            user.Notifications.ForEach(n => n.IsUnread = false);
-
-            return count;
+            return Ok(user != null ? new UserViewModel(user) : null);
         }
 
         /// <summary>
@@ -235,17 +222,6 @@ namespace MessianicChords.Controllers
         [ProducesResponseType(typeof(RegisterResults), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Register([BindRequired, FromBody, FromForm] RegisterModel model)
         {
-            var (pwned, count) = await pwnedPasswordService.IsPasswordPwnedAsync(model.Password);
-
-            if (pwned)
-            {
-                return Ok(new RegisterResults
-                {
-                    IsPwned = true,
-                    ErrorMessage = string.Format(PwnedPasswordMessage, count),
-                });
-            }
-
             // See if we're already registered.
             var emailLower = model.Email.ToLowerInvariant();
             var existingUser = await userManager.FindByEmailAsync(emailLower);
@@ -256,28 +232,6 @@ namespace MessianicChords.Controllers
                     ErrorMessage = "You're already registered.",
                     IsAlreadyRegistered = true,
                     NeedsConfirmation = !existingUser.EmailConfirmed
-                });
-            }
-
-            // Reject throwaway emails. We need to do this because this helps prevent upvote/downvote fraud.
-            var throwawayDomainsDoc = await DbSession.LoadOptionalAsync<ThrowawayEmailDomains>("ThrowawayEmailDomains/1");
-            var domainIndex = emailLower.LastIndexOf('@');
-            if (domainIndex == -1 || domainIndex == (emailLower.Length - 1))
-            {
-                return Ok(new RegisterResults
-                {
-                    ErrorMessage = "Your email address appears to be invalid"
-                });
-            }
-
-            var attemptedDomain = emailLower[(domainIndex + 1)..];
-            var isThrowawayEmail = throwawayDomainsDoc?.Domains.Contains(attemptedDomain, StringComparison.InvariantCultureIgnoreCase);
-            if (isThrowawayEmail == true)
-            {
-                logger.LogInformation("Rejected attempt to register with a throwaway email address {email}", emailLower);
-                return Ok(new RegisterResults
-                {
-                    ErrorMessage = "Throwaway email accounts are unable to register with Chavah. Please use a valid email address. We'll never send spam nor share your email with anyone."
                 });
             }
 
@@ -297,13 +251,13 @@ namespace MessianicChords.Controllers
                 var confirmToken = new AccountToken //await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                 {
                     Id = $"AccountTokens/Confirm/{emailLower}",
-                    ApplicationUserId = user.Id,
+                    UserId = user.Id,
                     Token = Guid.NewGuid().ToString()
                 };
                 await DbSession.StoreAsync(confirmToken);
                 DbSession.SetRavenExpiration(confirmToken, DateTime.UtcNow.AddDays(14));
 
-                emailSender.QueueConfirmEmail(model.Email, confirmToken.Token, appOptions);
+                await emailSender.SendConfirmEmailAsync(model.Email, confirmToken.Token, appOptions);
 
                 logger.LogInformation("Sending new user confirmation email to {email} with confirm token {token}", model.Email, confirmToken.Token);
                 return Ok(new RegisterResults
@@ -357,7 +311,7 @@ namespace MessianicChords.Controllers
             var regTokenId = $"AccountTokens/Confirm/{email.ToLowerInvariant()}";
             var regToken = await DbSession.LoadOptionalAsync<AccountToken>(regTokenId);
             var isSameCode = regToken != null && string.Equals(regToken.Token, confirmCode, StringComparison.InvariantCultureIgnoreCase);
-            var isSameUser = regToken != null && string.Equals(regToken.ApplicationUserId, userId, StringComparison.InvariantCultureIgnoreCase);
+            var isSameUser = regToken != null && string.Equals(regToken.UserId, userId, StringComparison.InvariantCultureIgnoreCase);
             var isValidToken = isSameCode && isSameUser;
             var errorMessage = default(string);
             if (isValidToken)
@@ -366,10 +320,10 @@ namespace MessianicChords.Controllers
                 logger.LogInformation("Successfully confirmed new account {email}", email);
 
                 // Add a welcome notification for the user.
-                user.AddNotification(Notification.Welcome(appOptions.AuthorImageUrl));
+                //user.AddNotification(Notification.Welcome(appOptions.AuthorImageUrl));
 
                 // Send them a welcome email.
-                emailSender.QueueWelcomeEmail(email);
+                await emailSender.SendWelcomeEmailAsync(email);
             }
             else if (regToken == null)
             {
@@ -433,14 +387,14 @@ namespace MessianicChords.Controllers
 
             var passwordResetToken = new AccountToken //await userManager.GeneratePasswordResetTokenAsync(user);
             {
-                ApplicationUserId = userId,
+                UserId = userId,
                 Id = $"AccountTokens/Reset/{user.Email}",
                 Token = Guid.NewGuid().ToString()
             };
             await DbSession.StoreAsync(passwordResetToken);
             DbSession.SetRavenExpiration(passwordResetToken, DateTime.UtcNow.AddDays(14));
 
-            emailSender.QueueResetPassword(email, passwordResetToken.Token, appOptions);
+            await emailSender.SendResetPassword(email, passwordResetToken.Token, appOptions);
 
             logger.LogInformation("Sending reset password email to {email} with reset code {resetCode}", email, passwordResetToken.Token);
             return new ResetPasswordResult
@@ -550,7 +504,7 @@ namespace MessianicChords.Controllers
             var isMutedUser = await DbSession.Advanced.ExistsAsync("MutedEmails/" + message.Email);
             if (!isMutedUser)
             {
-                emailSender.QueueSupportEmail(message, emailOptions.SenderEmail);
+                await emailSender.SendSupportEmailAsync(message);
             }
             else
             {
@@ -569,13 +523,13 @@ namespace MessianicChords.Controllers
                 var confirmToken = new AccountToken
                 {
                     Id = $"AccountTokens/Confirm/{userWithEmail.Email}",
-                    ApplicationUserId = userWithEmail.Id!,
+                    UserId = userWithEmail.Id!,
                     Token = Guid.NewGuid().ToString()
                 };
                 await DbSession.StoreAsync(confirmToken);
                 DbSession.SetRavenExpiration(confirmToken, DateTime.UtcNow.AddDays(14));
 
-                emailSender.QueueConfirmEmail(userWithEmail.Email, confirmToken.Token, appOptions);
+                await emailSender.SendConfirmEmailAsync(userWithEmail.Email, confirmToken.Token, appOptions);
             }
         }
 
@@ -590,84 +544,6 @@ namespace MessianicChords.Controllers
 
             await userManager.DeleteAsync(user);
             await signInManager.SignOutAsync();
-            return Ok();
-        }
-
-        [HttpPost]
-        [Authorize(Roles = AppUser.AdminRole)]
-        public async Task<IActionResult> MigrateAccount([FromBody] MigrateUserModel model)
-        {
-            var oldEmail = model.OldEmail.ToLowerInvariant();
-            var newEmail = model.NewEmail.ToLowerInvariant();
-            if (oldEmail == newEmail)
-            {
-                return BadRequest("Emails are identical");
-            }
-
-            var oldUser = await userManager.FindByEmailAsync(oldEmail.ToLowerInvariant());
-            if (oldUser == null)
-            {
-                return BadRequest("No existing user with old email");
-            }
-
-            var newUser = await userManager.FindByEmailAsync(newEmail.ToLowerInvariant());
-            var useOldUserPassword = newUser == null; // Use the old password only if we're making a brand new user. Otherwise, preserve their existing password.
-            if (newUser == null)
-            {
-                // No new user with this email address? Register them now.
-                newUser = new AppUser
-                {
-                    Id = $"AppUsers/{newEmail}",
-                    UserName = newEmail,
-                    Email = newEmail,
-                    LastSeen = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow
-                };
-                var createUserResult = await userManager.CreateAsync(newUser, Guid.NewGuid().ToString());
-                if (createUserResult.Errors.Any())
-                {
-                    var errorMessages = string.Join(", ", createUserResult.Errors.Select(e => e.Description + " - error code - " + e.Code));
-                    throw new Exception($"Unable to create a new user with email address {newEmail} due to errors: {errorMessages}");
-                }
-            }
-
-            // Bring over the old user details.
-            newUser.EmailConfirmed = oldUser.EmailConfirmed;
-            newUser.LastSeen = oldUser.LastSeen;
-            newUser.FirstName = oldUser.FirstName;
-            newUser.LastName = oldUser.LastName;
-            newUser.LockoutEnabled = oldUser.LockoutEnabled;
-            newUser.MigratedOldAccountEmail = oldEmail;
-            newUser.Notifications = oldUser.Notifications;
-            newUser.ProfilePicUrl = oldUser.ProfilePicUrl;
-            newUser.RecentSongIds = oldUser.RecentSongIds;
-            newUser.RegistrationDate = oldUser.RegistrationDate;
-            newUser.RequiresPasswordReset = oldUser.RequiresPasswordReset;
-            newUser.SecurityStamp = oldUser.SecurityStamp;
-            newUser.TotalPlays = oldUser.TotalPlays;
-            newUser.TotalSongRequests = oldUser.TotalSongRequests;
-            newUser.Volume = oldUser.Volume;
-            if (useOldUserPassword)
-            {
-                newUser.PasswordHash = oldUser.PasswordHash;
-            }
-
-            // We're done with session changes. Save.
-            await DbSession.SaveChangesAsync();
-
-            // Finally, bring over all the user's likes. Because there can be many (potentially thousands) of likes,
-            // we do this outside the session via BulkInsert.
-            var existingLikes = await DbSession.Advanced.StreamAsync<Like>($"Likes/{oldUser.Id}");
-            using var bulkInsert = DbSession.Advanced.DocumentStore.BulkInsert();
-            while (await existingLikes.MoveNextAsync())
-            {
-                var newLike = new Like(newUser, existingLikes.Current.Document.SongId, existingLikes.Current.Document.Status)
-                {
-                    Date = existingLikes.Current.Document.Date
-                };
-                await bulkInsert.StoreAsync(newLike, newLike.Id);
-            }
-
             return Ok();
         }
 

@@ -1,14 +1,19 @@
-﻿using Raven.Identity;
+﻿using MessianicChords.Common;
+using Raven.Identity;
 using System.Reactive;
 
 namespace MessianicChords.Models
 {
     public class UserViewModel
     {
-        /// <summary>
-        /// Gets the total number of songs played by this user.
-        /// </summary>
-        public int TotalPlays { get; set; }
+        public UserViewModel()
+        {            
+        }
+
+        public UserViewModel(AppUser user)
+        {
+            this.CopyPropsFrom(user);
+        }
 
         /// <summary>
         /// Gets the date the user registered.
@@ -19,11 +24,6 @@ namespace MessianicChords.Models
         /// Gets the last time we saw this user.
         /// </summary>
         public DateTime LastSeen { get; set; }
-
-        /// <summary>
-        /// Gets the total number of song requests made by this user.
-        /// </summary>
-        public int TotalSongRequests { get; set; }
 
         /// <summary>
         /// Whether this user requires a password reset.

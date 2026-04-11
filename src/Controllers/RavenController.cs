@@ -1,7 +1,12 @@
 ﻿using MessianicChords.Api.Common;
+using MessianicChords.Common;
+using MessianicChords.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents.Session;
+using Raven.Client.Exceptions;
+using Raven.StructuredLogger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +18,7 @@ namespace MessianicChords.Controllers
     public abstract class RavenController : Controller
     {
         private readonly IAsyncDocumentSession dbSession;
+        private AppUser? currentUser;
         protected readonly ILogger logger;
 
         public RavenController(IAsyncDocumentSession dbSession, ILogger logger)
@@ -22,5 +28,119 @@ namespace MessianicChords.Controllers
         }
 
         public IAsyncDocumentSession DbSession => this.dbSession;
+
+        /// <summary>
+        /// Executes the action. If no error occurred, any changes made in the RavenDB document session will be saved.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            var executedContext = await next.Invoke();
+            var httpMethodOrNull = context?.HttpContext?.Request?.Method;
+            if (executedContext.Exception == null && httpMethodOrNull != "GET" && DbSession.Advanced.HasChanges)
+            {
+                try
+                {
+                    await DbSession.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    HandleKnownExceptions(ex, context, "Exception while saving changes");
+                }
+            }
+            else if (executedContext.Exception != null) // An exception occurred while executing the method.
+            {
+                HandleKnownExceptions(executedContext.Exception, context, "Exception while executing action");
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        protected async Task<AppUser> GetUserOrThrow()
+        {
+            var currentUser = await GetUser();
+            if (currentUser == null)
+            {
+                throw new UnauthorizedAccessException()
+                    .WithData("userName", User.Identity?.Name ?? string.Empty);
+            }
+
+            return currentUser;
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        protected async Task<AppUser?> GetUser()
+        {
+            if (currentUser != null)
+            {
+                return currentUser;
+            }
+
+            var email = User.Identity?.Name;
+            if (!string.IsNullOrEmpty(email))
+            {
+                currentUser = await DbSession.LoadAsync<AppUser>("AppUsers/" + email);
+            }
+
+            return currentUser;
+        }
+
+        protected string GetUserIdOrThrow()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            return userId!;
+        }
+
+        protected string? GetUserId()
+        {
+            if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity?.Name))
+            {
+                return $"{AppUser.AppUserPrefix}{User.Identity.Name}";
+            }
+
+            return null;
+        }
+
+        private void HandleKnownExceptions(Exception error, ActionExecutingContext? actionContext, string errorContext)
+        {
+            using (logger.BeginKeyValueScope("user", User?.Identity?.Name ?? string.Empty))
+            using (logger.BeginKeyValueScope("action", actionContext?.ActionDescriptor?.DisplayName ?? string.Empty))
+            using (logger.BeginKeyValueScope("errorContext", errorContext))
+            {
+                if (error is UnauthorizedAccessException)
+                {
+                    logger.LogWarning(error.Message);
+                }
+                else if (error is RavenException ravenEx
+                    && ravenEx.Message.Contains("The server returned an invalid or unrecognized response", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    logger.LogError(ravenEx.Message);
+                }
+                else if (error is TaskCanceledException)
+                {
+                    logger.LogInformation("Task cancelled");
+                }
+                else if (error.Message.StartsWith("An exception occurred while contacting", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // This occurs when the database is down.
+                    logger.LogError("Unable to reach database");
+                }
+                else if (error is System.Net.WebException
+                    && string.Equals(error.Message, "An error occurred while sending the request. The buffers supplied to a function was too small", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    logger.LogError("The buffers supplied to a function was too small");
+                }
+                else
+                {
+                    logger.LogError(error, error.Message);
+                }
+            }
+        }
     }
 }

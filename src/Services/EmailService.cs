@@ -37,6 +37,30 @@ public class EmailService
         await this.SendEmail(email);
     }
 
+    public async Task SendWelcomeEmailAsync(string to)
+    {
+        // TODO: implement
+        return 42;
+    }
+
+    public async Task SendResetPassword(string email, string token, AppSettings appOptions)
+    {
+        // TODO: implement
+        return 42;
+    }
+
+    public async Task SendSupportEmailAsync(SupportMessage message)
+    {
+        // TODO: implement
+        return 42;
+    }
+
+    public async Task SendConfirmEmailAsync(string email, string token, AppSettings appOptions)
+    {
+        // TODO: implement
+        return 42;
+    }
+
     private string GetNewChordsEmailHtml(ChordSubmission submission, string token)
     {
         return "" +
