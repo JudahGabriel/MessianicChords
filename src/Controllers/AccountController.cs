@@ -394,7 +394,7 @@ namespace MessianicChords.Controllers
             await DbSession.StoreAsync(passwordResetToken);
             DbSession.SetRavenExpiration(passwordResetToken, DateTime.UtcNow.AddDays(14));
 
-            await emailSender.SendResetPassword(email, passwordResetToken.Token, appOptions);
+            await emailSender.SendResetPassword(email, passwordResetToken.Token);
 
             logger.LogInformation("Sending reset password email to {email} with reset code {resetCode}", email, passwordResetToken.Token);
             return new ResetPasswordResult
