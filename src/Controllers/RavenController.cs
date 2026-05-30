@@ -59,7 +59,7 @@ namespace MessianicChords.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         protected async Task<AppUser> GetUserOrThrow()
         {
-            var currentUser = await GetUser();
+            var currentUser = await GetUserAsync();
             if (currentUser == null)
             {
                 throw new UnauthorizedAccessException()
@@ -70,7 +70,7 @@ namespace MessianicChords.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        protected async Task<AppUser?> GetUser()
+        protected async Task<AppUser?> GetUserAsync()
         {
             if (currentUser != null)
             {

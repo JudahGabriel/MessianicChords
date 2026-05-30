@@ -18,6 +18,10 @@ export class ApiServiceBase {
         const absoluteUrl = this.apiUrl + url;
         const postResult = await fetch(absoluteUrl, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
             body: args ? JSON.stringify(args) : undefined
         });
 
@@ -34,6 +38,7 @@ export class ApiServiceBase {
         const absoluteUrl = this.apiUrl + url;
         const postResult = await fetch(absoluteUrl, {
             method: "POST",
+            credentials: "include",
             body: formData
         });
 
@@ -53,7 +58,9 @@ export class ApiServiceBase {
             absoluteUrl += queryParams.join("&");
         }
 
-        const result = await fetch(absoluteUrl);
+        const result = await fetch(absoluteUrl, {
+            credentials: "include"
+        });
         if (!result.ok) {
             console.error("HTTP GET failed", absoluteUrl, result);
             throw new Error("HTTP GET resulted in non-successful status code " + result.status);

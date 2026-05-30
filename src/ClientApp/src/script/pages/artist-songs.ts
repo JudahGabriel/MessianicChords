@@ -1,5 +1,5 @@
 import { RouterLocation } from "@vaadin/router";
-import { css } from "lit";
+import { CSSResult } from "lit";
 import { customElement } from "lit/decorators.js";
 import { BootstrapBase } from "../common/bootstrap-base";
 import { ChordSheet, PagedResult } from "../models/interfaces";
@@ -11,15 +11,10 @@ import { BrowseArtists } from "./browse-artists";
 export class ArtistSongs extends BrowseArtists {
     location: RouterLocation | null = null;
 
-    static get styles() {
-        const localStyles = css`
-        `;
-        return [
-            BootstrapBase.styles,
-            BrowseArtists.styles,
-            localStyles
-        ];
-    }
+    static styles = [
+        BootstrapBase.styles,
+        BrowseArtists.styles
+    ] as CSSResult[];
 
     constructor() {
         super();
@@ -29,7 +24,7 @@ export class ArtistSongs extends BrowseArtists {
         const artistName = this.location?.params["name"] as string || null;
         const chunk = await this.chordService.getByArtistName(artistName, skip, take);
 
-        // Sort them into our letter group.
+        // Sort them into our artist group.
         chunk.results.forEach(c => this.addToArtistGroup(c));
 
         return chunk;

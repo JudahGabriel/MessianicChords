@@ -31,7 +31,8 @@ export function emptyChordSheet(): ChordSheet {
         about: null,
         year: null,
         scripture: null,
-        ccliNumber: null
+        ccliNumber: null,
+        tags: []
     };
 }
 
@@ -63,7 +64,7 @@ export function inputEventChecked(e: InputEvent): boolean {
 export function bytesToText(bytes: number): string {
     const gig = 1000000000;
     if (bytes >= gig) {
-        return `${Math.round(bytes / gig)}`
+        return `${Math.round(bytes / gig)}`;
     }
 
     const meg = 1000000;
@@ -84,6 +85,6 @@ export function guid(): string {
         return Math.floor((1 + Math.random()) * 0x10000)
             .toString(16)
             .substring(1);
-    }
+    };
     return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 }

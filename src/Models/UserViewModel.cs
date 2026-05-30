@@ -41,6 +41,11 @@ namespace MessianicChords.Models
         public string LastName { get; set; } = string.Empty;
 
         /// <summary>
+        /// The user's profile image URL.
+        /// </summary>
+        public Uri? ProfilePictureUrl { get; set; }
+
+        /// <summary>
         /// Number of times sign in failed.
         /// </summary>
         public int AccessFailedCount { get; set; }
@@ -99,5 +104,65 @@ namespace MessianicChords.Models
         ///  The roles of the user.
         /// </summary>
         public List<string> Roles { get; set; } = new List<string>();
+
+        /// <summary>
+        /// The IDs of the chord charts the user has starred.
+        /// </summary>
+        public List<string> StarredChartIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// The IDs of the chord charts the user has edited.
+        /// </summary>
+        public List<string> EditedChordChartIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// The IDs of the chord charts the user has created.
+        /// </summary>
+        public List<string> NewChordChartIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// A dictionary mapping chord chart IDs to chord chart names for the chord charts the user has
+        /// </summary>
+        public Dictionary<string, string> NewChordCharts { get; set; } = new Dictionary<string, string>();
+        
+        /// <summary>
+        /// A dictionary mapping chord chart IDs to chord chart names for the chord charts the user has edited.
+        /// </summary>
+        public Dictionary<string, string> EditedChordCharts { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// A dictionary mapping chord chart IDs to chord chart names for the chord charts the user has starred.
+        /// </summary>
+        public Dictionary<string, string> StarredChordCharts { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Updates the NewChordCharts, EditedChordCharts, and StarredChordCharts dictionaries based on the given chord charts.
+        /// </summary>
+        /// <param name="charts"></param>
+        public void UpdateChordCharts(IEnumerable<ChordSheet> charts)
+        {
+            foreach (var chart in charts)
+            {
+                if (string.IsNullOrEmpty(chart.Id))
+                {
+                    continue;
+                }
+
+                if (EditedChordChartIds.Contains(chart.Id))
+                {
+                    EditedChordCharts[chart.Id] = $"{chart.Artist} - {chart.Song}";
+                }
+
+                if (NewChordChartIds.Contains(chart.Id))
+                {
+                    NewChordCharts[chart.Id] = $"{chart.Artist} - {chart.Song}";
+                }
+
+                if (StarredChartIds.Contains(chart.Id))
+                {
+                    StarredChordCharts[chart.Id] = $"{chart.Artist} - {chart.Song}";
+                }
+            }
+        }
     }
 }

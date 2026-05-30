@@ -15,6 +15,7 @@ using SendGrid.Helpers.Mail;
 using Sparrow.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive;
@@ -30,6 +31,7 @@ namespace MessianicChords.Controllers
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly EmailService emailSender;
+        private readonly BunnyCdnManagerService bunnyCdn;
         private readonly AppSettings appOptions;
         
         public AccountController(
@@ -38,33 +40,129 @@ namespace MessianicChords.Controllers
             IAsyncDocumentSession asyncDocumentSession,
             ILogger<AccountController> logger,
             EmailService emailSender,
+            BunnyCdnManagerService bunnyCdn,
             IOptionsMonitor<AppSettings> appOptions)
             : base(asyncDocumentSession, logger)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.emailSender = emailSender;
+            this.bunnyCdn = bunnyCdn;
             this.appOptions = appOptions.CurrentValue;
         }
 
-        ///// <summary>
-        ///// Returns currently logged in user.
-        ///// </summary>
-        ///// <returns code="200">Returns logged in user.</returns>
-        //[HttpGet]
-        //[ProducesResponseType(typeof(UserViewModel), (int)HttpStatusCode.OK)]
-        //[ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
-        //public async Task<IActionResult> GetUser()
-        //{
-        //    var userName = User.Identity.Name;
-        //    AppUser user = null;
-        //    if (!string.IsNullOrEmpty(userName))
-        //    {
-        //        user = await base.GetUser();
-        //        return Ok(mapper.Map<UserViewModel>(user));
-        //    }
-        //    return Ok(null);
-        //}
+        /// <summary>
+        /// Returns currently logged in user.
+        /// </summary>
+        /// <returns code="200">Returns logged in user.</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(UserViewModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userName = User.Identity?.Name;
+            if (!string.IsNullOrEmpty(userName))
+            {
+                var user = await base.GetUserAsync();
+                var userViewModel = user == null ? null : await this.BuildUserViewModel(user);
+                return Ok(userViewModel);
+            }
+
+            return Ok(null);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveProfile([FromForm] SaveProfileRequest model)
+        {
+            var currentUser = await this.GetUserAsync();
+            if (currentUser == null)
+            {
+                return this.Unauthorized();
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Id)
+                || !string.Equals(currentUser.Id, model.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                logger.LogWarning("Rejected profile save for user {id} because it doesn't match current user {currentUserId}", model.Id, currentUser.Id);
+                return this.Forbid();
+            }
+
+            if (model.ProfilePictureFile != null && model.ProfilePictureFile.Length == 0)
+            {
+                return this.BadRequest("Profile picture file is empty.");
+            }
+
+            if (model.ProfilePictureFile != null && model.ProfilePictureFile.Length > 5_000_000)
+            {
+                return this.BadRequest("Profile picture is too large.");
+            }
+
+            currentUser.FirstName = model.FirstName?.Trim() ?? string.Empty;
+            currentUser.LastName = model.LastName?.Trim() ?? string.Empty;
+
+            if (model.ProfilePictureFile != null)
+            {
+                var extension = Path.GetExtension(model.ProfilePictureFile.FileName);
+                if (string.IsNullOrWhiteSpace(extension))
+                {
+                    return this.BadRequest("Profile picture file type is invalid.");
+                }
+
+                var fileName = $"{Guid.NewGuid()}{extension.ToLowerInvariant()}";
+                await using var imageStream = model.ProfilePictureFile.OpenReadStream();
+                var profilePictureUri = await this.bunnyCdn.UploadProfilePicture(imageStream, fileName);
+                currentUser.ProfilePictureUrl = profilePictureUri;
+            }
+
+            var updated = await this.BuildUserViewModel(currentUser);
+            return this.Ok(updated);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Star([BindRequired, FromBody] StarChordRequest model)
+        {
+            var currentUser = await this.GetUserAsync();
+            if (currentUser == null)
+            {
+                return this.Unauthorized();
+            }
+
+            var chordChartId = this.NormalizeChordChartId(model.ChordChartId);
+            if (string.IsNullOrWhiteSpace(chordChartId))
+            {
+                return this.BadRequest("Chord chart id is required.");
+            }
+
+            var alreadyStarred = currentUser.StarredChartIds.Any(id => string.Equals(id, chordChartId, StringComparison.OrdinalIgnoreCase));
+            if (!alreadyStarred)
+            {
+                currentUser.StarredChartIds.Add(chordChartId);
+            }
+
+            var userViewModel = await this.BuildUserViewModel(currentUser);
+            return this.Ok(userViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Unstar([BindRequired, FromBody] StarChordRequest model)
+        {
+            var currentUser = await this.GetUserAsync();
+            if (currentUser == null)
+            {
+                return this.Unauthorized();
+            }
+
+            var chordChartId = this.NormalizeChordChartId(model.ChordChartId);
+            if (string.IsNullOrWhiteSpace(chordChartId))
+            {
+                return this.BadRequest("Chord chart id is required.");
+            }
+
+            currentUser.StarredChartIds.RemoveAll(id => string.Equals(id, chordChartId, StringComparison.OrdinalIgnoreCase));
+
+            var userViewModel = await this.BuildUserViewModel(currentUser);
+            return this.Ok(userViewModel);
+        }
 
         /// <summary>
         /// User SignIn.
@@ -491,7 +589,7 @@ namespace MessianicChords.Controllers
             // If we have a userID, see if we can load that user and update his/her name.
             if (!string.IsNullOrEmpty(message.Name) && !string.IsNullOrEmpty(message.UserId))
             {
-                var user = await GetUser();
+                var user = await GetUserAsync();
                 if (user != null && string.IsNullOrEmpty(user.FirstName) && string.IsNullOrEmpty(user.LastName))
                 {
                     // Update their name.
@@ -536,7 +634,7 @@ namespace MessianicChords.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMyAccount()
         {
-            var user = await GetUser();
+            var user = await GetUserAsync();
             if (user == null)
             {
                 return Unauthorized();
@@ -566,6 +664,31 @@ namespace MessianicChords.Controllers
             }
 
             return SignInStatus.Failure;
+        }
+
+        private async Task<UserViewModel> BuildUserViewModel(AppUser user)
+        {
+            var userViewModel = new UserViewModel(user);
+            var chordChartIds = user.EditedChordChartIds.Concat(user.NewChordChartIds).Concat(user.StarredChartIds);
+            var chordChartsById = await this.DbSession.LoadAsync<ChordSheet>(chordChartIds);
+            userViewModel.UpdateChordCharts(chordChartsById.Where(c => c.Value != null).Select(c => c.Value!));
+            return userViewModel;
+        }
+
+        private string NormalizeChordChartId(string? chordChartId)
+        {
+            var normalized = chordChartId?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(normalized))
+            {
+                return string.Empty;
+            }
+
+            if (!normalized.StartsWith("chordsheets/", StringComparison.OrdinalIgnoreCase))
+            {
+                normalized = $"chordsheets/{normalized}";
+            }
+
+            return normalized;
         }
     }
 }

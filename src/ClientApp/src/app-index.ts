@@ -53,6 +53,10 @@ export class AppIndex extends LitElement {
             { path: "/browse/artists", component: "browse-artists", action: async () => await import("./script/pages/browse-artists") } as any,
             { path: "/browse/random", component: "browse-random", action: async () => await import("./script/pages/browse-random") } as any,
             { path: "/artist/:name", component: "artist-songs", action: async () => await import("./script/pages/artist-songs") } as any,
+            { path: "/my/starred", component: "my-starred-page", action: async () => await import("./script/pages/my-starred-page") } as any,
+            { path: "/profile", component: "profile-page", action: async () => await import("./script/pages/profile-page") } as any,
+            { path: "/account", component: "account-page", action: async () => await import("./script/pages/account-page") } as any,
+            { path: "/contact", component: "contact-page", action: async () => await import("./script/pages/contact-page") } as any,
             { path: "/about", component: "app-about", action: async () => await import("./script/pages/app-about") } as any
         ]);
     }

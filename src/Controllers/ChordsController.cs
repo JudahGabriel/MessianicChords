@@ -238,6 +238,30 @@ namespace MessianicChords.Controllers
             return sync.Start();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetMyStarred()
+        {
+            var user = await this.GetUserAsync();
+            if (user == null)
+            {
+                return this.Unauthorized();
+            }
+
+            if (user.StarredChartIds.Count == 0)
+            {
+                return this.Ok(new List<ChordSheet>());
+            }
+
+            var starredById = await this.DbSession.LoadAsync<ChordSheet>(user.StarredChartIds);
+            var results = user.StarredChartIds
+                .Select(id => starredById.TryGetValue(id, out var chart) ? chart : null)
+                .Where(chart => chart != null)
+                .Select(chart => chart!)
+                .ToList();
+
+            return this.Ok(results);
+        }
+
         /// <summary>
         /// Submits an edit for an existing chord sheet, or a new chord sheet.
         /// </summary>

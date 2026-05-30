@@ -66,16 +66,18 @@ public class EmailService
         return this.SendEmail(email);
     }
 
-    public async Task SendConfirmEmailAsync(string email, string token, AppSettings appOptions)
+    public Task SendConfirmEmailAsync(string destinationAddress, string token, AppSettings appOptions)
     {
-        var htmlBody = "<h1>MessianicChords: Confirm your email</h1>" +
+        var body = "<h1>MessianicChords: Confirm your email</h1>" +
             "<p>Thanks for registering on MessianicChords! Click the link below to confirm your email address. This link will expire in 24 hours.</p>" +
-            $"<p><a href='https://messianicchords.com/confirmemail?email={email}&token={token}'>Confirm email</a></p>";
+            $"<p><a href='https://messianicchords.com/confirmemail?email={destinationAddress}&token={token}'>Confirm email</a></p>";
+        var email = this.CreateEmail("MessianicChords: Confirm your email", new EmailAddress(destinationAddress), null, body);
+        return this.SendEmail(email);
     }
 
     private string GetNewChordsEmailHtml(ChordSubmission submission, string token)
     {
-        return 
+        return
             "<h1>New chords uploaded to MessianicChords</h1>" +
             "<p>" +
             $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id}&token={token}'>Review new chord chart</a>" +

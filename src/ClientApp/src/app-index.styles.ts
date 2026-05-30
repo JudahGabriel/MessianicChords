@@ -2,6 +2,7 @@ import { css } from "lit";
 import { tabletsAndSmaller } from "./script/common/breakpoints";
 
 export const indexStyles = css`
+
     @media print {
         app-header {
             display: none;

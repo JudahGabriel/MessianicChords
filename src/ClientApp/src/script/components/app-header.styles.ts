@@ -87,6 +87,84 @@ export const appHeaderStyles = css`
         flex-shrink: 0;
     }
 
+    .account-menu-trigger {
+        width: 2.25rem;
+        height: 2.25rem;
+        --sl-input-border-color: rgba(255, 255, 255, 0.35);
+        --sl-input-border-color-hover: white;
+        --sl-input-border-color-focus: white;
+        --sl-focus-ring-color: rgba(255, 255, 255, 0.45);
+        --sl-color-neutral-300: black;
+        --sl-input-background-color: rgba(255, 255, 255, 0.12);
+        --sl-color-neutral-700: white;
+    }
+
+    .account-menu-trigger-signed-out {
+        --sl-input-border-color: rgba(255, 255, 255, 0.35);
+        --sl-input-border-color-hover: white;
+        --sl-input-border-color-focus: white;
+        --sl-focus-ring-color: rgba(255, 255, 255, 0.45);
+        --sl-color-neutral-700: white;
+        --sl-input-background-color: rgba(255, 255, 255, 0.12);
+        --sl-color-primary-600: white;
+    }
+
+    .account-menu-trigger::part(base) {
+        padding: 0;
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .account-menu-trigger-signed-out::part(base) {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .account-menu-trigger {
+        &::part(label) {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        sl-icon {
+            color: white;
+            font-size: 1.5em;
+            margin-top: 5px;
+        }
+    }
+
+    .account-menu-trigger-signed-out {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        sl-icon {
+            color: white;
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+    }
+
+    .avatar-initial {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--theme-color);
+    }
+
+    .avatar-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 999px;
+        object-fit: cover;
+        display: block;
+    }
+
     /* Hamburger toggle - hidden on desktop */
     .menu-toggle {
         display: none;

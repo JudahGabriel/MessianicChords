@@ -19,6 +19,10 @@ export class ChordService extends ApiServiceBase {
         return this.getBackend().then(b => b.getByOrderedIndex(index));
     }
 
+    getMyStarred(): Promise<ChordSheet[]> {
+        return this.getBackend().then(b => b.getMyStarred());
+    }
+
     /**
      * @deprecated This method should no longer be used. Use searchPaged instead.
      */
@@ -99,6 +103,10 @@ class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
 
     getByOrderedIndex(index: number): Promise<string | null> {
         return super.getString("/chords/getByOrderedIndex", { index: index });
+    }
+
+    getMyStarred(): Promise<ChordSheet[]> {
+        return super.getJson("/chords/getMyStarred");
     }
 
     search(query: string): Promise<ChordSheet[]> {
@@ -203,6 +211,10 @@ class CacheBackend implements ChordFetchBackend {
 
     getByOrderedIndex(index: number): Promise<string | null> {
         throw new Error(`getByOrderedIndex(${index}) is intended for online use only.`);
+    }
+
+    getMyStarred(): Promise<ChordSheet[]> {
+        throw new Error("getMyStarred() is intended for online use only.");
     }
 
     async search(query: string): Promise<ChordSheet[]> {

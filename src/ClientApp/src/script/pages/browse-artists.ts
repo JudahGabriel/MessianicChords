@@ -1,4 +1,4 @@
-import { css, html, TemplateResult } from "lit";
+import { CSSResult, html, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "../components/chord-card";
 import "../components/chord-card-loading";
@@ -7,7 +7,7 @@ import { ChordSheet, PagedResult } from "../models/interfaces";
 import { BootstrapBase } from "../common/bootstrap-base";
 import { BrowseSongs } from "./browse-songs";
 import { repeat } from "lit/directives/repeat.js";
-import { SizeMax } from "../common/constants";
+import { browseArtistsStyles } from "./browse-artists.styles";
 
 // This component is the same as browse songs, only the grouping is by artist, rather than by first letter of song name.
 // So, let's just inherit from BrowseSongs.
@@ -15,28 +15,11 @@ import { SizeMax } from "../common/constants";
 export class BrowseArtists extends BrowseSongs {
     @state() artists: string[] = [];
 
-    static get styles() {
-        const localStyles = css`
-            .jump-to-artist {
-                transform: translateY(32px);
-                margin-top: -32px;
-            }
-
-            /* On small phones, don't shift it into the artist heading */
-            @media (max-width: ${SizeMax.Xs}px) {
-                .jump-to-artist {
-                    transform: none;
-                    margin-top: initial;
-                }
-            }
-        `;
-
-        return [
-            BootstrapBase.styles,
-            BrowseSongs.styles,
-            localStyles
-        ];
-    }
+    static styles = [
+        BootstrapBase.styles,
+        BrowseSongs.styles,
+        browseArtistsStyles
+    ] as CSSResult[];
 
     constructor() {
         super();

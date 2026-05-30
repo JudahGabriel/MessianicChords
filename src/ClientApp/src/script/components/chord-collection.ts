@@ -39,11 +39,9 @@ export class ChordCollection extends LitElement {
 
     render(): TemplateResult {
         if (!this.chords) {
-            console.log("zanz rendering no chords");
             return html``;
         }
 
-        console.log("zanz rendering chords list", this.chordList.length);
         return html`
             <div class="chords-container w-100 d-flex flex-wrap justify-content-evenly align-items-stretch">
                 ${repeat(this.chordList, c => c.id, c => this.renderChordCard(c))}
@@ -90,6 +88,5 @@ export class ChordCollection extends LitElement {
     private chordsChanged() {
         this.isLoading = this.chords?.isLoading || false;
         this.chordList = [...(this.chords?.items || [])];
-        console.log("zanz chordsChanged callback", this.chordList.length);
     }
 }

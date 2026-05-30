@@ -12,11 +12,6 @@ namespace MessianicChords.Models
     {
         public const string AppUserPrefix = "AppUsers/";
         public const string AdminRole = "admin";
-        
-        /// <summary>
-        /// Gets the total number of songs played by this user.
-        /// </summary>
-        public int TotalPlays { get; set; }
 
         /// <summary>
         /// Gets the date the user registered.
@@ -24,14 +19,24 @@ namespace MessianicChords.Models
         public DateTime RegistrationDate { get; set; }
 
         /// <summary>
+        /// The IDs of the chord charts the user has starred.
+        /// </summary>
+        public List<string> StarredChartIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// The IDs of the chord charts the user has edited.
+        /// </summary>
+        public List<string> EditedChordChartIds { get; set; } = new List<string>();
+
+        /// <summary>
+        /// The IDs of the chord charts the user has created.
+        /// </summary>
+        public List<string> NewChordChartIds { get; set; } = new List<string>();
+
+        /// <summary>
         /// Gets the last time we saw this user.
         /// </summary>
         public DateTime LastSeen { get; set; }
-
-        /// <summary>
-        /// Gets the total number of song requests made by this user.
-        /// </summary>
-        public int TotalSongRequests { get; set; }
 
         /// <summary>
         /// Whether this user requires a password reset.
@@ -48,16 +53,19 @@ namespace MessianicChords.Models
         /// </summary>
         public string LastName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// The user's profile image URL.
+        /// </summary>
+        public Uri? ProfilePictureUrl { get; set; }
+
         public AppUser Clone()
         {
             return new AppUser
             {
                 Id = Id,
                 LastSeen = LastSeen,
-                TotalSongRequests = TotalSongRequests,
                 RegistrationDate = RegistrationDate,
                 RequiresPasswordReset = RequiresPasswordReset,
-                TotalPlays = TotalPlays,
                 Email = Email,
                 UserName = UserName,
                 LockoutEnabled = LockoutEnabled
@@ -66,7 +74,7 @@ namespace MessianicChords.Models
 
         public bool IsAdmin()
         {
-            return Roles.Contains(AppUser.AdminRole);
+            return Roles.Contains(AdminRole);
         }
     }
 }

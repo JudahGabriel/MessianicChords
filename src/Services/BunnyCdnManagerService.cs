@@ -34,6 +34,17 @@ public class BunnyCdnManagerService
     }
 
     /// <summary>
+    /// Uploads an image to BunnyCDN.
+    /// </summary>
+    /// <param name="source">The stream containing the image data to upload.</param>
+    /// <param name="fileName">The name of the file to create in BunnyCDN.</param>
+    /// <returns>An HTTP URI pointing to the new image in BunnyCDN.</returns>
+    public Task<Uri> UploadProfilePicture(Stream source, string fileName)
+    {
+        return this.Upload(source, "profile-pictures", fileName);
+    }
+
+    /// <summary>
     /// Uploads the source stream to BunnyCDN.
     /// </summary>
     /// <param name="source">The stream containing the data to upload.</param>

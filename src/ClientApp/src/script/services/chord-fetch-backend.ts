@@ -7,6 +7,7 @@ import { ChordSheet, PagedResult } from "../models/interfaces";
 export interface ChordFetchBackend {
     getById(chordId: string): Promise<ChordSheet>;
     getByOrderedIndex(index: number): Promise<string | null>;
+    getMyStarred(): Promise<ChordSheet[]>;
     search(query: string): Promise<ChordSheet[]>;
     searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>>;
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>>;

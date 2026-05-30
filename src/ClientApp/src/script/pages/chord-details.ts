@@ -1,4 +1,4 @@
-import { Router, RouterLocation } from "@vaadin/router";
+import { RouterLocation } from "@vaadin/router";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
@@ -11,11 +11,14 @@ import { chordDetailStyles } from "./chord-details.styles";
 import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 import { sharedStyles } from "../common/shared.styles";
+import { UserViewModel } from "../models/account";
+import { accountService } from "../services/account-service";
 import "@shoelace-style/shoelace/dist/components/card/card.js";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
 import "@shoelace-style/shoelace/dist/components/button-group/button-group.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import "@shoelace-style/shoelace/dist/components/rating/rating.js";
 import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
 import "@shoelace-style/shoelace/dist/components/details/details.js";
 import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
@@ -31,6 +34,8 @@ export class ChordDetails extends LitElement {
     @state() hasScreenshots = false;
     @state() transpose = 0;
     @state() fontSize = ChordDetails.defaultFontSize;
+    @state() user: UserViewModel | null = null;
+    @state() starBusy = true;
 
     location: RouterLocation | null = null;
     chordChartLines: ChordChartLine[] | null = null;
@@ -42,6 +47,7 @@ export class ChordDetails extends LitElement {
 
     connectedCallback(): void {
         super.connectedCallback();
+        accountService.getUser().then(user => this.userLoaded(user));
 
         // See if we have a transpose hash in the address bar, e.g. "#transpose=4"
         if (window.location.hash) {
@@ -53,6 +59,10 @@ export class ChordDetails extends LitElement {
                 }
             }
         }
+    }
+
+    disconnectedCallback(): void {
+        super.disconnectedCallback();
     }
 
     firstUpdated() {
@@ -326,6 +336,7 @@ export class ChordDetails extends LitElement {
         const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
         const fontSizeClass = chord.chords ? "" : "d-none";
+        const starTitle = this.isCurrentChordStarred() ? "You already have starred this chord chart. Tap to unstar." : "Star this chord chart";
         return html`
             <div class="row d-print-none">
                 <div class="col-12">
@@ -335,6 +346,12 @@ export class ChordDetails extends LitElement {
                             <sl-tooltip content="Play the audio recording for this song" hoist>
                                 <sl-button size="${btnSize}" @click="${this.playMedia}">
                                     <sl-icon name="play-fill"></sl-icon>
+                                </sl-button>
+                            </sl-tooltip>
+
+                            <sl-tooltip content="${starTitle}" hoist>
+                                <sl-button @click="${this.chordChartStarClicked}">
+                                    <sl-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}"></sl-icon>
                                 </sl-button>
                             </sl-tooltip>
 
@@ -469,6 +486,30 @@ export class ChordDetails extends LitElement {
                 </a>
             </li>
         `;
+    }
+
+    private isCurrentChordStarred(): boolean {
+        return !!this.user && !!this.chord && this.user.starredChartIds.includes(this.chord.id);
+    }
+
+    private async chordChartStarClicked(): Promise<void> {
+        if (!this.chord) {
+            return;
+        }
+
+        if (!this.user) {
+            window.location.href = "/account";
+            return;
+        }
+
+        this.starBusy = true;
+        try {
+            this.user = this.isCurrentChordStarred()
+                ? await accountService.unstarChord(this.chord.id)
+                : await accountService.starChord(this.chord.id);
+        } finally {
+            this.starBusy = false;
+        }
     }
 
     renderChordPreviewer(chord: ChordSheet): TemplateResult {
@@ -719,5 +760,9 @@ export class ChordDetails extends LitElement {
         const newSize = Math.max(6, Math.min(48, this.fontSize + amount));
         this.fontSize = newSize;
         this.requestUpdate();
+    }
+
+    userLoaded(user: UserViewModel | null) {
+        this.user = user;
     }
 }

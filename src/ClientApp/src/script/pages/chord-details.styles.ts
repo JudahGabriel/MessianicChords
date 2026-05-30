@@ -87,6 +87,14 @@ export const chordDetailStyles = css`
         .transpose-value {
             min-width: 68px; /** So that changing the transpose value won't change the width of the button */
         }
+
+        .star-icon {
+            transition: color 0.2s;
+        }
+
+        .star-icon[name='star-fill'] {
+            color: var(--sl-color-amber-500);
+        }
     }
 
     iframe {
