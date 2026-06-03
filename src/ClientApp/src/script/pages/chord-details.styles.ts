@@ -1,5 +1,6 @@
 import { css } from "lit";
 import { SizeMax } from "../common/constants";
+import { tabletsAndSmaller } from "../common/breakpoints";
 
 export const chordDetailStyles = css`
     :host {
@@ -7,6 +8,12 @@ export const chordDetailStyles = css`
         --iframe-page-height: 1100px;
         --soft-gray: rgb(248, 248, 248);
         font-family: var(--subtitle-font);
+    }
+
+    .col-12 {
+        @media (max-width: ${SizeMax.Md}px) {
+            padding-right: 0;
+        }
     }
 
     .container {
@@ -27,6 +34,31 @@ export const chordDetailStyles = css`
             font-size: 1.3em;
             margin-bottom: -5px;
         }
+    }
+
+    .chart-and-sidebar-container {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+
+        /** On tablets and smaller, stack the chart and sidebar vertically */
+        ${tabletsAndSmaller()} {
+            flex-direction: column;
+        }
+
+        .chord-chart {
+            flex: 0 0 auto;
+            width: 66.66666667%;
+
+            /** On tablets and smaller, make the chord chart take up the full width */
+            ${tabletsAndSmaller()} {
+                width: 100%;
+            }
+        }
+    }
+
+    .song-artist-and-title-container {
+        padding: 4px;
     }
 
     .song-name,
@@ -78,6 +110,10 @@ export const chordDetailStyles = css`
         sl-icon {
             font-size: 1.5em;
             transform: translateY(4px);
+
+            @media (max-width: ${SizeMax.Xs}px) {
+                transform: translateY(2px);
+            }
         }
 
         sl-button-group {
@@ -85,7 +121,12 @@ export const chordDetailStyles = css`
         }
 
         .transpose-value {
-            min-width: 68px; /** So that changing the transpose value won't change the width of the button */
+            min-width: 50px; /** So that changing the transpose value won't change the width of the button */
+        }
+
+        .transpose-value::part(label) {
+            padding-left: 4px;
+            padding-right: 4px;
         }
 
         .star-icon {
@@ -221,6 +262,11 @@ export const chordDetailStyles = css`
         font-family: monospace;
         overflow: auto;
         background-color: white;
+
+        /** On small screens, reduce padding for better readability in the smaller space */
+        @media (max-width: ${SizeMax.Xs}px) {
+            padding: 8px 4px;
+        }
     }
 
     .plain-text-preview .chord {
@@ -262,7 +308,6 @@ export const chordDetailStyles = css`
     .sidebar {
         margin-top: 13px;
         margin-bottom: 16px;
-        padding-left: 10px;
 
         sl-card {
             --padding: 10px;

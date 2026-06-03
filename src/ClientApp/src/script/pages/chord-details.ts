@@ -9,7 +9,6 @@ import { ChordChartLine, ChordChartSpan, createChordChartLines } from "../models
 import { Chord } from "../models/chord";
 import { chordDetailStyles } from "./chord-details.styles";
 import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
-import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 import { sharedStyles } from "../common/shared.styles";
 import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
@@ -27,6 +26,7 @@ import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
 import "@shoelace-style/shoelace/dist/components/tab/tab.js";
 import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
 import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
+import "@shoelace-style/shoelace/dist/components/animation/animation.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {
@@ -38,7 +38,7 @@ export class ChordDetails extends LitElement {
     @state() transpose = 0;
     @state() fontSize = ChordDetails.defaultFontSize;
     @state() user: UserViewModel | null = null;
-    @state() starBusy = true;
+    @state() starBusy = false;
     @state() commentThread: CommentThread | null = null;
     @state() commentsLoading = false;
     @state() commentsError: string | null = null;
@@ -53,7 +53,7 @@ export class ChordDetails extends LitElement {
     readonly chordCache = new ChordCache();
     static readonly defaultFontSize = 16;
 
-    static styles = [sharedStyles, bootstrapGridStyles, bootstrapUtilities, chordDetailStyles];
+    static styles = [sharedStyles, bootstrapUtilities, chordDetailStyles];
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -212,30 +212,28 @@ export class ChordDetails extends LitElement {
 
         return html`
             <!-- Song details -->
-            <div class="row ${headerClass}">
-                <div class="col-12 col-lg-12">
-                    <div class="song-artist-and-title-container d-flex justify-content-between align-items-baseline mb-sm-4">
-                        <h1 class="song-name">${chord.song} <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span></h1>
-                        <h5 class="artist-author-name">
-                            <a href="/artist/${encodeURIComponent(chord.artist || chord.authors[0])}">
-                                ${chord.artist || chord.authors.join(", ")}
-                            </a>
-                        </h5>
-                    </div>
+            <div class="${headerClass}">
+                <div class="song-artist-and-title-container d-flex justify-content-between align-items-baseline mb-sm-4">
+                    <h1 class="song-name">${chord.song} <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span></h1>
+                    <h5 class="artist-author-name">
+                        <a href="/artist/${encodeURIComponent(chord.artist || chord.authors[0])}">
+                            ${chord.artist || chord.authors.join(", ")}
+                        </a>
+                    </h5>
                 </div>
             </div>
 
             <!-- Song toolbar -->
             ${this.renderSongToolbar(chord)}
 
-            <div class="row">
+            <div class="chart-and-sidebar-container">
                 <!-- Chord chart -->
-                <div class="col-12 col-lg-8 chord-chart">
+                <div class="chord-chart">
                     ${this.renderChordPreviewer(chord)}
                 </div>
 
                 <!-- Sidebar -->
-                <div class="sidebar col-lg-4 d-flex flex-column gap-5 d-print-none">
+                <div class="sidebar d-flex flex-column gap-5 d-print-none">
                     <sl-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
@@ -378,8 +376,10 @@ export class ChordDetails extends LitElement {
                             </sl-tooltip>
 
                             <sl-tooltip content="${starTitle}" hoist>
-                                <sl-button @click="${this.chordChartStarClicked}">
-                                    <sl-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}"></sl-icon>
+                                <sl-button size="${btnSize}" @click="${this.chordChartStarClicked}" ?disabled="${this.starBusy}">
+                                    <sl-animation name="spin" duration="1000" iterations="Infinity" ?play="${this.starBusy}">
+                                        <sl-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}"></sl-icon>
+                                    </sl-animation>
                                 </sl-button>
                             </sl-tooltip>
 
@@ -436,7 +436,7 @@ export class ChordDetails extends LitElement {
                                 </sl-button>
                             </sl-tooltip>
                             <sl-tooltip content="Current font size" hoist>
-                                <sl-button disabled size="${btnSize}">
+                                <sl-button class="current-font-size" disabled size="${btnSize}">
                                     ${this.fontSize}px
                                 </sl-button>
                             </sl-tooltip>

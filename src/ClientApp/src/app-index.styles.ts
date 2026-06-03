@@ -20,7 +20,7 @@ export const indexStyles = css`
 
     ${tabletsAndSmaller()} {
         main {
-            padding: 0 0 16px 0;
+            padding: 0 4px 16px 4px;
             margin-top: 30px;
         }
     }

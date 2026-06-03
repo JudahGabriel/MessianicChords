@@ -115,7 +115,7 @@ export class AppHeader extends LitElement {
                     class="account-menu-trigger-signed-out" 
                     slot="trigger" 
                     variant="text">
-                    <sl-icon name="list" label="Account menu"></sl-icon>
+                    <sl-icon name="person-circle" label="Account menu"></sl-icon>
                 </sl-button>
             `;
         }

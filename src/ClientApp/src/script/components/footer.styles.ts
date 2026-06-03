@@ -24,8 +24,8 @@ export const footerStyles = css`
         box-shadow: 0 -2px 15px var(--sl-color-neutral-100);
 
         @media (max-width: 575px) {
-            gap: 1rem;
-            padding: 1em 0.5em;
+            gap: 1em;
+            padding: 1em 0;
         }
     }
 `;

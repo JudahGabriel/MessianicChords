@@ -88,6 +88,10 @@
             width: 100vw;
             height: 100vh;
             margin: 0;
+
+            @@media (max-width: 575px) {
+                overflow-x: hidden;
+            }
             
             @@media print {
                 /* During print, we want to take up the whole page */
