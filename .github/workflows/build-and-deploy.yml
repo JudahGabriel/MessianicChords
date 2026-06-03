@@ -10,6 +10,9 @@ on:
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
   
 
 jobs:
@@ -17,41 +20,57 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
-            
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/ClientApp/package-lock.json
+
       - name: Run NPM install and build
+        shell: pwsh
         env:
           CI: true
         run: |
-          cd src\ClientApp
-          npm install
+          Set-Location src/ClientApp
+          if (Test-Path package-lock.json) {
+            npm ci
+          }
+          else {
+            npm install
+          }
           npm run build
-          cd ..
+          Set-Location ../..
       
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          include-prerelease: true
+
+      - name: Print .NET SDK info
+        run: dotnet --info
                     
       - name: Write appsettings.Production.json
-        uses: DamianReeves/write-file-action@v1.2
-        with:
-          path: ${{ github.workspace }}/src/appsettings.Production.json
-          contents: |
-            ${{ secrets.APPSETTINGSPRODUCTION }}
-          write-mode: overwrite
+        shell: pwsh
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE 'src/appsettings.Production.json'
+          $content = @"${{ secrets.APPSETTINGSPRODUCTION }}"@
+          Set-Content -Path $path -Value $content -NoNewline
+
+      - name: Restore with explicit framework
+        run: dotnet restore src/MessianicChords.csproj -p:TargetFramework=net10.0
           
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build src/MessianicChords.csproj --configuration Release -p:TargetFramework=net10.0 --no-restore
           
       - name: Write publish profile to directory
-        uses: DamianReeves/write-file-action@v1.2
-        with:
-          path: ${{ env.home }}/MessianicChordsOnVm.pubxml
-          contents: |
-            ${{ secrets.PUBLISH_PROFILE }}
-          write-mode: overwrite
+        shell: pwsh
+        run: |
+          $publishProfilePath = Join-Path $env:RUNNER_TEMP 'MessianicChordsOnVm.pubxml'
+          $content = @"${{ secrets.PUBLISH_PROFILE }}"@
+          Set-Content -Path $publishProfilePath -Value $content -NoNewline
           
       - name: dotnet publish
-        run: dotnet publish -c Release -o Publish /p:PublishProfileFullPath=${{ env.home }}/MessianicChordsOnVm.pubxml
+        run: dotnet publish src/MessianicChords.csproj -c Release -o Publish -p:TargetFramework=net10.0 -p:PublishProfileFullPath=${{ runner.temp }}/MessianicChordsOnVm.pubxml --no-build
