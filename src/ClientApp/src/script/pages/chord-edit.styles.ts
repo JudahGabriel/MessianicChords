@@ -33,14 +33,26 @@ export const chordEditStyles = css`
         margin-bottom: var(--sl-spacing-medium);
     }
 
+    .form-group > label {
+        display: block;
+        margin-bottom: var(--sl-spacing-x-small);
+    }
+
     .help-text {
         font-size: var(--sl-font-size-small);
         color: var(--sl-color-neutral-500);
         margin-top: var(--sl-spacing-x-small);
     }
 
+    .attachment-picker-row {
+        margin-top: var(--sl-spacing-2x-small);
+    }
+
+    #chord-chart-input::part(textarea) {
+        height: 11in;
+    }
+
     .chord-chart-text {
-        --height: 9in;
         font-family: monospace;
     }
 
@@ -80,13 +92,8 @@ export const chordEditStyles = css`
         font-size: var(--sl-font-size-small);
     }
 
-    input[type="file"] {
-        display: block;
-        width: 100%;
-        padding: var(--sl-spacing-small);
-        border: 1px solid var(--sl-color-neutral-300);
-        border-radius: var(--sl-border-radius-medium);
-        font-size: var(--sl-font-size-medium);
+    .hidden-file-input {
+        display: none;
     }
 
     .loading-skeleton {

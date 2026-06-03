@@ -290,6 +290,54 @@ export const chordDetailStyles = css`
             list-style: hebrew;
         }
 
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--sl-color-neutral-100);
+            padding: 4px 10px 4px 14px;
+            font-family: var(--title-font);
+            font-size: 0.85em;
+            line-height: 1.2;
+            position: relative;
+            isolation: isolate;
+            clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+        }
+
+        .tag-chip::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            background: var(--sl-color-neutral-300);
+            clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+            z-index: -1;
+        }
+
+        .tag-chip::after {
+            content: "";
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--sl-color-neutral-0);
+            border: 1px solid var(--sl-color-neutral-300);
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tag-chip sl-icon {
+            font-size: 0.95em;
+            color: var(--theme-color);
+        }
+
         .comments-section {
             padding: 4px;
             box-sizing: border-box;

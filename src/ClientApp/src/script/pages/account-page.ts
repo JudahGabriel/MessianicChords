@@ -205,6 +205,11 @@ export class AccountPage extends LitElement {
                 this.user = result.user ?? await this.accountService.getUser();
                 this.success = "You're signed in.";
                 window.dispatchEvent(new CustomEvent("account-changed"));
+
+                const redirectUrl = this.getRedirectUrl();
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                }
                 return;
             }
 
@@ -267,6 +272,20 @@ export class AccountPage extends LitElement {
         } finally {
             this.isSubmitting = false;
         }
+    }
+
+    private getRedirectUrl(): string | null {
+        const redirect = new URLSearchParams(window.location.search).get("redirect");
+        if (!redirect) {
+            return null;
+        }
+
+        // Only allow local app-relative redirects.
+        if (!redirect.startsWith("/") || redirect.startsWith("//")) {
+            return null;
+        }
+
+        return redirect;
     }
 
     private async signOut(): Promise<void> {

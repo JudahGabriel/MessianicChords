@@ -5,6 +5,7 @@ import { repeat } from "lit/directives/repeat.js";
 import { bytesToText, emptyChordSheet } from "../common/utils";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
+import { accountService } from "../services/account-service";
 import "../components/multiple-items-input.js";
 
 import "@shoelace-style/shoelace/dist/components/input/input.js";
@@ -16,7 +17,7 @@ import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
 import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
-import { chordEditStyles } from "./chord-edti.styles";
+import { chordEditStyles } from "./chord-edit.styles";
 
 @customElement("chord-edit")
 export class ChordEdit extends LitElement {
@@ -44,15 +45,22 @@ export class ChordEdit extends LitElement {
     }
 
     firstUpdated() {
-        const id = this.location?.params["id"];
-        if (id) {
-            this.chordService.getById(`chordsheets/${id}`)
-                .then(chordSheet => this.chordSheetLoaded(chordSheet))
-                .catch(error => this.chordSheetLoadFailed(error));
-        } else {
-            this.isNewChordSheet = true;
-            this.chord = emptyChordSheet();
-        }
+        accountService.getUser().then(user => {
+            if (!user) {
+                window.location.href = `/account?redirect=${encodeURIComponent(window.location.pathname)}`;
+                return;
+            }
+
+            const id = this.location?.params["id"];
+            if (id) {
+                this.chordService.getById(`chordsheets/${id}`)
+                    .then(chordSheet => this.chordSheetLoaded(chordSheet))
+                    .catch(error => this.chordSheetLoadFailed(error));
+            } else {
+                this.isNewChordSheet = true;
+                this.chord = emptyChordSheet();
+            }
+        });
     }
 
     chordSheetLoaded(chordSheet: ChordSheet) {
@@ -165,7 +173,12 @@ export class ChordEdit extends LitElement {
                             <sl-icon name="paperclip"></sl-icon>
                             Attachments
                         </label>
-                        <input type="file" id="attachments-input" multiple @input="${this.addAttachments}" />
+                        <input class="hidden-file-input" type="file" id="attachments-input" multiple @input="${this.addAttachments}" />
+                        <div class="attachment-picker-row">
+                            <sl-button type="button" @click="${this.chooseAttachmentFiles}">
+                                Choose files
+                            </sl-button>
+                        </div>
                         <div class="help-text">Optional. Attachments for the chord sheet. For example, a chord chart file (.pdf, .docx, .jpg, etc.), an audio recording of the song, piano sheet music, or other related files.</div>
                         <ul class="attachment-list">
                             ${repeat(this.attachments, a => this.attachments.indexOf(a), a => this.renderAttachment(a))}
@@ -189,6 +202,24 @@ export class ChordEdit extends LitElement {
                             @itemschanged="${this.linksChanged}">
                         </multiple-items-input>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <sl-icon name="tags"></sl-icon>
+                        Tags
+                    </label>
+                    <multiple-items-input
+                        placeholder="worship"
+                        aria-label="Tags"
+                        help="Optional. Tags such as worship, hymn, slow, upbeat, Hebrew, liturgy, etc."
+                        add-label="+"
+                        add-tooltip="Add another tag"
+                        item-tooltip="Remove this tag"
+                        input-id="tags-input"
+                        .items="${chord.tags}"
+                        @itemschanged="${this.tagsChanged}">
+                    </multiple-items-input>
                 </div>
 
                 <!-- Key, capo, and scripture row -->
@@ -360,7 +391,12 @@ export class ChordEdit extends LitElement {
         const attachmentsInput = e.target as HTMLInputElement;
         if (attachmentsInput.files && attachmentsInput.files.length > 0) {
             this.attachments = this.attachments.concat(...Array.from(attachmentsInput.files));
+            attachmentsInput.value = "";
         }
+    }
+
+    chooseAttachmentFiles() {
+        this.shadowRoot?.querySelector<HTMLInputElement>("#attachments-input")?.click();
     }
 
     removeAttachment(attachment: File | string): void {
@@ -371,6 +407,13 @@ export class ChordEdit extends LitElement {
         const links = e.detail.items as string[];
         if (Array.isArray(links) && this.chord) {
             this.chord.links = links;
+        }
+    }
+
+    tagsChanged(e: CustomEvent) {
+        const tags = e.detail.items as string[];
+        if (Array.isArray(tags) && this.chord) {
+            this.chord.tags = tags;
         }
     }
 

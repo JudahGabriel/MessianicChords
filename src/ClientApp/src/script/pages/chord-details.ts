@@ -206,6 +206,10 @@ export class ChordDetails extends LitElement {
         // - If the chord chart is in the new format, include the header in the print.
         // - If the chord chart isn't in the new format, don't include the header in the print.
         const headerClass = chord.chords ? "" : "d-print-none";        
+        const hasMediaLinks = chord.links.length > 0;
+        const hasAudio = this.hasAudioPlayer(chord);
+        const hasAnyMedia = hasMediaLinks || hasAudio;
+
         return html`
             <!-- Song details -->
             <div class="row ${headerClass}">
@@ -253,7 +257,7 @@ export class ChordDetails extends LitElement {
                             Authors: <strong>${chord.authors.join(", ")}</strong>
                         </p>
                         <p>
-                            Tags: <strong>${chord.tags.join(", ")}</strong>
+                            Tags: <span class="tag-list">${this.renderTags(chord.tags)}</span>
                         </p>
                     </sl-card>
 
@@ -266,9 +270,12 @@ export class ChordDetails extends LitElement {
                         </div>
 
                         ${this.renderAudioPlayer(chord)}
-                        <ul class="media-links">
-                            ${repeat(chord.links, l => l, l => this.renderLink(l))}
-                        </ul>
+                        ${hasMediaLinks ? html`
+                            <ul class="media-links">
+                                ${repeat(chord.links, l => l, l => this.renderLink(l))}
+                            </ul>
+                        ` : html``}
+                        ${!hasAnyMedia ? html`<p class="comments-muted">No media attachments.</p>` : html``}
 
                         <!-- <p class="d-flex gap-1 align-items-center">
                             <span class="fs-5 pe-2 ps-2" lang="he" style="color: #e9dd9a; background-color: #2f3d58">ח</span>
@@ -509,26 +516,44 @@ export class ChordDetails extends LitElement {
         `;
     }
 
+    renderTags(tags: string[]): TemplateResult {
+        if (!tags || tags.length === 0) {
+            return html`<span class="comments-muted">None</span>`;
+        }
+
+        return html`${repeat(tags, t => t, t => this.renderTag(t))}`;
+    }
+
+    renderTag(tag: string): TemplateResult {
+        return html`
+            <span class="tag-chip">
+                <sl-icon name="tag" label="Tag"></sl-icon>
+                <span>${tag}</span>
+            </span>
+        `;
+    }
+
     renderComments(chord: ChordSheet): TemplateResult {
         const comments = this.commentThread?.comments || [];
         const signedIn = !!this.user;
+        const shouldRenderCommentsScroll = this.commentsLoading || !!this.commentsError || comments.length > 0;
         return html`
             <section class="comments-section">
-                <div class="comments-scroll">
-                    ${this.commentsLoading ? html`<p class="comments-muted">Loading comments...</p>` : html``}
-                    ${this.commentsError ? html`<p class="comments-error">${this.commentsError}</p>` : html``}
-                    ${!this.commentsLoading && !this.commentsError && comments.length === 0 ? html`<p class="comments-muted">No comments yet.</p>` : html``}
-
-                    ${comments.length > 0 ? html`
-                        <ul class="comment-list">
-                            ${repeat(comments, c => c.id, c => this.renderComment(chord, c))}
-                        </ul>
-                    ` : html``}
-                </div>
+                ${shouldRenderCommentsScroll ? html`
+                    <div class="comments-scroll">
+                        ${this.commentsLoading ? html`<p class="comments-muted">Loading comments...</p>` : html``}
+                        ${this.commentsError ? html`<p class="comments-error">${this.commentsError}</p>` : html``}
+                        ${comments.length > 0 ? html`
+                            <ul class="comment-list">
+                                ${repeat(comments, c => c.id, c => this.renderComment(chord, c))}
+                            </ul>
+                        ` : html``}
+                    </div>
+                ` : html``}
 
                 ${signedIn ? this.renderAddCommentForm(chord) : html`
                     <p class="comments-sign-in">
-                        <a href="/account">Sign in to comment on this chord chart.</a>
+                        <a href="/account">Sign in to comment</a>
                     </p>
                 `}
             </section>
@@ -913,18 +938,26 @@ export class ChordDetails extends LitElement {
     }
 
     renderAudioPlayer(chord: ChordSheet): TemplateResult {
-        const chavahLink = chord.links.find(l => l.startsWith("https://messianicradio.com") && l.includes("song=songs/"));
-        if (!chavahLink) {
-            return html``;
-        }
-
-        const chavahUri = new URL(chavahLink);
-        const chavahSongId = chavahUri.searchParams.get("song");
+        const chavahSongId = this.getChavahSongId(chord);
         if (!chavahSongId) {
             return html``;
         }
 
         return html`<audio controls preload="none" src="https://messianicradio.com/api/songs/getmp3byid?songId=${chavahSongId}"></audio>`;
+    }
+
+    private hasAudioPlayer(chord: ChordSheet): boolean {
+        return !!this.getChavahSongId(chord);
+    }
+
+    private getChavahSongId(chord: ChordSheet): string | null {
+        const chavahLink = chord.links.find(l => l.startsWith("https://messianicradio.com") && l.includes("song=songs/"));
+        if (!chavahLink) {
+            return null;
+        }
+
+        const chavahUri = new URL(chavahLink);
+        return chavahUri.searchParams.get("song");
     }
 
     playMedia(): void {

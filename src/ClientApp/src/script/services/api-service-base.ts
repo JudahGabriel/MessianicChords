@@ -5,6 +5,24 @@ export class ApiServiceBase {
 
     protected async getJson<T>(url: string, args?: object): Promise<T> {
         const response = await this.getResponse(url, args);
+        if (response.status === 204) {
+            return null as T;
+        }
+
+        const contentLength = response.headers.get("content-length");
+        if (contentLength === "0") {
+            return null as T;
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.toLowerCase().includes("application/json")) {
+            const text = await response.text();
+            if (!text || !text.trim()) {
+                return null as T;
+            }
+            return JSON.parse(text) as T;
+        }
+
         const json = await response.json() as T;
         return json;
     }
@@ -28,6 +46,15 @@ export class ApiServiceBase {
         if (!postResult.ok) {
             console.error("HTTP POST failed", absoluteUrl, postResult);
             throw new Error("HTTP POST resulted in non-successful status code " + postResult.status);
+        }
+
+        if (postResult.status === 204) {
+            return null as T;
+        }
+
+        const contentLength = postResult.headers.get("content-length");
+        if (contentLength === "0") {
+            return null as T;
         }
 
         const json = await postResult.json();
