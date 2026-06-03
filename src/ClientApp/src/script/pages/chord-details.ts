@@ -13,6 +13,8 @@ import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 import { sharedStyles } from "../common/shared.styles";
 import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
+import { Comment, CommentThread } from "../models/comment";
+import { commentService } from "../services/comment-service";
 import "@shoelace-style/shoelace/dist/components/card/card.js";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
 import "@shoelace-style/shoelace/dist/components/button-group/button-group.js";
@@ -24,6 +26,7 @@ import "@shoelace-style/shoelace/dist/components/details/details.js";
 import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
 import "@shoelace-style/shoelace/dist/components/tab/tab.js";
 import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
+import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {
@@ -36,6 +39,13 @@ export class ChordDetails extends LitElement {
     @state() fontSize = ChordDetails.defaultFontSize;
     @state() user: UserViewModel | null = null;
     @state() starBusy = true;
+    @state() commentThread: CommentThread | null = null;
+    @state() commentsLoading = false;
+    @state() commentsError: string | null = null;
+    @state() newCommentContent = "";
+    @state() commentBusy = false;
+    @state() editingCommentId: string | null = null;
+    @state() editCommentContent = "";
 
     location: RouterLocation | null = null;
     chordChartLines: ChordChartLine[] | null = null;
@@ -82,6 +92,7 @@ export class ChordDetails extends LitElement {
         this.isWebPublished = !!chord.publishUri;
         this.hasScreenshots = chord.screenshots.length > 0;
         this.cacheChordForOfflineSearch(chord);
+        this.loadComments(chord.id);
         const chordName = [
             chord.song,
             chord.hebrewSongName
@@ -290,6 +301,16 @@ export class ChordDetails extends LitElement {
                     <sl-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
+                                <span>Comments</span>
+                            </div>
+                        </div>
+
+                        ${this.renderComments(chord)}
+                    </sl-card>
+
+                    <sl-card class="card-header w-100">
+                        <div slot="header">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <span>Arrangement</span>
                                 <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
                             </div>
@@ -486,6 +507,163 @@ export class ChordDetails extends LitElement {
                 </a>
             </li>
         `;
+    }
+
+    renderComments(chord: ChordSheet): TemplateResult {
+        const comments = this.commentThread?.comments || [];
+        const signedIn = !!this.user;
+        return html`
+            <section class="comments-section">
+                <div class="comments-scroll">
+                    ${this.commentsLoading ? html`<p class="comments-muted">Loading comments...</p>` : html``}
+                    ${this.commentsError ? html`<p class="comments-error">${this.commentsError}</p>` : html``}
+                    ${!this.commentsLoading && !this.commentsError && comments.length === 0 ? html`<p class="comments-muted">No comments yet.</p>` : html``}
+
+                    ${comments.length > 0 ? html`
+                        <ul class="comment-list">
+                            ${repeat(comments, c => c.id, c => this.renderComment(chord, c))}
+                        </ul>
+                    ` : html``}
+                </div>
+
+                ${signedIn ? this.renderAddCommentForm(chord) : html`
+                    <p class="comments-sign-in">
+                        <a href="/account">Sign in to comment on this chord chart.</a>
+                    </p>
+                `}
+            </section>
+        `;
+    }
+
+    renderComment(chord: ChordSheet, comment: Comment): TemplateResult {
+        const isEditing = this.editingCommentId === comment.id;
+        const canEdit = this.canEditComment(comment);
+        const created = new Date(comment.created);
+        const createdText = isNaN(created.getTime()) ? "" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(created);
+        const avatarTemplate = comment.userProfilePictureUrl
+            ? html`<img class="comment-avatar" src="${comment.userProfilePictureUrl}" alt="${comment.userDisplayName}" loading="lazy" />`
+            : html`<sl-icon class="comment-avatar-icon" name="person-circle" label="No profile picture"></sl-icon>`;
+
+        return html`
+            <li class="comment-item">
+                ${isEditing ? html`
+                    <sl-textarea
+                        class="comment-edit-box"
+                        rows="3"
+                        .value="${this.editCommentContent}"
+                        @sl-input="${(e: Event) => this.editCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></sl-textarea>
+                    <div class="comment-actions">
+                        <sl-button size="small" ?disabled="${this.commentBusy || this.editCommentContent.trim().length === 0}" @click="${() => this.saveCommentEdit(chord)}">
+                            Save
+                        </sl-button>
+                        <sl-button size="small" variant="default" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
+                            Cancel
+                        </sl-button>
+                    </div>
+                ` : html`
+                    <p class="comment-content">${comment.content}</p>
+                    <div class="comment-attribution">
+                        <span class="comment-attribution-hyphen">—</span>
+                        <div class="comment-author">
+                            ${avatarTemplate}
+                            <span class="comment-author-name">${comment.userDisplayName}</span>
+                        </div>
+                        <span class="comment-date">${createdText}</span>
+                        ${canEdit ? html`
+                            <sl-button class="comment-edit-button" size="small" variant="text" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
+                                <sl-icon name="pencil-square"></sl-icon>
+                            </sl-button>
+                        ` : html``}
+                    </div>
+                `}
+            </li>
+        `;
+    }
+
+    renderAddCommentForm(chord: ChordSheet): TemplateResult {
+        return html`
+            <form class="comment-form" @submit="${(e: Event) => this.submitComment(e, chord)}">
+                <sl-textarea
+                    class="comment-input"
+                    placeholder="Add a comment"
+                    rows="3"
+                    .value="${this.newCommentContent}"
+                    @sl-input="${(e: Event) => this.newCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></sl-textarea>
+                <div class="comment-actions">
+                    <sl-button type="submit" size="small" ?disabled="${this.commentBusy || this.newCommentContent.trim().length === 0}">
+                        Post comment
+                    </sl-button>
+                </div>
+            </form>
+        `;
+    }
+
+    private canEditComment(comment: Comment): boolean {
+        return !!this.user?.id && this.user.id.toLowerCase() === comment.userId.toLowerCase();
+    }
+
+    private startCommentEdit(comment: Comment): void {
+        this.editingCommentId = comment.id;
+        this.editCommentContent = comment.content;
+    }
+
+    private cancelCommentEdit = (): void => {
+        this.editingCommentId = null;
+        this.editCommentContent = "";
+    };
+
+    private async saveCommentEdit(chord: ChordSheet): Promise<void> {
+        if (!this.editingCommentId) {
+            return;
+        }
+
+        const content = this.editCommentContent.trim();
+        if (!content) {
+            return;
+        }
+
+        this.commentBusy = true;
+        this.commentsError = null;
+        try {
+            this.commentThread = await commentService.editComment(chord.id, this.editingCommentId, content);
+            this.cancelCommentEdit();
+        } catch (error) {
+            this.commentsError = `Unable to edit comment: ${error}`;
+        } finally {
+            this.commentBusy = false;
+        }
+    }
+
+    private async submitComment(e: Event, chord: ChordSheet): Promise<void> {
+        e.preventDefault();
+        const content = this.newCommentContent.trim();
+        if (!content) {
+            return;
+        }
+
+        this.commentBusy = true;
+        this.commentsError = null;
+        try {
+            this.commentThread = await commentService.addComment(chord.id, content);
+            this.newCommentContent = "";
+        } catch (error) {
+            this.commentsError = `Unable to add comment: ${error}`;
+        } finally {
+            this.commentBusy = false;
+        }
+    }
+
+    private async loadComments(chordSheetId: string): Promise<void> {
+        this.commentsLoading = true;
+        this.commentsError = null;
+        try {
+            this.commentThread = await commentService.getComments(chordSheetId);
+        } catch (error) {
+            this.commentsError = `Unable to load comments: ${error}`;
+            this.commentThread = null;
+        } finally {
+            this.commentsLoading = false;
+        }
     }
 
     private isCurrentChordStarred(): boolean {

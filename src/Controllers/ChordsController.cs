@@ -262,6 +262,103 @@ namespace MessianicChords.Controllers
             return this.Ok(results);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetComments(string chordSheetId)
+        {
+            var normalizedChordSheetId = NormalizeChordSheetId(chordSheetId);
+            if (string.IsNullOrWhiteSpace(normalizedChordSheetId))
+            {
+                return this.BadRequest("Chord sheet id is required.");
+            }
+            var chordSheetIdValue = normalizedChordSheetId!;
+
+            var thread = await LoadOrCreateCommentThread(chordSheetIdValue);
+            return this.Ok(thread);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment([FromBody] AddCommentRequest request)
+        {
+            var currentUser = await this.GetUserAsync();
+            if (currentUser == null)
+            {
+                return this.Unauthorized();
+            }
+
+            var normalizedChordSheetId = NormalizeChordSheetId(request.ChordSheetId);
+            if (string.IsNullOrWhiteSpace(normalizedChordSheetId))
+            {
+                return this.BadRequest("Chord sheet id is required.");
+            }
+            var chordSheetId = normalizedChordSheetId!;
+
+            var commentContent = (request.Content ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(commentContent))
+            {
+                return this.BadRequest("Comment content is required.");
+            }
+
+            var userId = currentUser.Id ?? this.GetUserIdOrThrow();
+            var userDisplayName = GetDisplayNameForUser(currentUser) ?? "Unknown user";
+
+            var thread = await LoadOrCreateCommentThread(chordSheetId);
+            var comment = new Comment
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                UserId = userId!,
+                UserDisplayName = userDisplayName!,
+                UserProfilePictureUrl = currentUser.ProfilePictureUrl,
+                Content = commentContent!,
+                Created = DateTimeOffset.UtcNow
+            };
+            thread.Comments.Add(comment);
+            return this.Ok(SortComments(thread));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditComment([FromBody] EditCommentRequest request)
+        {
+            var currentUser = await this.GetUserAsync();
+            if (currentUser == null)
+            {
+                return this.Unauthorized();
+            }
+
+            var normalizedChordSheetId = NormalizeChordSheetId(request.ChordSheetId);
+            if (string.IsNullOrWhiteSpace(normalizedChordSheetId))
+            {
+                return this.BadRequest("Chord sheet id is required.");
+            }
+            var chordSheetId = normalizedChordSheetId!;
+
+            var commentContent = (request.Content ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(commentContent))
+            {
+                return this.BadRequest("Comment content is required.");
+            }
+
+            var threadId = GetCommentThreadId(chordSheetId);
+            var thread = await DbSession.LoadAsync<CommentThread>(threadId);
+            if (thread == null)
+            {
+                return this.NotFound("Comment thread not found.");
+            }
+
+            var comment = thread.Comments.FirstOrDefault(c => string.Equals(c.Id, request.CommentId, StringComparison.OrdinalIgnoreCase));
+            if (comment == null)
+            {
+                return this.NotFound("Comment not found.");
+            }
+
+            if (!string.Equals(comment.UserId, currentUser.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Forbid();
+            }
+
+            comment.Content = commentContent;
+            return this.Ok(SortComments(thread));
+        }
+
         /// <summary>
         /// Submits an edit for an existing chord sheet, or a new chord sheet.
         /// </summary>
@@ -305,6 +402,75 @@ namespace MessianicChords.Controllers
             }
 
             return new List<ChordSheet>(0);
+        }
+
+        private static string? NormalizeChordSheetId(string? chordSheetId)
+        {
+            if (string.IsNullOrWhiteSpace(chordSheetId))
+            {
+                return null;
+            }
+
+            return chordSheetId.StartsWith("ChordSheets/", StringComparison.OrdinalIgnoreCase)
+                ? chordSheetId
+                : $"ChordSheets/{chordSheetId}";
+        }
+
+        private async Task<CommentThread> LoadOrCreateCommentThread(string chordSheetId)
+        {
+            var threadId = GetCommentThreadId(chordSheetId);
+            var thread = await DbSession.LoadAsync<CommentThread>(threadId);
+            if (thread == null)
+            {
+                thread = new CommentThread
+                {
+                    ChordSheetId = chordSheetId,
+                    Comments = []
+                };
+                await DbSession.StoreAsync(thread, threadId);
+            }
+
+            return SortComments(thread);
+        }
+
+        private static CommentThread SortComments(CommentThread thread)
+        {
+            thread.Comments = thread.Comments
+                .OrderBy(c => c.Created)
+                .ToList();
+            return thread;
+        }
+
+        private static string GetCommentThreadId(string chordSheetId)
+        {
+            var rawId = chordSheetId.StartsWith("ChordSheets/", StringComparison.OrdinalIgnoreCase)
+                ? chordSheetId["ChordSheets/".Length..]
+                : chordSheetId;
+            return $"CommentThreads/{rawId}";
+        }
+
+        private static string GetDisplayNameForUser(AppUser user)
+        {
+            var fullName = string.Join(" ", new[] { user.FirstName, user.LastName }.Where(n => !string.IsNullOrWhiteSpace(n))).Trim();
+            if (!string.IsNullOrWhiteSpace(fullName))
+            {
+                return fullName;
+            }
+
+            var userName = user.UserName;
+            if (!string.IsNullOrWhiteSpace(userName))
+            {
+                return userName;
+            }
+
+            var email = user.Email?.Trim();
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                var atIndex = email.IndexOf('@');
+                return atIndex > 0 ? email[..atIndex] : email;
+            }
+
+            return "Unknown user";
         }
 
         private string GetMimeTypeFromChordSheetExtension(string? extension)
@@ -357,6 +523,19 @@ namespace MessianicChords.Controllers
             }
 
             throw new ArgumentException("Chord sheet had neither plain text chords nor Google Doc ID");
+        }
+
+        public class AddCommentRequest
+        {
+            public string ChordSheetId { get; set; } = string.Empty;
+            public string Content { get; set; } = string.Empty;
+        }
+
+        public class EditCommentRequest
+        {
+            public string ChordSheetId { get; set; } = string.Empty;
+            public string CommentId { get; set; } = string.Empty;
+            public string Content { get; set; } = string.Empty;
         }
     }
 }

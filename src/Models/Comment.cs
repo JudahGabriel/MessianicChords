@@ -6,6 +6,11 @@
 public class Comment
 {
     /// <summary>
+    /// Gets the unique ID of the comment.
+    /// </summary>
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+
+    /// <summary>
     /// Gets the ID of the user that created the comment.
     /// </summary>
     required public string UserId { get; set; }
@@ -14,6 +19,11 @@ public class Comment
     /// Gets the display name of the user who created the comment.
     /// </summary>
     required public string UserDisplayName { get; set; }
+
+    /// <summary>
+    /// Gets the profile picture URL of the user who created the comment.
+    /// </summary>
+    public Uri? UserProfilePictureUrl { get; set; }
 
     /// <summary>
     /// Gets the content of the comment.

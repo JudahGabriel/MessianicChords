@@ -290,6 +290,147 @@ export const chordDetailStyles = css`
             list-style: hebrew;
         }
 
+        .comments-section {
+            padding: 4px;
+            box-sizing: border-box;
+        }
+
+        .comments-scroll {
+            border: 1px solid var(--sl-color-neutral-200);
+            border-radius: 4px;
+            padding: 8px;
+            background-color: #fff;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
+            max-height: 300px;
+            margin-bottom: 8px;
+        }
+
+        .comment-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comment-item {
+            border-bottom: 1px solid var(--sl-color-neutral-100);
+            padding-bottom: 8px;
+            min-width: 0;
+        }
+
+        .comment-item:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .comment-content {
+            white-space: pre-wrap;
+            margin: 0 0 6px 0;
+            min-height: auto;
+            display: block;
+            font-family: var(--title-font);
+            padding: 4px;
+        }
+
+        .comment-attribution {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-left: 12px;
+            font-family: var(--subtitle-font);
+            font-size: 0.85em;
+            color: var(--sl-color-neutral-600);
+            min-width: 0;
+        }
+
+        .comment-attribution-hyphen {
+            flex-shrink: 0;
+        }
+
+        .comment-author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .comment-author-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .comment-avatar {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .comment-avatar-icon {
+            font-size: 18px;
+            color: var(--sl-color-neutral-500);
+            flex-shrink: 0;
+        }
+
+        .comment-date {
+            color: var(--sl-color-neutral-500);
+            white-space: nowrap;
+            margin-left: auto;
+        }
+
+        .comment-form {
+            margin-top: 0;
+        }
+
+        .comment-input,
+        .comment-edit-box {
+            width: 100%;
+            min-height: 70px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .comment-input::part(base),
+        .comment-edit-box::part(base) {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .comment-actions {
+            margin-top: 6px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .comment-edit-button sl-icon {
+            font-size: 1rem;
+        }
+
+        .comments-muted,
+        .comments-sign-in,
+        .comments-error {
+            margin: 0;
+            min-height: auto;
+            display: block;
+        }
+
+        .comments-muted {
+            color: var(--sl-color-neutral-600);
+        }
+
+        .comments-error {
+            color: var(--sl-color-danger-600);
+        }
+
         audio {
             width: 100%;
         }
@@ -306,6 +447,10 @@ export const chordDetailStyles = css`
 
             sl-icon {
                 color: var(--theme-color);
+            }
+
+            .d-flex {
+                min-height: 32px;
             }
         }
     }
