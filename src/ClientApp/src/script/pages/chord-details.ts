@@ -518,7 +518,7 @@ export class ChordDetails extends LitElement {
 
     renderTags(tags: string[]): TemplateResult {
         if (!tags || tags.length === 0) {
-            return html`<span class="comments-muted">None</span>`;
+            return html``;
         }
 
         return html`${repeat(tags, t => t, t => this.renderTag(t))}`;
