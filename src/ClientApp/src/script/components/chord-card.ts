@@ -23,7 +23,7 @@ export class ChordCard extends LitElement {
             <sl-card class="card chord-card">
                 <div slot="header">
                     <div class="card-title d-flex justify-content-between">
-                        <a class="song-name" href="${this.chord.id}" target="${target}">
+                        <a class="song-name" href="/${this.chord.id.toLowerCase()}" target="${target}">
                             ${this.chord.song}
                         </a>
                         ${this.renderHebrewName()}
@@ -44,7 +44,7 @@ export class ChordCard extends LitElement {
         const target = this.newWindow ? "_blank" : "_self";
         if (this.chord && this.chord.hebrewSongName) {
             return html`
-                <a class="hebrew-song-name" href="/${this.chord.id}" target="${target}" lang="he">
+                <a class="hebrew-song-name" href="/${this.chord.id.toLowerCase()}" target="${target}" lang="he">
                     ${this.chord.hebrewSongName}
                 </a>`;
         }

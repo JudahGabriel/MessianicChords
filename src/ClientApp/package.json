@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@thepassle/app-tools": "^1.2.0",
     "@shoelace-style/shoelace": "^2.7.0",
     "@types/node": "^20.5.6",
-    "@vaadin/router": "^1.7.4",
     "lit": "^2.8.0",
     "rxjs": "^7.5.5",
     "workbox-build": "^7.0.0",

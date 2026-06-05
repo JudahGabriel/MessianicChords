@@ -1,6 +1,5 @@
-import { RouterLocation } from "@vaadin/router";
 import { html, LitElement, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from "lit/directives/repeat.js";
@@ -30,6 +29,7 @@ import "@shoelace-style/shoelace/dist/components/animation/animation.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {
+    @property({ attribute: "chord-id"}) chordId: string | null = null;
     @state() chord: ChordSheet | null = null;
     @state() error: string | null = null;
     @state() canGoFullScreen: boolean | null = null;
@@ -47,7 +47,6 @@ export class ChordDetails extends LitElement {
     @state() editingCommentId: string | null = null;
     @state() editCommentContent = "";
 
-    location: RouterLocation | null = null;
     chordChartLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
     readonly chordCache = new ChordCache();
@@ -84,7 +83,7 @@ export class ChordDetails extends LitElement {
 
     chordSheetLoaded(chord: ChordSheet) {
         if (!chord) {
-            this.chordSheetLoadFailed("Unable to load chord sheet. API return null for " + this.location?.params["id"]);
+            this.chordSheetLoadFailed("Unable to load chord sheet. API return null for " + this.chordId);
             return;
         }
 
@@ -100,35 +99,17 @@ export class ChordDetails extends LitElement {
             .filter(n => !!n)
             .join(" ");
         document.title = `${chordName} by ${chord.artist || chord.authors[0] || "Unknown"} - guitar chord chart and lyrics - MessianicChords.com`;
-
-        // Offline helper: see if we have a offline index query string.
-        // If so, fetch the next chord sheet in the list and load that in a moment.
-        const queryParams = new URLSearchParams(this.location?.search || "");
-        const offlineIndexStr = queryParams.get("offline-index") || "";
-        const offlineIndex = parseFloat(offlineIndexStr);
-        if (offlineIndex >= 0) {
-            setTimeout(() => {
-                this.chordService.getByOrderedIndex(offlineIndex)
-                    .then(chordId => {
-                        if (chordId) {
-                            window.location.href = `/${chordId}?offline-index=${offlineIndex+1}`;
-                        }
-                    });
-
-            }, 3000);
-        }
     }
 
     chordSheetLoadFailed(error: unknown) {
         // Couldn't load the chord sheet from the network? See if it's in our local cache.
-        const chordId = this.location?.params["id"] as string;
-        if (!chordId) {
+        if (!this.chordId) {
             this.error = "Couldn't load chord from local cache because we couldn't find an chord ID in the URL.";
             return;
         }
 
         // If the chord sheet is in the cache, cool, let's just use that.
-        this.chordCache.get(chordId)
+        this.chordCache.get(this.chordId)
             .then(chord => chord ? this.chordSheetLoaded(chord) : this.error = `Unable to load chord from API and from cache: ${error}`)
             .catch(cacheError => this.error = `Unable to load chord from API due to error ${error}. Failed to load from cache due to cache error: ${cacheError}`);
     }
@@ -840,7 +821,7 @@ export class ChordDetails extends LitElement {
 
     loadChordSheet(): Promise<ChordSheet> {
         // Grab the chord sheet id
-        const chordId = `ChordSheets/${this.location?.params["id"]}`;
+        const chordId = `chordsheets/${this.chordId}`;
         return this.chordService.getById(chordId);
     }
 

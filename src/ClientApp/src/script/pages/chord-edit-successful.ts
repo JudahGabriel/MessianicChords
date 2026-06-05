@@ -1,11 +1,11 @@
-import { RouterLocation } from "@vaadin/router";
 import { css, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 import { BootstrapBase } from "../common/bootstrap-base";
+import { RouteLocation } from "../common/route-location";
 
 @customElement('chord-edit-successful')
 export class ChordEditSuccessful extends BootstrapBase {
-    location: RouterLocation | null = null; // injected by the router
+    location: RouteLocation | null = null; // injected by the router
 
     static get styles() {
         const localStyles = css`
@@ -40,7 +40,7 @@ export class ChordEditSuccessful extends BootstrapBase {
     }
 
     renderReturnLink(): TemplateResult {
-        const id = this.location?.params["id"];
+        const id = this.location?.params?.["id"];
         if (id) {
             return html`<a class="btn btn-primary btn-lg" href="/chordsheets/${id}">Return to chord sheet</a>`
         }

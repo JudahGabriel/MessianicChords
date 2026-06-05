@@ -23,10 +23,12 @@ export const chordDetailStyles = css`
         font-size: 1.8em;
         margin-bottom: -15px;
         margin-top: 0;
-    }
 
-    @media (max-width: ${SizeMax.Md}px) {
-        .song-name {
+        ${phonesOnly()} {
+            text-align: center;
+        }
+
+        ${tabletsAndSmaller()} {
             font-size: 1.3em;
             margin-bottom: -5px;
         }

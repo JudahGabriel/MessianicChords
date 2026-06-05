@@ -96,6 +96,7 @@ export class AppHome extends LitElement {
         const target = this.isInTabbedPwa ? "_blank" : "_self";
         return html`
             <section class="home-page">
+                <home-jumbotron></home-jumbotron>
                 <div class="search-container">
                 <sl-input
                     id="search-box"
@@ -177,7 +178,7 @@ export class AppHome extends LitElement {
             html`${songName} - ${newChordSheet.key}` :
             html`${songName}`;
         return html`
-            <a class="new-chord-link fw-bold text-truncate" href="${newChordSheet.id}" target="${target}">${title}</a>
+            <a class="new-chord-link fw-bold text-truncate" href="/${newChordSheet.id.toLowerCase()}" target="${target}">${title}</a>
             <sl-divider vertical></sl-divider>
         `;
     }

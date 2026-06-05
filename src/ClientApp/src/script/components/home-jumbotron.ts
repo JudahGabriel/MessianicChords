@@ -14,20 +14,22 @@ export class HomeJumbotron extends LitElement {
   @state() isOnline: boolean = navigator.onLine;
   @state() hideOfflineAlert = false;
 
+  private readonly onAppRouteChanged = (e: Event) => this.routeChanged(e as CustomEvent);
+
   constructor() {
       super();
   }
 
   connectedCallback() {
       super.connectedCallback();
-      window.addEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
+      window.addEventListener("app-route-changed", this.onAppRouteChanged);
       window.addEventListener("online", () => this.isOnline = navigator.onLine);
       this.listenForOfflineStatusChange();
   }
 
   disconnectedCallback() {
       super.disconnectedCallback();
-      window.removeEventListener("vaadin-router-location-changed", e => this.routeChanged(e as CustomEvent));
+      window.removeEventListener("app-route-changed", this.onAppRouteChanged);
   }
 
   async listenForOfflineStatusChange() {
@@ -37,7 +39,7 @@ export class HomeJumbotron extends LitElement {
   }
 
   routeChanged(e: CustomEvent) {
-      this.locationPath = e.detail?.location?.pathname || "";
+      this.locationPath = e.detail?.context?.url?.pathname || "";
   }
 
   get isOnHomePage(): boolean {

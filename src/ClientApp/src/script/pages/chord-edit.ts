@@ -1,7 +1,7 @@
-import { Router, RouterLocation } from "@vaadin/router";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
+import { RouteLocation } from "../common/route-location";
 import { bytesToText, emptyChordSheet } from "../common/utils";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
@@ -31,7 +31,7 @@ export class ChordEdit extends LitElement {
     @state() invalidFieldName: "name" | "artist-authors" | "chords" | "attachments" | "" = "";
     @state() isSubmitting = false;
 
-    location: RouterLocation | null = null; // injected by the router
+    location: RouteLocation | null = null; // injected by the router
     chordService = new ChordService();
 
     static readonly maxAttachmentSizeInBytes = 10000000;
@@ -51,7 +51,7 @@ export class ChordEdit extends LitElement {
                 return;
             }
 
-            const id = this.location?.params["id"];
+            const id = this.location?.params?.["id"];
             if (id) {
                 this.chordService.getById(`chordsheets/${id}`)
                     .then(chordSheet => this.chordSheetLoaded(chordSheet))
@@ -67,7 +67,7 @@ export class ChordEdit extends LitElement {
         this.chord = chordSheet;
     }
 
-    chordSheetLoadFailed(error: any) {
+    chordSheetLoadFailed(error: unknown) {
         this.error = error ? `${error}` : "Unable to load chord sheet";
     }
 
@@ -428,7 +428,7 @@ export class ChordEdit extends LitElement {
 
         const pastedText = e.clipboardData?.getData("text");
         if (pastedText) {
-            const chordsElement = this.shadowRoot?.querySelector("#chord-chart-input") as any;
+            const chordsElement = this.shadowRoot?.querySelector("#chord-chart-input") as HTMLTextAreaElement;
             if (chordsElement) {
                 chordsElement.value = pastedText.replace(/ {2}/g, " ");
                 e.preventDefault();
@@ -450,8 +450,7 @@ export class ChordEdit extends LitElement {
         if (this.validateForm()) {
             this.isSubmitting = true;
             try {
-                console.log("submitting chord sheet", this.chord);
-                await this.chordService.submitChordEdit(this.chord!, this.attachments);
+                await this.chordService.submitChordEdit(this.chord, this.attachments);
                 this.navigateToSubmissionSuccessful();
             } catch (error: unknown) {
                 console.log("Error submitting chord sheet", error);
@@ -468,9 +467,9 @@ export class ChordEdit extends LitElement {
         }
 
         if (this.isNewChordSheet) {
-            Router.go("/ChordSheets/new/success");
+            window.location.href = "/chordsheets/new/success";
         } else {
-            Router.go(this.chord.id + "/edit/success");
+            window.location.href = `/${this.chord.id}/edit/success`;
         }
     }
 
