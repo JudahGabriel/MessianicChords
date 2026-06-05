@@ -139,6 +139,10 @@ export const chordDetailStyles = css`
 
         .star-icon {
             transition: color 0.2s;
+            
+            ${phonesOnly()} {
+                transform: translateY(4px);
+            }
         }
 
         .star-icon[name='star-fill'] {
