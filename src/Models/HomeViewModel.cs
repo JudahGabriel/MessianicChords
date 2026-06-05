@@ -47,9 +47,9 @@ public class HomeViewModel
     /// <param name="order">Must be 'newest', 'songs', 'artists', or 'random'.</param>
     public void UpdateFromBrowse(string order)
     {
-        if (order != "newest" && order != "songs" && order != "artists" && order != "random")
+        if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random")
         {
-            throw new ArgumentException("Order must be 'newest', 'songs', 'artists', or 'random'", nameof(order));
+            throw new ArgumentException("Order must be 'newest', 'songs', 'artists', 'tags' or 'random'", nameof(order));
         }
 
         this.Description = $"Browse chord charts for songs by {order}";

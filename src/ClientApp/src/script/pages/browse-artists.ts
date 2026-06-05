@@ -8,6 +8,8 @@ import { BootstrapBase } from "../common/bootstrap-base";
 import { BrowseSongs } from "./browse-songs";
 import { repeat } from "lit/directives/repeat.js";
 import { browseArtistsStyles } from "./browse-artists.styles";
+import "@shoelace-style/shoelace/dist/components/select/select.js";
+import "@shoelace-style/shoelace/dist/components/option/option.js";
 
 // This component is the same as browse songs, only the grouping is by artist, rather than by first letter of song name.
 // So, let's just inherit from BrowseSongs.
@@ -37,22 +39,26 @@ export class BrowseArtists extends BrowseSongs {
 
     renderAllArtistsDropdown(): TemplateResult {
         return html`
-            <div class="row jump-to-artist mb-4 mb-sm-0">
-                <div class="col-lg-2 col-md-4 col-sm-4 offset-lg-9 offset-md-8 offset-sm-8">
-                    <label for="artistDataList" class="form-label visually-hidden">Jump to artist</label>
-                    <input class="form-control" list="artistOptions" id="artistDataList" placeholder="Jump to artist"
-                        @input="${this.jumpToArtistChanged}">
-                    <datalist id="artistOptions">
-                        ${repeat(this.artists, a => a, a => this.renderArtist(a))}
-                    </datalist>
-                </div>
+            <div class="artist-header-row mb-4 mb-sm-0">
+                <h2 class="highlight mb-0">Songs By Artist</h2>
+                <sl-select
+                    id="artistSelect"
+                    class="artist-jump-select"
+                    placeholder="Jump to artist"
+                    @sl-change="${this.jumpToArtistChanged}">
+                    ${repeat(this.artists, a => a, a => this.renderArtist(a))}
+                </sl-select>
             </div>
         `;
     }
 
     renderArtist(artistName: string): TemplateResult {
+        if (!artistName) {
+            return html``;
+        }
+        const artistValue = encodeURIComponent(artistName);
         return html`
-            <option value="${artistName}"></option>
+            <sl-option value="${artistValue}">${artistName}</sl-option>
         `;
     }
 
@@ -77,11 +83,12 @@ export class BrowseArtists extends BrowseSongs {
         }
     }
 
-    jumpToArtistChanged(e: InputEvent) {
+    jumpToArtistChanged(e: Event) {
         const input = e.target as HTMLInputElement;
-        // If we typed or selected an artist, jump to him.
-        if (input && input.value.length > 3 && this.artists.includes(input.value)) {
-            window.location.href = `/artist/${encodeURIComponent(input.value)}`;
+        const selectedArtist = input?.value ? decodeURIComponent(input.value) : "";
+        // If we selected an artist, jump to them.
+        if (selectedArtist && this.artists.includes(selectedArtist)) {
+            window.location.href = `/artist/${encodeURIComponent(selectedArtist)}`;
         }
     }
 }

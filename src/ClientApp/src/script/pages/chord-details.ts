@@ -145,9 +145,7 @@ export class ChordDetails extends LitElement {
 
         return html`
             <section class="container">
-                <div>
-                    ${content}
-                </div>
+                ${content}
             </section>
             ${this.renderPrintableScreenshots()}
         `;
@@ -213,7 +211,7 @@ export class ChordDetails extends LitElement {
         return html`
             <!-- Song details -->
             <div class="${headerClass}">
-                <div class="song-artist-and-title-container d-flex justify-content-between align-items-baseline mb-sm-4">
+                <div class="song-artist-and-title-container mb-sm-4">
                     <h1 class="song-name">${chord.song} <span class="hebrew-song-name" lang="he">${chord.hebrewSongName}</span></h1>
                     <h5 class="artist-author-name">
                         <a href="/artist/${encodeURIComponent(chord.artist || chord.authors[0])}">
@@ -525,11 +523,12 @@ export class ChordDetails extends LitElement {
     }
 
     renderTag(tag: string): TemplateResult {
+        const tagUrl = `/browse/tags?tag=${encodeURIComponent(tag)}`;
         return html`
-            <span class="tag-chip">
+            <a class="tag-chip" href="${tagUrl}">
                 <sl-icon name="tag" label="Tag"></sl-icon>
                 <span>${tag}</span>
-            </span>
+            </a>
         `;
     }
 

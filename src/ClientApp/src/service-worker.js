@@ -46,6 +46,7 @@ pageCache({
     "/",
     "/browse/newest",
     "/browse/songs",
+    "/browse/tags",
     "/browse/artists",
     "/artist/_",
     "/ChordSheets/_"

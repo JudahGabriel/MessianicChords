@@ -1,5 +1,5 @@
 import { css } from "lit";
-import { BreakpointMax, mediaQuery } from "./breakpoints";
+import { BreakpointMax, mediaQuery, phonesOnly } from "./breakpoints";
 
 export const sharedStyles = css`
     :host {
@@ -10,6 +10,16 @@ export const sharedStyles = css`
         --highlight-background: linear-gradient(rgb(255, 214, 94) 0%, #febf04 100%);
         --highlight-border-radius: 60px 30px 35px 15px / 25px 38px 66px 53px;
         --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+
+        @media (max-width: 575px) {
+            padding: 0;
+        }
     }
 
     h1, h2, h3, h4 {
@@ -39,6 +49,13 @@ export const sharedStyles = css`
         background: var(--highlight-background);
         box-shadow: var(--highlight-box-shadow);
         transform: rotateZ(-1deg);
+    }
+
+    h2.highlight {
+        ${phonesOnly()} {
+            margin-left: 8px;
+            padding: 0 8px;
+        }
     }
 
     input::placeholder,

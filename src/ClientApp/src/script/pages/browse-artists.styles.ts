@@ -1,17 +1,21 @@
 import { css } from "lit";
-import { SizeMax } from "../common/constants";
+import { phonesOnly } from "../common/breakpoints";
 
 export const browseArtistsStyles = css`
-    .jump-to-artist {
-        transform: translateY(32px);
-        margin-top: -32px;
-    }
+	.artist-header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
 
-    /* On small phones, don't shift it into the artist heading */
-    @media (max-width: ${SizeMax.Xs}px) {
-        .jump-to-artist {
-            transform: none;
-            margin-top: initial;
+	.artist-jump-select {
+		min-width: 220px;
+		max-width: 320px;
+
+        ${phonesOnly()} {
+            margin-left: 8px;
         }
-    }
+	}
 `;

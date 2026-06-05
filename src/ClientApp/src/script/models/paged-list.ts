@@ -16,6 +16,14 @@ export class PagedList<T> {
     }
 
     /**
+     * Returns an empty PagedList.
+     * @returns 
+     */
+    static empty<T>(): PagedList<T> {
+        return new PagedList<T>(() => Promise.resolve({ skip: 0, take: 0, results: [], totalCount: 0 }));
+    }
+
+    /**
      * Gets whether the list is currently fetching the next chunk of items.
      */
     get isLoading(): boolean {

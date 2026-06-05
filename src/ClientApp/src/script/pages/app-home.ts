@@ -122,6 +122,8 @@ export class AppHome extends LitElement {
                         <sl-divider vertical></sl-divider>
                         <a class="fw-bold" href="/browse/artists" target="${target}">Artists</a>
                         <sl-divider vertical></sl-divider>
+                        <a class="fw-bold" href="/browse/tags" target="${target}">Tags</a>
+                        <sl-divider vertical></sl-divider>
                         <a class="fw-bold" href="/browse/random" target="${target}">Random</a>
                     </div>
                 </div>

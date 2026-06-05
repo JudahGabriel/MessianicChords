@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MessianicChords.Controllers
 {
@@ -233,6 +234,8 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet]
+        [HttpPost]
+        [Authorize(Roles = AppUser.AdminRole)]
         public Task<SyncRecord> Sync([FromServices]GoogleDriveSync sync)
         {
             return sync.Start();
@@ -316,6 +319,7 @@ namespace MessianicChords.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> EditComment([FromBody] EditCommentRequest request)
         {
             var currentUser = await this.GetUserAsync();
@@ -365,12 +369,14 @@ namespace MessianicChords.Controllers
         /// <param name="request">The chord edit request.</param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize]
         public Task SubmitEdit(ChordSubmissionRequest request, [FromServices]ChordSubmissionService submissionService)
         {
             return submissionService.Create(request);
         }
 
         [HttpGet]
+        [Authorize(Roles = AppUser.AdminRole)]
         public async Task<string> ApproveRejectSubmission(
             [FromQuery] ChordSubmissionApproval decision,
             [FromQuery] string token,
@@ -401,7 +407,7 @@ namespace MessianicChords.Controllers
                     .ToListAsync();
             }
 
-            return new List<ChordSheet>(0);
+            return [];
         }
 
         private static string? NormalizeChordSheetId(string? chordSheetId)
@@ -525,17 +531,10 @@ namespace MessianicChords.Controllers
             throw new ArgumentException("Chord sheet had neither plain text chords nor Google Doc ID");
         }
 
-        public class AddCommentRequest
-        {
-            public string ChordSheetId { get; set; } = string.Empty;
-            public string Content { get; set; } = string.Empty;
-        }
+    }
 
-        public class EditCommentRequest
-        {
-            public string ChordSheetId { get; set; } = string.Empty;
-            public string CommentId { get; set; } = string.Empty;
-            public string Content { get; set; } = string.Empty;
-        }
+    public class ChavahSong
+    {
+        public List<string> Tags { get; set; } = new List<string>();
     }
 }

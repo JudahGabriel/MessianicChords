@@ -1,19 +1,8 @@
 ﻿using MessianicChords.Common;
 using MessianicChords.Models;
-using MessianicChords.Services;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace MessianicChords.Controllers
@@ -95,7 +84,7 @@ namespace MessianicChords.Controllers
         [HttpGet("browse/{order}")]
         public IActionResult Browse(string order)
         {
-            if (order != "newest" && order != "songs" && order != "artists" && order != "random")
+            if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random")
             {
                 return Redirect("/");
             }

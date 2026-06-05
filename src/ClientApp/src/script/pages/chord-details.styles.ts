@@ -1,6 +1,6 @@
 import { css } from "lit";
 import { SizeMax } from "../common/constants";
-import { tabletsAndSmaller } from "../common/breakpoints";
+import { phonesOnly, tabletsAndSmaller } from "../common/breakpoints";
 
 export const chordDetailStyles = css`
     :host {
@@ -16,11 +16,7 @@ export const chordDetailStyles = css`
         }
     }
 
-    .container {
-        @media (max-width: 575px) {
-            padding: 0;
-        }
-    }
+
 
     .song-name {
         font-family: var(--title-font);
@@ -47,8 +43,9 @@ export const chordDetailStyles = css`
         }
 
         .chord-chart {
-            flex: 0 0 auto;
+            flex: 0 1 66.66666667%;
             width: 66.66666667%;
+            min-width: 0;
 
             /** On tablets and smaller, make the chord chart take up the full width */
             ${tabletsAndSmaller()} {
@@ -59,6 +56,15 @@ export const chordDetailStyles = css`
 
     .song-artist-and-title-container {
         padding: 4px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+
+        ${phonesOnly()} {
+            flex-direction: column;
+            align-items: center;
+        }
     }
 
     .song-name,
@@ -306,6 +312,8 @@ export const chordDetailStyles = css`
     }
 
     .sidebar {
+        flex: 1 1 33.33333333%;
+        min-width: 0;
         margin-top: 13px;
         margin-bottom: 16px;
 
@@ -350,10 +358,11 @@ export const chordDetailStyles = css`
             padding: 4px 10px 4px 14px;
             font-family: var(--title-font);
             font-size: 0.85em;
-            line-height: 1.2;
             position: relative;
             isolation: isolate;
             clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+            color: inherit;
+            text-decoration: none;
         }
 
         .tag-chip::before {
@@ -381,6 +390,15 @@ export const chordDetailStyles = css`
         .tag-chip sl-icon {
             font-size: 0.95em;
             color: var(--theme-color);
+        }
+
+        .tag-chip:hover {
+            background: var(--sl-color-neutral-200);
+        }
+
+        .tag-chip:focus-visible {
+            outline: 2px solid var(--theme-color);
+            outline-offset: 2px;
         }
 
         .comments-section {

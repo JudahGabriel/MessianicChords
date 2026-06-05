@@ -67,6 +67,7 @@ export class AppHeader extends LitElement {
                         <a href="/" @click="${this.closeMenu}">Home</a>
                         <a href="/browse/songs" @click="${this.closeMenu}">Songs</a>
                         <a href="/browse/artists" @click="${this.closeMenu}">Artists</a>
+                        <a href="/browse/tags" @click="${this.closeMenu}">Tags</a>
                         <a href="/browse/random" @click="${this.closeMenu}">Random</a>
                     </div>
 
