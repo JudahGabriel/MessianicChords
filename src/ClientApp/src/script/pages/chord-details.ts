@@ -213,6 +213,12 @@ export class ChordDetails extends LitElement {
 
                 <!-- Sidebar -->
                 <div class="sidebar d-flex flex-column gap-5 d-print-none">
+                    ${chord.albumArtUrl ? html`
+                        <sl-card class="card-header w-100 album-art-card">
+                            <img class="album-art-image" src="${chord.albumArtUrl}" alt="Album art for ${chord.song}" loading="lazy" />
+                        </sl-card>
+                    ` : html``}
+
                     <sl-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">

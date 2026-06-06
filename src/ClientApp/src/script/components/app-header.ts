@@ -65,6 +65,7 @@ export class AppHeader extends LitElement {
 
                     <div class="nav-links ${this.menuOpen ? "open" : ""}">
                         <a href="/" @click="${this.closeMenu}">Home</a>
+                        <a href="/browse/newest" @click="${this.closeMenu}">Newest</a>
                         <a href="/browse/songs" @click="${this.closeMenu}">Songs</a>
                         <a href="/browse/artists" @click="${this.closeMenu}">Artists</a>
                         <a href="/browse/tags" @click="${this.closeMenu}">Tags</a>

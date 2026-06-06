@@ -74,12 +74,12 @@ export const chordCardStyles = css`
 
     .overlay-top {
         top: 0;
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.12) 100%);
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.0) 100%);
     }
 
     .overlay-bottom {
         bottom: 0;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 100%);
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.72) 0%, rgba(255, 0, 0, 0.0) 100%);
     }
 
     .song-name {

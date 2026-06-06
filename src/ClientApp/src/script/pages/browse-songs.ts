@@ -1,14 +1,13 @@
 import {  html, LitElement, TemplateResult } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement } from "lit/decorators.js";
-import "../components/chord-card";
+import "../components/chord-collection";
 import "../components/chord-card-loading";
 import "../components/load-more-button";
 import { ChordSheet, PagedResult } from "../models/interfaces";
 import { PagedList } from "../models/paged-list";
 import { ChordService } from "../services/chord-service";
 import { sharedStyles } from "../common/shared.styles";
-import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 
 type ChordsByLetter = { [letter: string]: ChordSheet[] };
 
@@ -19,7 +18,7 @@ export class BrowseSongs extends LitElement {
     protected readonly chordService = new ChordService();
     readonly allChords: PagedList<ChordSheet>;
 
-    static styles = [bootstrapGridStyles, sharedStyles];
+    static styles = [sharedStyles];
 
     constructor() {
         super();
@@ -105,17 +104,21 @@ export class BrowseSongs extends LitElement {
             return html``;
         }
 
+        const chordList = this.toPagedList(chords);
+
         return html`
             <h3 class="highlight">${letter}</h3>
-            <div class="d-flex flex-wrap justify-content-evenly mb-5">
-                ${repeat(chords, c => c.id, c => this.renderChord(c))}
+            <div class="mb-5">
+                <chord-collection .chords="${chordList}"></chord-collection>
             </div>
         `;
     }
 
-    renderChord(chord: ChordSheet): TemplateResult {
-        return html`
-            <chord-card .chord="${chord}"></chord-card>
-        `;
+    private toPagedList(chords: ChordSheet[]): PagedList<ChordSheet> {
+        const pagedList = PagedList.empty<ChordSheet>();
+        pagedList.items.push(...chords);
+        pagedList.totalCount = chords.length;
+        pagedList.hasMoreItems = false;
+        return pagedList;
     }
 }

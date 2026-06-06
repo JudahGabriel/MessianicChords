@@ -18,12 +18,8 @@ export const indexStyles = css`
         }
     }
 
-    home-jumbotron {
-        display: block;
-
-        ${tabletsAndSmaller()} {
-            padding-bottom: 16px;
-        }
+    app-footer {
+        z-index: var(--sl-z-index-drawer);
     }
 
     ${tabletsAndSmaller()} {

@@ -323,6 +323,19 @@ export const chordDetailStyles = css`
         margin-top: 13px;
         margin-bottom: 16px;
 
+        .album-art-card {
+            --padding: 0;
+            overflow: hidden;
+        }
+
+        .album-art-image {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: var(--sl-color-neutral-100);
+        }
+
         sl-card {
             --padding: 10px;
             --border-width: 0;

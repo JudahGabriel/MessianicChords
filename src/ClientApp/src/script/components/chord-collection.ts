@@ -34,6 +34,9 @@ export class ChordCollection extends LitElement {
             if (this.chords) {
                 this.chords.addEventListener("changed", this.chordsChangedHandler);
             }
+
+            // Sync immediately so pre-populated lists render without waiting for a "changed" event.
+            this.chordsChanged();
         }
     }
 

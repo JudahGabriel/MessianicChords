@@ -1,11 +1,11 @@
-import { css, html, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { BootstrapBase } from '../common/bootstrap-base';
-import { PagedList } from '../models/paged-list';
+import { css, html, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { BootstrapBase } from "../common/bootstrap-base";
+import { PagedList } from "../models/paged-list";
 
-@customElement('load-more-button')
+@customElement("load-more-button")
 export class LoadMoreButton extends BootstrapBase {
-    @property({ type: Object }) list: PagedList<any> | null = null;
+    @property({ type: Object }) list: PagedList<unknown> | null = null;
 
     static get styles() {
         const localStyles = css`
@@ -34,20 +34,20 @@ export class LoadMoreButton extends BootstrapBase {
         }
 
         return html`
-            <button class="btn btn-secondary" type="button" @click="${this.getNextChunk}">
+            <sl-button type="button" @click="${this.getNextChunk}">
                 Load more...
-            </button>
+            </sl-button>
         `;
     }
 
     renderLoading(): TemplateResult {
         return html`
-            <button class="btn btn-secondary disabled" type="button">
+            <sl-button type="button" disabled>
                 <span class="spinner-border" role="status">
                     <span class="visually-hidden"></span>
                 </span>
                 <span>Loading...</span>
-            </button>
+            </sl-button>
         `;
     }
 

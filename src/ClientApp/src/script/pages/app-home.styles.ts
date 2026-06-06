@@ -59,29 +59,17 @@ export const appHomeStyles = css`
     .new-chords {
         justify-content: center;
         flex-direction: row;
-        align-items: center;
-        gap: 0.25em;
-    }
-
-    .new-chords sl-divider {
-        height: 1em; 
-        --spacing: 0;
+        align-items: stretch;
+        gap: 0.75rem;
+        flex-wrap: wrap;
     }
 
     ${phonesOnly()} {
         .new-chords {
             flex-direction: column;
-            gap: 0.5em;
+            gap: 0.75rem;
             align-items: center;
         }
-
-        .new-chords sl-divider {
-            display: none;
-        }
-    }
-
-    .new-chords sl-divider:last-of-type {
-        display: none;
     }
 
     .new-chords-placeholder-container {
@@ -91,17 +79,6 @@ export const appHomeStyles = css`
     ${phonesOnly()} {
         .new-chords-placeholder-container {
             width: 100%;
-        }
-    }
-
-    ${phonesOnly()} {
-        .new-chords a {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            width: 100%;
-            display: inline-block;
-            max-width: 300px;
         }
     }
 
@@ -127,5 +104,13 @@ export const appHomeStyles = css`
     .browse-by-container sl-divider {
         height: 1em;
         --spacing: 0;
+    }
+
+    home-jumbotron {
+        display: block;
+
+        ${tabletsAndSmaller()} {
+            padding-bottom: 16px;
+        }
     }
 `;
