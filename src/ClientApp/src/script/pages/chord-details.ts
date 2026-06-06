@@ -46,6 +46,7 @@ export class ChordDetails extends LitElement {
     @state() commentBusy = false;
     @state() editingCommentId: string | null = null;
     @state() editCommentContent = "";
+    @state() isAudioPlaying = false;
 
     chordChartLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
@@ -88,6 +89,7 @@ export class ChordDetails extends LitElement {
         }
 
         this.chord = chord;
+        this.isAudioPlaying = false;
         this.isWebPublished = !!chord.publishUri;
         this.hasScreenshots = chord.screenshots.length > 0;
         this.cacheChordForOfflineSearch(chord);
@@ -348,15 +350,20 @@ export class ChordDetails extends LitElement {
         const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
         const fontSizeClass = chord.chords ? "" : "d-none";
         const starTitle = this.isCurrentChordStarred() ? "You already have starred this chord chart. Tap to unstar." : "Star this chord chart";
+        const hasAudio = this.hasAudioPlayer(chord);
+        const playPauseTooltip = this.isAudioPlaying
+            ? "Pause the audio recording for this song"
+            : "Play the audio recording for this song";
+        const playPauseIcon = this.isAudioPlaying ? "pause-fill" : "play-fill";
         return html`
             <div class="row d-print-none">
                 <div class="col-12">
                     <div class="btn-toolbar">
                         <sl-button-group>
 
-                            <sl-tooltip content="Play the audio recording for this song" hoist>
-                                <sl-button size="${btnSize}" @click="${this.playMedia}">
-                                    <sl-icon name="play-fill"></sl-icon>
+                            <sl-tooltip content="${playPauseTooltip}" hoist>
+                                <sl-button size="${btnSize}" @click="${this.toggleMediaPlayback}" ?disabled="${!hasAudio}">
+                                    <sl-icon name="${playPauseIcon}"></sl-icon>
                                 </sl-button>
                             </sl-tooltip>
 
@@ -928,7 +935,16 @@ export class ChordDetails extends LitElement {
             return html``;
         }
 
-        return html`<audio controls preload="none" src="https://messianicradio.com/api/songs/getmp3byid?songId=${chavahSongId}"></audio>`;
+        return html`
+            <audio
+                controls
+                preload="none"
+                src="https://messianicradio.com/api/songs/getmp3byid?songId=${chavahSongId}"
+                @play="${this.handleAudioPlay}"
+                @pause="${this.handleAudioPause}"
+                @ended="${this.handleAudioPause}">
+            </audio>
+        `;
     }
 
     private hasAudioPlayer(chord: ChordSheet): boolean {
@@ -945,12 +961,24 @@ export class ChordDetails extends LitElement {
         return chavahUri.searchParams.get("song");
     }
 
-    playMedia(): void {
+    toggleMediaPlayback(): void {
         const audio = this.shadowRoot?.querySelector("audio");
         if (audio) {
-            audio.play();
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
         }
     }
+
+    private handleAudioPlay = (): void => {
+        this.isAudioPlaying = true;
+    };
+
+    private handleAudioPause = (): void => {
+        this.isAudioPlaying = false;
+    };
 
     changeFontSize(amount: number) {
         const newSize = Math.max(6, Math.min(48, this.fontSize + amount));
