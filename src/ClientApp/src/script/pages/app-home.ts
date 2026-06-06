@@ -8,8 +8,6 @@ import { BehaviorSubject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { appHomeStyles } from "./app-home.styles";
 import { sharedStyles } from "../common/shared.styles";
-import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
-import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 import "@shoelace-style/shoelace/dist/components/input/input.js";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
@@ -20,7 +18,7 @@ import { PagedList } from "../models/paged-list";
 @customElement("app-home")
 export class AppHome extends LitElement {
 
-    static styles = [sharedStyles, bootstrapGridStyles, bootstrapUtilities, appHomeStyles];
+    static styles = [sharedStyles, appHomeStyles];
 
     @state() newChords: ChordSheet[] = [];
     @state() newChordsSkip = 0;
@@ -130,7 +128,7 @@ export class AppHome extends LitElement {
                 </div>
 
                 <div class="d-flex flex-column">
-                    <div class="d-flex justify-content-center mb-1 mb-sm-0">
+                    <div class="d-flex justify-content-center">
                         New chord charts 
                         <sl-icon-button class="load-more-chords-btn" name="arrow-clockwise" label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}></sl-icon-button>
                     </div>
@@ -139,8 +137,8 @@ export class AppHome extends LitElement {
                     </div>
                 </div>                
 
-                <div class="d-flex justify-content-center">
-                    <div class="me-1">Got chords to share?</div>
+                <div class="d-flex justify-content-center gap-2">
+                    <div>Got chords to share?</div>
                     <a class="fw-bold" href="/chordsheets/new" target="${target}">Upload</a>
                 </div>
             </nav>

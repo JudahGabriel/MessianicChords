@@ -140,7 +140,7 @@ public class GoogleDriveSync
                 // COMMENTED OUT, NOTE TO SELF: Unfortunately, PublishToWeb doesn't work. Google Docs gives an error saying authentication is required. To fix this, we'll need to authorize: https://stackoverflow.com/questions/59148718/google-drive-api-publish-document-and-get-published-link
                 // chordSheet.PublishUri = await TryPublishToWeb(docId);
                 await dbSession.StoreAsync(chordSheet);
-                syncRecord.Log.Add($"Added {docId} as a new ChordSheet. Added it as {chordSheet.Id}, {chordSheet.GetDisplayName()}.");
+                syncRecord.Log.Add($"Added {docId} as a new ChordSheet. Added it as {chordSheet.Id?.ToLower()}, {chordSheet.GetDisplayName()}.");
                 syncRecord.AddedDocs.Add(chordSheet.GetDisplayName());
             }
         }
@@ -185,7 +185,7 @@ public class GoogleDriveSync
             chordSheet.HasFetchedPlainTextContents = false; // So that it will be fetched again in the near future.
             chordSheet.PlainTextContents = existingPlainTextContents; // Use existing PlainTextContents until we can refetch them later from the updated doc.
             chordSheet.HasFetchedScreenshots = false; // So that it will be fetched again in the near future by ScreenshotGenerator.
-            syncRecord.Log.Add($"Updated {chordSheet.Id}, {chordSheet.GetDisplayName()}");
+            syncRecord.Log.Add($"Updated {chordSheet.Id?.ToLower()}, {chordSheet.GetDisplayName()}");
             syncRecord.UpdatedDocs.Add(chordSheet.GetDisplayName());
         }
         await dbSession.SaveChangesAsync();

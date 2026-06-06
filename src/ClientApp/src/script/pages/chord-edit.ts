@@ -1,7 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
-import { RouteLocation } from "../common/route-location";
 import { bytesToText, emptyChordSheet } from "../common/utils";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
@@ -22,7 +21,7 @@ import { chordEditStyles } from "./chord-edit.styles";
 @customElement("chord-edit")
 export class ChordEdit extends LitElement {
     static styles = [chordEditStyles];
-
+    @property({ attribute: "chord-id" }) chordId: string | null = null;
     @state() isNewChordSheet = false;
     @state() chord: ChordSheet | null = null;
     @state() error: string | null = null;
@@ -31,7 +30,6 @@ export class ChordEdit extends LitElement {
     @state() invalidFieldName: "name" | "artist-authors" | "chords" | "attachments" | "" = "";
     @state() isSubmitting = false;
 
-    location: RouteLocation | null = null; // injected by the router
     chordService = new ChordService();
 
     static readonly maxAttachmentSizeInBytes = 10000000;
@@ -51,9 +49,8 @@ export class ChordEdit extends LitElement {
                 return;
             }
 
-            const id = this.location?.params?.["id"];
-            if (id) {
-                this.chordService.getById(`chordsheets/${id}`)
+            if (this.chordId) {
+                this.chordService.getById(`chordsheets/${this.chordId.toLowerCase()}`)
                     .then(chordSheet => this.chordSheetLoaded(chordSheet))
                     .catch(error => this.chordSheetLoadFailed(error));
             } else {
@@ -72,7 +69,9 @@ export class ChordEdit extends LitElement {
     }
 
     render(): TemplateResult {
-        return html`${this.renderLoadingOrDetails()}`;
+        return html`
+            ${this.renderLoadingOrDetails()}
+        `;
     }
 
     renderLoadingOrDetails(): TemplateResult {
@@ -469,7 +468,7 @@ export class ChordEdit extends LitElement {
         if (this.isNewChordSheet) {
             window.location.href = "/chordsheets/new/success";
         } else {
-            window.location.href = `/${this.chord.id}/edit/success`;
+            window.location.href = `/${this.chord.id.toLowerCase()}/edit/success`;
         }
     }
 

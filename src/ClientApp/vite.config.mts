@@ -1,6 +1,7 @@
 
-import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig, PluginOption } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 const outDir = "../wwwroot";
@@ -18,7 +19,7 @@ export default defineConfig({
             registerType: "autoUpdate",
             injectRegister: "inline",
             manifest: false,
-            strategies: 'injectManifest', // inject the file manifest into the service worker
+            strategies: "injectManifest", // inject the file manifest into the service worker
             srcDir: "src",
             filename: "service-worker.js",
             workbox: {
@@ -32,9 +33,11 @@ export default defineConfig({
                 ]
             },
             devOptions: {
-                type: 'module',
+                type: "module",
                 enabled: false
             }
-        })
+        }),
+
+        visualizer() as PluginOption,
     ]
-})
+});

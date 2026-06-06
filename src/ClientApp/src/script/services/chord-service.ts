@@ -67,10 +67,10 @@ export class ChordService extends ApiServiceBase {
             const uint8Array = encoder.encode(transposedChords);
             const binaryString = String.fromCharCode(...uint8Array);
             const base64TransposedChords = btoa(binaryString);
-            return `${this.apiUrl}/chords/download?id=${chord.id}&transposedLyricsBase64=${encodeURIComponent(base64TransposedChords)}`;
+            return `${this.apiUrl}/chords/download?id=${chord.id.toLowerCase()}&transposedLyricsBase64=${encodeURIComponent(base64TransposedChords)}`;
         }
 
-        return `${this.apiUrl}/chords/download?id=${chord.id}`;
+        return `${this.apiUrl}/chords/download?id=${chord.id.toLowerCase()}`;
     }
 
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
@@ -166,7 +166,7 @@ class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
             return chord.downloadUrl;
         }
 
-        return `${this.apiUrl}/chords/download?id=${chord.id}`;
+        return `${this.apiUrl}/chords/download?id=${chord.id.toLowerCase()}`;
     }
 
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {

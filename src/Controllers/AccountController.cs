@@ -6,21 +6,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Raven.Client.Documents.BulkInsert;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using Raven.Identity;
 using Raven.StructuredLogger;
-using SendGrid.Helpers.Mail;
-using Sparrow.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Reactive;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace MessianicChords.Controllers
 {
@@ -29,6 +20,7 @@ namespace MessianicChords.Controllers
     public class AccountController : RavenController
     {
         private readonly UserManager<AppUser> userManager;
+        private readonly RoleManager<Raven.Identity.IdentityRole> roleManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly EmailService emailSender;
         private readonly BunnyCdnManagerService bunnyCdn;
@@ -36,19 +28,37 @@ namespace MessianicChords.Controllers
         
         public AccountController(
             UserManager<AppUser> userManager,
+            RoleManager<Raven.Identity.IdentityRole> roleManager,
             SignInManager<AppUser> signInManager,
             IAsyncDocumentSession asyncDocumentSession,
-            ILogger<AccountController> logger,
             EmailService emailSender,
             BunnyCdnManagerService bunnyCdn,
-            IOptionsMonitor<AppSettings> appOptions)
+            IOptionsMonitor<AppSettings> appOptions,
+            ILogger<AccountController> logger)
             : base(asyncDocumentSession, logger)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.emailSender = emailSender;
             this.bunnyCdn = bunnyCdn;
             this.appOptions = appOptions.CurrentValue;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFoo([FromServices] AlbumArtFetcher albumArtFetcher)
+        {
+            var charts = await this.DbSession.Query<ChordSheet>().Take(2100).ToListAsync();
+            foreach (var chart in charts)
+            {
+                if (chart.AlbumArtUrl == null)
+                {
+                    chart.AlbumArtUrl = await albumArtFetcher.TryFetchAlbumArt(chart);
+                }
+            }
+
+            await this.DbSession.SaveChangesAsync();
+            return Ok("yes");
         }
 
         /// <summary>

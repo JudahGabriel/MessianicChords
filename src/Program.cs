@@ -7,6 +7,7 @@ using Raven.DependencyInjection;
 using Raven.Identity;
 using Raven.Migrations;
 using Raven.StructuredLogger;
+using System.Net;
 
 namespace MessianicChords;
 
@@ -50,9 +51,19 @@ public class Program
         builder.Services.AddTransient<PdfToPng>();
         builder.Services.AddTransient<BunnyCdnManagerService>();
         builder.Services.AddTransient<ChordSubmissionService>();
+        builder.Services.AddSingleton<AlbumArtFetcher>();
         builder.Services.AddHostedService<GoogleDriveRavenSyncService>();
         builder.Services.AddHostedService<ThumbnailFetcher>();
         builder.Services.AddHostedService<ScreenshotGenerator>();
+        builder.Services.AddHttpClient("AlbumArtRedirectLookup", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(10);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            AllowAutoRedirect = false,
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+        });
         builder.Services.AddHttpClient();
 
         // Configure the HTTP request pipeline.

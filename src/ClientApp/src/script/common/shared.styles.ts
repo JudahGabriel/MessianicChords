@@ -69,4 +69,136 @@ export const sharedStyles = css`
             text-align: center;
         }
     }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .d-flex {
+        display: flex !important;
+    }
+
+    .flex-column {
+        flex-direction: column !important;
+    }
+
+    .gap-0 {
+        gap: 0 !important;
+    }
+
+    .gap-1 {
+        gap: 0.25rem !important;
+    }
+
+    .gap-2 {
+    gap: 0.5rem !important;
+    }
+
+    .gap-3 {
+        gap: 1rem !important;
+    }
+
+    .gap-4 {
+        gap: 1.5rem !important;
+    }
+
+    .gap-5 {
+        gap: 3rem !important;
+    }
+
+    .justify-content-start {
+        justify-content: flex-start !important;
+    }
+
+    .justify-content-end {
+        justify-content: flex-end !important;
+    }
+
+    .justify-content-center {
+        justify-content: center !important;
+    }
+
+    .justify-content-between {
+        justify-content: space-between !important;
+    }
+
+    .justify-content-around {
+        justify-content: space-around !important;
+    }
+
+    .justify-content-evenly {
+        justify-content: space-evenly !important;
+    }
+
+    .align-items-start {
+        align-items: flex-start !important;
+    }
+
+    .align-items-end {
+        align-items: flex-end !important;
+    }
+
+    .align-items-center {
+        align-items: center !important;
+    }
+
+    .align-items-baseline {
+        align-items: baseline !important;
+    }
+
+    .align-items-stretch {
+        align-items: stretch !important;
+    }
+
+    .align-content-start {
+        align-content: flex-start !important;
+    }
+
+    .align-content-end {
+        align-content: flex-end !important;
+    }
+
+    .align-content-center {
+        align-content: center !important;
+    }
+
+    .align-content-between {
+        align-content: space-between !important;
+    }
+
+    .align-content-around {
+        align-content: space-around !important;
+    }
+
+    .align-content-stretch {
+        align-content: stretch !important;
+    }
+
+    .fw-lighter {
+        font-weight: lighter !important;
+    }
+
+    .fw-light {
+        font-weight: 300 !important;
+    }
+
+    .fw-normal {
+        font-weight: 400 !important;
+    }
+
+    .fw-medium {
+        font-weight: 500 !important;
+    }
+
+    .fw-semibold {
+        font-weight: 600 !important;
+    }
+
+    .fw-bold {
+        font-weight: 700 !important;
+    }
+
+    .fw-bolder {
+        font-weight: bolder !important;
+    }
 `;

@@ -7,6 +7,7 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Raven.Identity;
 
 namespace MessianicChords.Controllers
 {

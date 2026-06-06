@@ -62,8 +62,8 @@ namespace MessianicChords.Controllers
             var submissions = await chordSubmissionService.GetAll(0, 100);
             var feedItems = submissions.Select(s => new SyndicationItem(
                     title: s.EditedChordSheetId == null ? $"New chord chart: {s.GetDisplayName()}" : $"Updated chart for {s.GetDisplayName()}",
-                    content: $"<a href='https://messianicchords.com/chordsubmissions/review?id={s.Id}&token={s.ApproveRejectKey}'>Review {s.GetDisplayName()}</a>",
-                    itemAlternateLink: new Uri($"https://messianicchords.com/chordsubmissions/review?id={s.Id}&token={s.ApproveRejectKey}"),
+                    content: $"<a href='https://messianicchords.com/chordsubmissions/review?id={s.Id.ToLower()}&token={s.ApproveRejectKey}'>Review {s.GetDisplayName()}</a>",
+                    itemAlternateLink: new Uri($"https://messianicchords.com/chordsubmissions/review?id={s.Id.ToLower()}&token={s.ApproveRejectKey}"),
                     id: s.ApproveRejectKey,
                     lastUpdatedTime: s.Created));
 

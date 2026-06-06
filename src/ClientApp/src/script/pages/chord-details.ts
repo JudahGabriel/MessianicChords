@@ -217,7 +217,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>General</span>
-                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this song"></sl-icon-button>
                             </div>
                         </div>
 
@@ -242,7 +242,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Media</span>
-                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this song"></sl-icon-button>
                             </div>
                         </div>
 
@@ -296,7 +296,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Arrangement</span>
-                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this song"></sl-icon-button>
                             </div>
                         </div>
                         <p>
@@ -318,7 +318,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Copyright</span>
-                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id}/edit" title="Edit this song"></sl-icon-button>
+                                <sl-icon-button name="pencil-square" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this song"></sl-icon-button>
                             </div>
                         </div>
                         <p>
@@ -384,7 +384,7 @@ export class ChordDetails extends LitElement {
                             </sl-tooltip>
 
                             <sl-tooltip content="Edit this chord chart" hoist>
-                                <sl-button size="${btnSize}" href="/${chord.id}/edit" target="_blank">
+                                <sl-button size="${btnSize}" href="/${chord.id.toLowerCase()}/edit" target="_blank">
                                     <sl-icon name="pencil-square"></sl-icon>
                                 </sl-button>
                             </sl-tooltip>
@@ -435,8 +435,7 @@ export class ChordDetails extends LitElement {
 
     renderChavahLink(chord: ChordSheet): TemplateResult {
         const chavahLink =
-            chord.links.find(url => url.startsWith("https://messianicradio.com") && url.includes("song=songs/")) ||
-                (chord.chavahSongId ? `https://messianicraido.com?song=${chord.chavahSongId}` : null);
+            chord.links.find(url => url.startsWith("https://messianicradio.com") && url.includes("song=songs/"));
         if (!chavahLink) {
             return html``;
         }

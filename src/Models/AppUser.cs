@@ -11,7 +11,7 @@ namespace MessianicChords.Models
     public class AppUser : IdentityUser
     {
         public const string AppUserPrefix = "AppUsers/";
-        public const string AdminRole = "admin";
+        public const string AdminRole = "Admin";
 
         /// <summary>
         /// Gets the date the user registered.

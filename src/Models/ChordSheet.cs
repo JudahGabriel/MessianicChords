@@ -64,9 +64,13 @@ public class ChordSheet
     public DateTime Created { get; set; }
     public string? Extension { get; set; }
     public Uri? PublishUri { get; set; }
-    public string? ChavahSongId { get; set; }
     public int PagesCount { get; set; }
     public List<Uri> Screenshots { get; set; } = [];
+
+    /// <summary>
+    /// The album art image URL to use for this chord chart.
+    /// </summary>
+    public Uri? AlbumArtUrl { get; set; }
     
     /// <summary>
     /// The authors who created the song.
@@ -155,7 +159,6 @@ public class ChordSheet
         Song = other.Song;
         ThumbnailUrl = other.ThumbnailUrl;
         PublishUri = other.PublishUri ?? this.PublishUri; 
-        ChavahSongId = other.ChavahSongId;
         PagesCount = other.PagesCount;
         Links = other.Links;
         Authors = other.Authors ?? this.Authors;

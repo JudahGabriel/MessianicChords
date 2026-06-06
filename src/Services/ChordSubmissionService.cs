@@ -14,16 +14,19 @@ public class ChordSubmissionService
     private readonly IAsyncDocumentSession dbSession;
     private readonly BunnyCdnManagerService cdnService;
     private readonly EmailService emailService;
+    private readonly AlbumArtFetcher albumArtFetcher;
 
     public ChordSubmissionService(
         IAsyncDocumentSession dbSession,
         BunnyCdnManagerService cdnService,
         EmailService emailService,
+        AlbumArtFetcher albumArtFetcher,
         ILogger<ChordSubmissionService> logger)
     {
         this.dbSession = dbSession;
         this.cdnService = cdnService;
         this.emailService = emailService;
+        this.albumArtFetcher = albumArtFetcher;
         this.logger = logger;
     }
 
@@ -188,14 +191,14 @@ public class ChordSubmissionService
         submission.GoogleDocId = approval.GoogleDocId ?? chordSheet.GoogleDocId;
         submission.PublishUri = approval.GoogleDocPublishUri ?? chordSheet.PublishUri;
         submission.Extension = approval.GoogleDocExtension ?? chordSheet.Extension ?? "mc";
-        Uri.TryCreate(string.IsNullOrWhiteSpace(submission.ChavahSongId) ? string.Empty : "https://messianicradio.com?song=" + submission.ChavahSongId, UriKind.Absolute, out var chavahUri);
+        submission.AlbumArtUrl = await albumArtFetcher.TryFetchAlbumArt(submission);
+
         var allLinks = chordSheet.Links
             .Concat(submission.Links)
             .Concat(new[] // Also include the GoogleDocAddress and GoogleDoc publish URI
                 {
                     approval.GoogleDocAddress,
-                    approval.GoogleDocPublishUri,
-                    chavahUri
+                    approval.GoogleDocPublishUri
                 }
                 .Where(l => l != null) // ...if they're not null
                 .Select(l => l!)

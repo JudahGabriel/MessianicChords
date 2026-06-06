@@ -19,7 +19,6 @@ export function emptyChordSheet(): ChordSheet {
         extension: null,
         hasFetchedPlainTextContents: false,
         publishUri: null,
-        chavahSongId: null,
         pagesCount: 1,
         hasFetchedThumbnail: false,
         screenshots: [],

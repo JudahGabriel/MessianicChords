@@ -2,7 +2,6 @@ import { html, LitElement, TemplateResult } from "lit";
 import { property, customElement } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
 import { sharedStyles } from "../common/shared.styles";
-import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 import { chordCardStyles } from "./chord-card.styles";
 import "@shoelace-style/shoelace/dist/components/card/card.js";
 
@@ -11,7 +10,7 @@ export class ChordCard extends LitElement {
     @property({ type: Object }) chord: ChordSheet | null = null;
     @property({ type: Boolean, attribute: "new-window" }) newWindow = false;
 
-    static styles = [sharedStyles, bootstrapUtilities, chordCardStyles];
+    static styles = [sharedStyles, chordCardStyles];
 
     render(): TemplateResult {
         if (!this.chord) {

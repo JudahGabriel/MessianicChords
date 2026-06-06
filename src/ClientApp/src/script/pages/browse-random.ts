@@ -4,7 +4,6 @@ import "../components/chord-card";
 import "../components/chord-card-loading";
 import { ChordSheet, PagedResult } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
-import { bootstrapGridStyles } from "../common/bootstrap-grid.styles";
 import { browseRandomStyles } from "./browse-random.styles";
 import { sharedStyles } from "../common/shared.styles";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
@@ -21,7 +20,7 @@ export class BrowseRandom extends LitElement {
     readonly chordService = new ChordService();
     readonly chordsPerRoll = 7;
 
-    static styles = [bootstrapGridStyles, sharedStyles, browseRandomStyles];
+    static styles = [sharedStyles, browseRandomStyles];
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -73,14 +72,16 @@ export class BrowseRandom extends LitElement {
     render(): TemplateResult {
         return html`
             <div class="container">
-                <h3 class="highlight">Random</h3>
-                <sl-button variant="default" ?disabled="${this.isLoading}" class="btn btn-light" @click="${this.resetAndFetchChords}">
-                    <div slot="prefix">
-                        <sl-icon class="dice-block-1" name="dice-1"></sl-icon>
-                        <sl-icon class="dice-block-2" name="dice-6"></sl-icon>
-                    </div>
-                    Roll again
-                </sl-button>
+                <div class="random-header">
+                    <h3 class="highlight">Random</h3>
+                    <sl-button variant="default" ?disabled="${this.isLoading}" class="btn btn-light" @click="${this.resetAndFetchChords}">
+                        <div slot="prefix">
+                            <sl-icon class="dice-block-1" name="dice-1"></sl-icon>
+                            <sl-icon class="dice-block-2" name="dice-6"></sl-icon>
+                        </div>
+                        Roll again
+                    </sl-button>
+                </div>
                 ${this.renderMainContent()}
             </div>
         `;

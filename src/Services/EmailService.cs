@@ -80,7 +80,7 @@ public class EmailService
         return
             "<h1>New chords uploaded to MessianicChords</h1>" +
             "<p>" +
-            $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id}&token={token}'>Review new chord chart</a>" +
+            $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id?.ToLower()}&token={token}'>Review new chord chart</a>" +
             "</p>";
     }
 
@@ -89,7 +89,7 @@ public class EmailService
         return "" +
             "<h1>Chord chart edited on MessianicChords</h1>" +
             "<p>" +
-            $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id}&token={token}'>Review edited chord chart</a>" +
+            $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id?.ToLower()}&token={token}'>Review edited chord chart</a>" +
             "</p>";
     }
 

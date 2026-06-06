@@ -283,7 +283,6 @@ public class GoogleDriveChordsFetcher
             HasFetchedPlainTextContents = false,
             HasFetchedThumbnail = false,
             DownloadUrl = downloadUrl,
-            ChavahSongId = chavahSong?.Id,
             PagesCount = 1,
             PublishUri = null,
             Authors = new List<string>(),
