@@ -4,6 +4,7 @@ import { ChordSheet } from "../models/interfaces";
 import { sharedStyles } from "../common/shared.styles";
 import { chordCardStyles } from "./chord-card.styles";
 import "@shoelace-style/shoelace/dist/components/card/card.js";
+import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 
 @customElement("chord-card")
 export class ChordCard extends LitElement {
@@ -18,46 +19,49 @@ export class ChordCard extends LitElement {
         }
 
         const target = this.newWindow ? "_blank" : "_self";
-        return html`
-            <sl-card class="card chord-card">
-                <div slot="header">
-                    <div class="card-title d-flex justify-content-between">
-                        <a class="song-name" href="/${this.chord.id.toLowerCase()}" target="${target}">
-                            ${this.chord.song}
-                        </a>
-                        ${this.renderHebrewName()}
-                    </div>
-                </div>
+        const artist = this.chord.artist || this.chord.authors.join(", ");
 
-                <h6 class="card-subtitle mb-2 text-muted">
-                    <a class="artist" href="/artist/${encodeURIComponent(this.chord.artist || this.chord.authors[0])}" target="${target}">
-                        ${this.chord.artist || this.chord.authors.join(", ")}
-                    </a>
-                </h6>
-                ${this.renderKey()}
+        return html`
+            <sl-card class="chord-card">
+                <a class="card-link" href="/${this.chord.id.toLowerCase()}" target="${target}">
+                    <div class="card-media">
+                        ${this.renderBackground()}
+
+                        <div class="overlay overlay-top">
+                            <div class="song-name">${this.chord.song}</div>
+                        </div>
+
+                        <div class="overlay overlay-bottom">
+                            <div class="artist">
+                                ${artist}
+                            </div>
+                            ${this.renderKey()}
+                        </div>
+                    </div>
+                </a>
             </sl-card>
         `;
     }
 
-    renderHebrewName(): TemplateResult {
-        const target = this.newWindow ? "_blank" : "_self";
-        if (this.chord && this.chord.hebrewSongName) {
-            return html`
-                <a class="hebrew-song-name" href="/${this.chord.id.toLowerCase()}" target="${target}" lang="he">
-                    ${this.chord.hebrewSongName}
-                </a>`;
+    renderBackground(): TemplateResult {
+        if (this.chord?.albumArtUrl) {
+            return html`<img class="album-art" src="${this.chord.albumArtUrl}" alt="Album art for ${this.chord.song}" loading="lazy" />`;
         }
 
-        return html``;
+        return html`
+            <div class="fallback-art" aria-hidden="true">
+                <sl-icon name="file-text"></sl-icon>
+            </div>
+        `;
     }
 
     renderKey(): TemplateResult {
         if (this.chord && this.chord.key) {
             return html`
-                <h6 class="card-subtitle mb-2 text-muted key">
-                    <span>Key of</span>
+                <div class="key">
+                    <span>Key:</span>
                     ${this.chord.key}
-                </h6>`;
+                </div>`;
         }
 
         return html``;
