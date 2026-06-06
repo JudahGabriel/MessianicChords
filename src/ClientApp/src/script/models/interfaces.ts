@@ -16,7 +16,7 @@ export interface ChordSheet {
     extension: string | null;
     hasFetchedPlainTextContents: boolean;
     publishUri: string | null;
-    chavahSongId: string | null;
+    albumArtUrl: string | null;
     pagesCount: number;
     hasFetchedThumbnail: boolean;
     screenshots: string[];

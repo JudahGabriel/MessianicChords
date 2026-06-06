@@ -13,6 +13,7 @@ export function emptyChordSheet(): ChordSheet {
         googleDocId: "",
         googleDocResourceKey: "",
         id: "",
+        albumArtUrl: null,
         plainTextContents: null,
         created: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
