@@ -92,7 +92,7 @@ export class AppHome extends LitElement {
     }
 
     render(): TemplateResult {
-        const navClass = this.searchResults.items.length > 0 ? "d-none" : "";
+        const showNewChords = this.searchResults.items.length === 0;
         const target = this.isInTabbedPwa ? "_blank" : "_self";
         return html`
             <section class="home-page">
@@ -112,7 +112,7 @@ export class AppHome extends LitElement {
                 </sl-input>
             </div>
 
-            <nav class="text-center ${navClass} d-flex flex-column gap-3">
+            <nav class="text-center d-flex flex-column gap-3">
 
                 <div class="d-flex flex-column">
                     <span>Browse</span>
@@ -129,17 +129,19 @@ export class AppHome extends LitElement {
                     </div>
                 </div>
 
-                <div class="d-flex flex-column gap-3">
-                    <div class="d-flex justify-content-center">
-                        New chord charts 
-                        <sl-tooltip content="Load more recently uploaded chord charts" placement="top">
-                            <sl-icon-button class="load-more-chords-btn" name="arrow-clockwise" label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}></sl-icon-button>
-                        </sl-tooltip>
+                ${showNewChords ? html`
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-center">
+                            New chord charts 
+                            <sl-tooltip content="Load more recently uploaded chord charts" placement="top">
+                                <sl-icon-button class="load-more-chords-btn" name="arrow-clockwise" label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}></sl-icon-button>
+                            </sl-tooltip>
+                        </div>
+                        <div class="new-chords d-flex gap-2 justify-content-center align-items-center">
+                            ${this.renderNewChords()}
+                        </div>
                     </div>
-                    <div class="new-chords d-flex gap-2 justify-content-center align-items-center">
-                        ${this.renderNewChords()}
-                    </div>
-                </div>                
+                ` : null}
 
                 <div class="d-flex justify-content-center gap-2">
                     <div>Got chords to share?</div>
