@@ -190,6 +190,8 @@ export class ChordDetails extends LitElement {
         const hasMediaLinks = chord.links.length > 0;
         const hasAudio = this.hasAudioPlayer(chord);
         const hasAnyMedia = hasMediaLinks || hasAudio;
+        const albumArtUrl = chord.albumArtUrl || "";
+        const shouldShowAlbumArt = !!albumArtUrl && !albumArtUrl.toLowerCase().includes("chord-screenshots");
 
         return html`
             <!-- Song details -->
@@ -215,9 +217,9 @@ export class ChordDetails extends LitElement {
 
                 <!-- Sidebar -->
                 <div class="sidebar d-flex flex-column gap-5 d-print-none">
-                    ${chord.albumArtUrl ? html`
+                    ${shouldShowAlbumArt ? html`
                         <sl-card class="card-header w-100 album-art-card">
-                            <img class="album-art-image" src="${chord.albumArtUrl}" alt="Album art for ${chord.song}" loading="lazy" />
+                            <img class="album-art-image" src="${albumArtUrl}" alt="Album art for ${chord.song}" loading="lazy" />
                         </sl-card>
                     ` : html``}
 
