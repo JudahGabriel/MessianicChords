@@ -1,6 +1,7 @@
 import { html } from "lit";
 import { Router } from "@thepassle/app-tools/router.js";
 import { lazy } from "@thepassle/app-tools/router/plugins/lazy.js";
+import { redirect } from "@thepassle/app-tools/router/plugins/redirect.js";
 
 export interface RouteContext {
     params?: Record<string, string>;
@@ -40,6 +41,11 @@ export const appRouter = new Router({
             title: "Edit Chord Sheet",
             plugins: [lazy(() => import("../script/pages/chord-edit"))],
             render: (context: RouteContext) => html`<chord-edit chord-id="${context.params?.id || ""}"></chord-edit>`
+        },
+        {
+            path: "/ChordSheets/:id",
+            title: "Chord Details",
+            plugins: [redirect((context: RouteContext) => `/chordsheets/${context.params?.id || ""}`)]
         },
         {
             path: "/chordsheets/:id",
