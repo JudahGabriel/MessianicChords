@@ -31,6 +31,7 @@ namespace MessianicChords.Controllers
         [HttpGet]
         [Route("/")]
         [Route("{*url}")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Index()
         {
             var model = new HomeViewModel();
