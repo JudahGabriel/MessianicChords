@@ -3,7 +3,6 @@ import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "./script/common/shared.styles";
 import { indexStyles } from "./app-index.styles";
 import { appRouter, RouteContext } from "./services/app-router";
-import "./script/components/home-jumbotron";
 import "./script/components/footer";
 import "./script/components/app-header";
 
