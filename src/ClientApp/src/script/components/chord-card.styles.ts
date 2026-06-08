@@ -96,6 +96,7 @@ export const chordCardStyles = css`
         color: #f4f7ff;
         font-weight: 600;
         text-decoration: none;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     }
 
     .artist:hover {
@@ -107,6 +108,7 @@ export const chordCardStyles = css`
         font-size: 0.92rem;
         color: #e8ecff;
         font-weight: 500;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     }
 
     .key span {
