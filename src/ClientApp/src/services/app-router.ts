@@ -43,6 +43,11 @@ export const appRouter = new Router({
             render: (context: RouteContext) => html`<chord-edit chord-id="${context.params?.id || ""}"></chord-edit>`
         },
         {
+            path: "/ChordSheets/:id/edit", // ChordSheet legacy upper-case variant
+            title: "Edit Chord Sheet",
+            plugins: [redirect((context: RouteContext) => `/chordsheets/${context.params?.id || ""}/edit`)]
+        },
+        {
             path: "/ChordSheets/:id",
             title: "Chord Details",
             plugins: [redirect((context: RouteContext) => `/chordsheets/${context.params?.id || ""}`)]

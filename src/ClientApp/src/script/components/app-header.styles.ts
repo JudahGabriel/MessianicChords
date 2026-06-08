@@ -27,7 +27,7 @@ export const appHeaderStyles = css`
 
     .logo-link {
         display: flex;
-        align-items: center;
+        align-items: self-end;
         gap: var(--sl-spacing-small);
         text-decoration: none;
         color: white;
