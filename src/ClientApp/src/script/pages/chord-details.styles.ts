@@ -332,7 +332,7 @@ export const chordDetailStyles = css`
             display: block;
             width: 100%;
             aspect-ratio: 1 / 1;
-            object-fit: cover;
+            object-fit: container;
             background: var(--sl-color-neutral-100);
         }
 
