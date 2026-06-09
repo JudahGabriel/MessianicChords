@@ -25,22 +25,30 @@ export const appHomeStyles = css`
     /* On phones and tablets, make the search container margin cancel out the parent's padding */
     @media (max-width: ${SizeMax.Sm}px) {
         .search-container {
-            margin-left: -20px;
-            margin-right: -20px;
+            margin-left: 0;
+            margin-right: 0;
         }
+
+        #search-box {
+            width: 95%;
+            max-width: 95vw;
+        }
+    }
+
+    #search-box {
+        width: 500px;
+    }
+
+    #search-box::part(base) {
+        width: 100%;
     }
 
     #search-box::part(input) {
-        width: 500px;
+        width: 100%;
+        flex: 1 1 auto;
+        min-width: 0;
         color: #0b0974;
         text-align: center;
-        padding-left: 85px;
-    }
-
-    @media (max-width: ${SizeMax.Xs}px) {
-        #search-box {
-            width: 90%;
-        }
     }
 
     nav a {

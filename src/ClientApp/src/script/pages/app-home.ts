@@ -102,9 +102,9 @@ export class AppHome extends LitElement {
                 <sl-input
                     id="search-box"
                     type="search"
-                    placeholder="Type a song, artist, or lyric"
+                    placeholder="Type a song, artist, or lyrics"
                     autofocus
-                    clearable
+                    autocomplete="off"
                     pill
                     size="large"
                     value="${this.searchText.value}"

@@ -28,6 +28,7 @@ export const homeJumbotronStyles = css`
 
       ${mediaQuery(BreakpointMax.xs)} {
         img {
+          display: none;
           margin: 5px 10px 0 0;
           width: 50px;
           height: 50px;
@@ -46,6 +47,7 @@ export const homeJumbotronStyles = css`
 
       ${mediaQuery(BreakpointMax.xs)} {
         h1 {
+          display: none;
           margin-top: 0;
           margin-left: 20px;
           font-size: 1.5em;

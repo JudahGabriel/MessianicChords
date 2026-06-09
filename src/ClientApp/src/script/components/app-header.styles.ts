@@ -70,14 +70,46 @@ export const appHeaderStyles = css`
 
     /* Search */
     .nav-search {
-        flex: 1;
         display: flex;
-        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-search-mobile {
+        display: none;
+    }
+
+    .nav-search-desktop {
+        flex: 0 1 auto;
+        justify-content: flex-end;
+    }
+
+    .nav-search-desktop.open {
+        flex: 1;
         max-width: 320px;
     }
 
-    .nav-search sl-input {
+    .nav-search-desktop .search-controls {
+        display: flex;
+        align-items: center;
+        gap: var(--sl-spacing-x-small);
         width: 100%;
+    }
+
+    .nav-search-desktop .search-input {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .search-toggle-button,
+    .search-close-button {
+        color: white;
+    }
+
+    .search-toggle-button::part(base),
+    .search-close-button::part(base) {
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
     }
 
     /* Right side */
@@ -240,16 +272,25 @@ export const appHeaderStyles = css`
         }
 
         .nav-links,
-        .nav-search,
+        .nav-search-desktop,
         .nav-right {
             display: none;
             width: 100%;
         }
 
         .nav-links.open,
-        .nav-search.open,
+        .nav-search-mobile.open,
         .nav-right.open {
             display: flex;
+        }
+
+        .nav-search-mobile.open {
+            width: 100%;
+            padding: var(--sl-spacing-small) 0;
+        }
+
+        .nav-search-mobile.open sl-input {
+            width: 100%;
         }
 
         .nav-links.open {
@@ -257,11 +298,6 @@ export const appHeaderStyles = css`
             align-items: flex-start;
             gap: var(--sl-spacing-x-small);
             padding: var(--sl-spacing-small) 0;
-        }
-
-        .nav-search.open {
-            max-width: 100%;
-            padding-bottom: var(--sl-spacing-small);
         }
 
         .nav-right.open {

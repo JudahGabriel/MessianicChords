@@ -1,5 +1,5 @@
 import { html, LitElement, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, query, state } from "lit/decorators.js";
 import { appHeaderStyles } from "./app-header.styles";
 import { sharedStyles } from "../common/shared.styles";
 import { UserViewModel } from "../models/account";
@@ -21,8 +21,12 @@ export class AppHeader extends LitElement {
     static styles = [sharedStyles, appHeaderStyles];
 
     @state() menuOpen = false;
+    @state() searchOpen = false;
     @state() user: UserViewModel | null = null;
     @state() isOnline: boolean = navigator.onLine;
+
+    @query(".nav-search-desktop sl-input")
+    private searchInput?: HTMLElement;
 
     private signedInStateSubscription: Subscription | null = null;
     private onlineStatusSubscription: Subscription | null = null;
@@ -87,7 +91,7 @@ export class AppHeader extends LitElement {
                         <a id="offline-menu-link" href="/browse/offline" @click="${this.closeMenu}">Offline</a>
                     </div>
 
-                    <div class="nav-search ${this.menuOpen ? "open" : ""}">
+                    <div class="nav-search nav-search-mobile ${this.menuOpen ? "open" : ""}">
                         <sl-input
                             type="search"
                             placeholder="Search chord charts"
@@ -97,6 +101,38 @@ export class AppHeader extends LitElement {
                             @sl-change="${this.handleSearch}">
                             <sl-icon name="search" slot="prefix"></sl-icon>
                         </sl-input>
+                    </div>
+
+                    <div class="nav-search nav-search-desktop ${this.searchOpen ? "open" : ""}">
+                        ${this.searchOpen ? html`
+                            <div class="search-controls">
+                                <sl-input
+                                    class="search-input"
+                                    type="search"
+                                    placeholder="Search chord charts"
+                                    size="small"
+                                    clearable
+                                    pill
+                                    @sl-change="${this.handleSearch}"
+                                    @keydown="${this.handleSearchKeydown}">
+                                    <sl-icon name="search" slot="prefix"></sl-icon>
+                                </sl-input>
+
+                                <sl-icon-button
+                                    class="search-close-button"
+                                    name="x-lg"
+                                    label="Close search"
+                                    @click="${this.closeSearch}">
+                                </sl-icon-button>
+                            </div>
+                        ` : html`
+                            <sl-icon-button
+                                class="search-toggle-button"
+                                name="search"
+                                label="Open search"
+                                @click="${this.openSearch}">
+                            </sl-icon-button>
+                        `}
                     </div>
 
                     <div class="nav-right ${this.menuOpen ? "open" : ""}">
@@ -189,6 +225,16 @@ export class AppHeader extends LitElement {
         this.menuOpen = !this.menuOpen;
     }
 
+    private async openSearch(): Promise<void> {
+        this.searchOpen = true;
+        await this.updateComplete;
+        this.searchInput?.focus();
+    }
+
+    private closeSearch(): void {
+        this.searchOpen = false;
+    }
+
     private closeMenu(): void {
         this.menuOpen = false;
     }
@@ -198,6 +244,14 @@ export class AppHeader extends LitElement {
         if (value) {
             window.location.href = `/?search=${encodeURIComponent(value)}`;
         }
+    }
+
+    private handleSearchKeydown(e: KeyboardEvent): void {
+        if (e.key !== "Enter") {
+            return;
+        }
+
+        this.handleSearch(e);
     }
 
     private async onAccountMenuSelected(e: CustomEvent): Promise<void> {
