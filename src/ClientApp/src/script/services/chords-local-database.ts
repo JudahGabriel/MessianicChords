@@ -321,6 +321,7 @@ export class ChordsLocalDatabase {
         const terms = Array.from(termsSet);
         return {
             ...chordSheet,
+            id: chordSheet.id.toLowerCase(),
             songLowered: chordSheet.song.toLowerCase(),
             artistLowered: chordSheet.artist.toLowerCase(),
             searchTerm1: (terms[0] || "").toLocaleLowerCase(),
