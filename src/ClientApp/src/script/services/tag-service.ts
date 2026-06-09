@@ -13,7 +13,7 @@ export class TagService extends ApiServiceBase {
      * Fetches all available tags.
      */
     getAllTags(): Promise<string[]> {
-        return super.getJson("/tags/GetAll");
+        return super.getJson("/tags/getAll");
     }
 
     /**
@@ -22,7 +22,7 @@ export class TagService extends ApiServiceBase {
      * @returns A list of chord sheets with that tag.
      */
     getChordSheetsByTag(tag: string): Promise<ChordSheet[]> {
-        return super.getJson("/tags/GetChordSheetsByTag", { tag });
+        return super.getJson("/tags/getChordSheetsByTag", { tag });
     }
 }
 

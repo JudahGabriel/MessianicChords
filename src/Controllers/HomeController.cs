@@ -178,6 +178,26 @@ namespace MessianicChords.Controllers
             return File("/apple-app-site-association.json", "application/json");
         }
 
+        /// <summary>
+        /// Returns the digital asset links file used in the Google Play store app.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet(".well-known/assetlinks.json")]
+        public IActionResult DigitalAssetLinks()
+        {
+            return File("/assetlinks.json", "application/json");
+        }
+
+        /// <summary>
+        /// Used by the client app to determine if we're online.
+        /// </summary>
+        /// <returns></returns>
+        [HttpHead("ping")]
+        public IActionResult Ping()
+        {
+            return Ok();
+        }
+
         private XmlNode CreateUrlNode(XmlDocument doc, string location, DateTime lastModified, string changeFrequency, double priority)
         {
             var siteMapNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";

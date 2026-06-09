@@ -52,19 +52,51 @@ pageCache({
     plugins: [{
         // We want to override cache key for
         //  - Artist page: /artist/Joe%20Artist
+        //  - Approve/reject page: /chords/ApproveRejectSubmission
+        //  - Chord edit page: /chordsheets/{id}/edit
+        //  - Submission review page: /chordsubmissions/review?id=...
         //  - Chord details page: /ChordSheets/2630
         // Reason is, these pages are the same HTML, just different behavior.
         cacheKeyWillBeUsed: async function ({ request }) {
-            const isArtistPage = !!request.url.match(/\/artist\/[^/]+$/);
+            // Normalize all artist profile URLs to a single cache entry.
+            const isArtistPage = !!request.url.match(/\/artist\/[^/]+$/i);
             if (isArtistPage) {
                 return new URL(request.url).origin + "/artist/_";
             }
+
+            // Normalize approve/reject submission URLs (including variants) to one key.
+            const isApproveRejectSubmissionPage = new URL(request.url)
+                .pathname
+                .toLowerCase()
+                .startsWith("/chords/approverejectsubmission");
+            if (isApproveRejectSubmissionPage) {
+                return new URL(request.url).origin + "/chords/approvereject";
+            }
+
+            // Normalize chord edit pages regardless of specific sheet id.
+            const isChordSheetEditPage = !!new URL(request.url)
+                .pathname
+                .match(/^\/chordsheets\/[^/]+\/edit$/i);
+            if (isChordSheetEditPage) {
+                return new URL(request.url).origin + "/chordsheets/_/edit";
+            }
+
+            // Ignore query params for review page so all reviews share one cache key.
+            const isChordSubmissionReviewPage = new URL(request.url)
+                .pathname
+                .toLowerCase() === "/chordsubmissions/review";
+            if (isChordSubmissionReviewPage) {
+                return new URL(request.url).origin + "/chordsubmissions/review";
+            }
+
+            // Normalize chord details pages regardless of specific sheet id.
             const chordDetailsRegex = new RegExp(/\/ChordSheets\/[\w|\d|-]+$/, "i");
             const isChordDetailsPage = !!request.url.match(chordDetailsRegex);
             if (isChordDetailsPage) {
                 return new URL(request.url).origin + "/ChordSheets/_";
             }
 
+            // Keep all other URLs keyed by their original full request URL.
             return request.url;
         }
     }]

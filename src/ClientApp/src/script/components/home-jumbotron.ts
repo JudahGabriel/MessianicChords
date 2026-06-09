@@ -1,3 +1,4 @@
+import { Subscription } from "rxjs";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
@@ -15,6 +16,7 @@ export class HomeJumbotron extends LitElement {
   @state() hideOfflineAlert = false;
 
   private readonly onAppRouteChanged = (e: Event) => this.routeChanged(e as CustomEvent);
+  private onlineStatusSubscription: Subscription | null = null;
 
   constructor() {
       super();
@@ -30,12 +32,16 @@ export class HomeJumbotron extends LitElement {
   disconnectedCallback() {
       super.disconnectedCallback();
       window.removeEventListener("app-route-changed", this.onAppRouteChanged);
+      this.onlineStatusSubscription?.unsubscribe();
   }
 
   async listenForOfflineStatusChange() {
       const module = await import("../services/online-detector");
-      const detector = new module.OnlineDetector();
-      detector.checkOnline().then(result => this.isOnline = result);
+      this.onlineStatusSubscription = module.onlineDetector.onlineStatus.subscribe(status => {
+          if (status !== null) {
+              this.isOnline = status;
+          }
+      });
   }
 
   routeChanged(e: CustomEvent) {

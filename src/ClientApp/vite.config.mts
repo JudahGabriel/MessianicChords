@@ -29,7 +29,8 @@ export default defineConfig({
                 globPatterns: [
                     "offline.html",
                     "assets/js/*.js",
-                    "assets/js/*.css"
+                    "assets/js/*.css",
+                    "assets/icons/**/*"
                 ]
             },
             devOptions: {

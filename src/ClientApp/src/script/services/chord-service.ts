@@ -1,270 +1,79 @@
 import { ChordSheet, PagedResult } from "../models/interfaces";
+import { filter, firstValueFrom, take } from "rxjs";
 import { ApiServiceBase } from "./api-service-base";
-import type { ChordCache } from "./chord-cache"; // Import types only for now, as we only use the real module if we're offline.
+import { CacheBackend as CacheBackendOffline } from "./chord-backend-offline";
+import { ChordBackendOnline } from "./chord-backend-online";
 import { ChordFetchBackend } from "./chord-fetch-backend";
+import { onlineDetector } from "./online-detector";
 
 export class ChordService extends ApiServiceBase {
 
-    private backend: ChordFetchBackend | null = null;
+    private onlineBackend = new ChordBackendOnline();
+    private offlineBackend = new CacheBackendOffline();
 
     constructor() {
         super();
     }
 
     getById(chordId: string): Promise<ChordSheet> {
-        return this.getBackend().then(b => b.getById(chordId));
+        return this.backend.then(b => b.getById(chordId));
     }
 
     getByOrderedIndex(index: number): Promise<string | null> {
-        return this.getBackend().then(b => b.getByOrderedIndex(index));
+        return this.backend.then(b => b.getByOrderedIndex(index));
     }
 
-    getMyStarred(): Promise<ChordSheet[]> {
-        return this.getBackend().then(b => b.getMyStarred());
-    }
-
-    /**
-     * @deprecated This method should no longer be used. Use searchPaged instead.
-     */
     search(query: string): Promise<ChordSheet[]> {
-        return this.getBackend().then(b => b.search(query));
-    }
-
-    searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.getBackend().then(b => b.searchPaged(query, skip, take));
+        return this.backend.then(b => b.search(query));
     }
 
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.getBackend().then(b => b.getBySongName(skip, take));
+        return this.backend.then(b => b.getBySongName(skip, take));
     }
 
     getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.getBackend().then(b => b.getByArtistName(artist, skip, take));
+        return this.backend.then(b => b.getByArtistName(artist, skip, take));
     }
 
     getByRandom(take: number): Promise<ChordSheet[]> {
-        return this.getBackend().then(b => b.getByRandom(take));
+        return this.backend.then(b => b.getByRandom(take));
     }
 
     getAllArtists(): Promise<string[]> {
-        return this.getBackend().then(b => b.getAllArtists());
+        return this.backend.then(b => b.getAllArtists());
     }
 
     getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        return this.getBackend().then(b => b.getNew(skip, take));
+        return this.backend.then(b => b.getNew(skip, take));
     }
 
-    downloadUrlFor(chord: ChordSheet, transposedChords: string | null | undefined): string {
-        // For things on Google Drive.
+    downloadUrlFor(chord: ChordSheet): string {
         if (chord.downloadUrl) {
             return chord.downloadUrl;
         }
 
-        // If we have transposed chords, send in the full transposed string to the server as a base64 string.
-        // We use TextEncoder to handle non-ascii characters.
-        if (transposedChords) {
-            const encoder = new TextEncoder();
-            const uint8Array = encoder.encode(transposedChords);
-            const binaryString = String.fromCharCode(...uint8Array);
-            const base64TransposedChords = btoa(binaryString);
-            return `${this.apiUrl}/chords/download?id=${chord.id.toLowerCase()}&transposedLyricsBase64=${encodeURIComponent(base64TransposedChords)}`;
-        }
-
-        return `${this.apiUrl}/chords/download?id=${chord.id.toLowerCase()}`;
+        return `${this.apiUrl}/chords/download?id=${chord.id}`;
     }
 
     submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
-        return this.getBackend().then(b => b.submitChordEdit(chord, attachments));
+        return this.backend.then(b => b.submitChordEdit(chord, attachments));
     }
 
-    private async getBackend(): Promise<ChordFetchBackend> {
-        if (this.backend) {
-            return this.backend;
+    getCacheableChords(): Promise<ChordSheet[]> {
+        return this.backend.then(b => b.getCacheableChords());
+    }
+
+    private get backend(): Promise<ChordFetchBackend> {
+        // If online status has not been determined yet, wait for the first non-null value.
+        if (onlineDetector.onlineStatus.value === null) {
+            return firstValueFrom(
+                onlineDetector.onlineStatus.pipe(
+                    filter((isOnline): isOnline is boolean => isOnline !== null),
+                    take(1) // automatic unsubscribe after it emits
+                )
+            ).then(isOnline => isOnline ? this.onlineBackend : this.offlineBackend);
         }
 
-        const module = await import("./online-detector");
-        const detector = new module.OnlineDetector();
-        const isOnline = await detector.checkOnline();
-        this.backend = isOnline ?
-            new ApiBackend() :
-            new CacheBackend();
-        return this.backend;
-    }
-}
-
-/**
- * An implementation of ChordFetchBackend that talks to the API. Used when online.
- */
-class ApiBackend extends ApiServiceBase implements ChordFetchBackend {
-
-    async getById(chordId: string): Promise<ChordSheet> {
-        return super.getJson("/chords/get", { id: chordId });
-    }
-
-    getByOrderedIndex(index: number): Promise<string | null> {
-        return super.getString("/chords/getByOrderedIndex", { index: index });
-    }
-
-    getMyStarred(): Promise<ChordSheet[]> {
-        return super.getJson("/chords/getMyStarred");
-    }
-
-    search(query: string): Promise<ChordSheet[]> {
-        return super.getJson("/chords/search", { search: query });
-    }
-
-    searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const args = {
-            search: query,
-            skip,
-            take
-        };
-        return super.getJson("/chords/searchPaged", args);
-    }
-
-    getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const args = {
-            skip,
-            take
-        };
-        return super.getJson("/chords/getBySongName", args);
-    }
-
-    getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const args: any = {
-            skip,
-            take
-        };
-        const url = artist ? "/chords/getArtistSongs" : "/chords/getByArtistName";
-        if (artist) {
-            args.artist = artist;
-        }
-        return super.getJson(url, args);
-    }
-
-    getByRandom(take: number): Promise<ChordSheet[]> {
-        const args = {
-            take
-        };
-        return super.getJson("/chords/getByRandom", args);
-    }
-
-    getAllArtists(): Promise<string[]> {
-        return super.getJson("/chords/getAllArtists");
-    }
-
-    async getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const args = {
-            skip,
-            take
-        };
-        return super.getJson("/chords/getNew", args);
-    }
-
-    downloadUrlFor(chord: ChordSheet): string {
-        if (!chord.chords && chord.downloadUrl) {
-            return chord.downloadUrl;
-        }
-
-        return `${this.apiUrl}/chords/download?id=${chord.id.toLowerCase()}`;
-    }
-
-    submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
-        // Create a new form to hold all the chord props and attachments.
-        const formData = new FormData();
-        const chordProps = Object.entries(chord);
-        for (const [prop,val] of chordProps) {
-            if (val !== null && val !== undefined) {
-                // Is it an array? Append all array values to the form.
-                const arrayVal = Array.isArray(val) ? val as Array<unknown> : null;
-                if (arrayVal) {
-                    arrayVal.forEach(v => formData.append(prop, `${v}`));
-                } else {
-                    formData.append(prop, `${val}`);
-                }
-            }
-        }
-
-        if (attachments.length > 0) {
-            attachments.forEach(a => formData.append("attachmentUploads", a, a.name));
-        }
-
-        return super.postFormData("/chords/submitEdit", formData);
-    }
-}
-
-/**
- * Implementation of ChordFetchService that loads chords from the local Chord Cache. Intended for use when offline.
- */
-class CacheBackend implements ChordFetchBackend {
-    private chordCache: ChordCache | null = null;
-
-    async getById(chordId: string): Promise<ChordSheet> {
-        const cache = await this.getChordCache();
-        const chord = await cache.get(chordId);
-        if (!chord) {
-            throw new Error("Couldn't find chord in cache");
-        }
-
-        return chord;
-    }
-
-    getByOrderedIndex(index: number): Promise<string | null> {
-        throw new Error(`getByOrderedIndex(${index}) is intended for online use only.`);
-    }
-
-    getMyStarred(): Promise<ChordSheet[]> {
-        throw new Error("getMyStarred() is intended for online use only.");
-    }
-
-    async search(query: string): Promise<ChordSheet[]> {
-        const cache = await this.getChordCache();
-        return await cache.search(query);
-    }
-
-    async searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const cache = await this.getChordCache();
-        return await cache.searchPaged(query, skip, take);
-    }
-
-    async getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const cache = await this.getChordCache();
-        return await cache.getBySongName(skip, take);
-    }
-
-    async getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const cache = await this.getChordCache();
-        return await cache.getByArtistName(artist, skip, take);
-    }
-
-    async getByRandom(take: number): Promise<ChordSheet[]> {
-        const cache = await this.getChordCache();
-        return await cache.getRandom(take);
-    }
-
-    async getAllArtists(): Promise<string[]> {
-        const cache = await this.getChordCache();
-        return await cache.getAllArtists();
-    }
-
-    async getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const cache = await this.getChordCache();
-        return cache.getNew(skip, take);
-    }
-
-    async getChordCache(): Promise<ChordCache> {
-        if (!this.chordCache) {
-            const module = await import("./chord-cache");
-            this.chordCache = new module.ChordCache();
-        }
-
-        return this.chordCache;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    submitChordEdit(chord: ChordSheet, attachments: File[]): Promise<void> {
-        console.error("Cannot upload chords while offline", chord, attachments);
-        throw new Error("Can't upload chords while offline.");
+        return Promise.resolve(onlineDetector.onlineStatus.value ? this.onlineBackend : this.offlineBackend);
     }
 }
