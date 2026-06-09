@@ -78,6 +78,10 @@ export class ChordService extends ApiServiceBase {
         return this.backend.then(b => b.getCacheableChords());
     }
 
+    getMyStarred(): Promise<ChordSheet[]> {
+        return this.backend.then(b => b.getMyStarred());
+    }
+
     private get backend(): Promise<ChordFetchBackend> {
         // If online status has not been determined yet, wait for the first non-null value.
         if (onlineDetector.onlineStatus.value === null) {

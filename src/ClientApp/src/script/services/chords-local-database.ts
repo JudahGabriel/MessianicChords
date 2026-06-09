@@ -3,7 +3,7 @@ import { ChordSheet, PagedResult } from "../models/interfaces";
 /**
  * Cache of ChordSheet objects. Used for offline search.
  */
-export class ChordCache {
+export class ChordsLocalDatabase {
 
     private static readonly chordSheetDb = "chord-sheets-db";
     private static readonly chordStore = "chord-store";
@@ -72,7 +72,7 @@ export class ChordCache {
      */
     public async getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         const store = await this.openChordsStore("readonly");
-        return await this.getIndexResultsPaged(ChordCache.songIndex, null, store, skip, take);
+        return await this.getIndexResultsPaged(ChordsLocalDatabase.songIndex, null, store, skip, take);
     }
 
     /**
@@ -85,7 +85,7 @@ export class ChordCache {
     public async getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         const store = await this.openChordsStore("readonly");
         const query = artist ? IDBKeyRange.only(artist.toLowerCase()) : null;
-        return await this.getIndexResultsPaged(ChordCache.artistIndex, query, store, skip, take);
+        return await this.getIndexResultsPaged(ChordsLocalDatabase.artistIndex, query, store, skip, take);
     }
 
     /**
@@ -99,11 +99,11 @@ export class ChordCache {
 
         // If we don't have enough items in the cache, just return what we've got.
         if (totalCount <= take) {
-            return await this.getIndexResults(ChordCache.songIndex, null, store);
+            return await this.getIndexResults(ChordsLocalDatabase.songIndex, null, store);
         }
 
         const skipValues = this.generateRandomUniqueInts(0, totalCount, take);
-        const randomChordFetches = skipValues.map(skip => this.getIndexResultsPaged(ChordCache.songIndex, null, store, skip, 1));
+        const randomChordFetches = skipValues.map(skip => this.getIndexResultsPaged(ChordsLocalDatabase.songIndex, null, store, skip, 1));
         const randomChords = await Promise.all(randomChordFetches);
         const results: ChordSheet[] = [];
         randomChords.forEach(c => results.push(c.results[0]));
@@ -116,14 +116,14 @@ export class ChordCache {
      */
     public async getAllArtists(): Promise<string[]> {
         const store = await this.openChordsStore("readonly");
-        const chordSheets = await this.getIndexResults(ChordCache.artistIndex, null, store);
+        const chordSheets = await this.getIndexResults(ChordsLocalDatabase.artistIndex, null, store);
         return Array.from(new Set(chordSheets.map(c => c.artist)));
     }
 
     public async getNew(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         // TODO: we need to implement a new created date index.
         const store = await this.openChordsStore("readonly");
-        return await this.getIndexResultsPaged(ChordCache.songIndex, null, store, skip, take);
+        return await this.getIndexResultsPaged(ChordsLocalDatabase.songIndex, null, store, skip, take);
     }
 
     private openDatabase(): Promise<IDBDatabase> {
@@ -132,7 +132,7 @@ export class ChordCache {
         }
 
         return new Promise<IDBDatabase>((resolve, reject) => {
-            const openReq = indexedDB.open(ChordCache.chordSheetDb, 4);
+            const openReq = indexedDB.open(ChordsLocalDatabase.chordSheetDb, 4);
             openReq.onsuccess = (e) => {
                 const db = (e.target as any).result as IDBDatabase;
                 resolve(db);
@@ -152,27 +152,27 @@ export class ChordCache {
 
     private createDatabase(e: IDBVersionChangeEvent) {
         const db = (e.target as any).result as IDBDatabase;
-        const chordStore = db.createObjectStore(ChordCache.chordStore, {
+        const chordStore = db.createObjectStore(ChordsLocalDatabase.chordStore, {
             keyPath: "id"
         });
-        chordStore.createIndex(ChordCache.songIndex, "songLowered", { unique: false });
-        chordStore.createIndex(ChordCache.artistIndex, "artistLowered", { unique: false });
-        ChordCache.searchTermIndexes.forEach((indexName, i) => chordStore.createIndex(indexName, `searchTerm${i+1}`, { unique: false }));
+        chordStore.createIndex(ChordsLocalDatabase.songIndex, "songLowered", { unique: false });
+        chordStore.createIndex(ChordsLocalDatabase.artistIndex, "artistLowered", { unique: false });
+        ChordsLocalDatabase.searchTermIndexes.forEach((indexName, i) => chordStore.createIndex(indexName, `searchTerm${i+1}`, { unique: false }));
     }
 
     private async openChordsStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
         const db = await this.openDatabase();
-        const tx = db.transaction([ChordCache.chordStore], mode);
-        return tx.objectStore(ChordCache.chordStore);
+        const tx = db.transaction([ChordsLocalDatabase.chordStore], mode);
+        return tx.objectStore(ChordsLocalDatabase.chordStore);
     }
 
     private async queryIndexes(value: string): Promise<ChordSheet[]> {
         const store = await this.openChordsStore("readonly");
         const query = IDBKeyRange.only(value);
 
-        const chordResults = this.getIndexResults(ChordCache.songIndex, query, store);
-        const artistResults = this.getIndexResults(ChordCache.artistIndex, query, store);
-        const searchTermResults = [0, 1, 2, 3, 4].map(i => this.getIndexResults(ChordCache.searchTermIndexes[i], query, store));
+        const chordResults = this.getIndexResults(ChordsLocalDatabase.songIndex, query, store);
+        const artistResults = this.getIndexResults(ChordsLocalDatabase.artistIndex, query, store);
+        const searchTermResults = [0, 1, 2, 3, 4].map(i => this.getIndexResults(ChordsLocalDatabase.searchTermIndexes[i], query, store));
 
         const allResults = new Map<string, ChordSheet>();
         const resultTasks = await Promise.all([chordResults, artistResults, ...searchTermResults]);

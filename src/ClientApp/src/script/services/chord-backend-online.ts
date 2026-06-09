@@ -1,11 +1,13 @@
 import { ChordSheet, PagedResult } from "../models/interfaces";
 import { ApiServiceBase } from "./api-service-base";
+import { ChordsLocalDatabase } from "./chords-local-database";
 import { ChordFetchBackend } from "./chord-fetch-backend";
 
 /**
  * An implementation of ChordFetchBackend that talks to the API. Used when online.
  */
 export class ChordBackendOnline extends ApiServiceBase implements ChordFetchBackend {
+    private readonly chordCache = new ChordsLocalDatabase();
 
     async getById(chordId: string): Promise<ChordSheet> {
         return super.getJson("/chords/get", { id: chordId });
@@ -37,7 +39,7 @@ export class ChordBackendOnline extends ApiServiceBase implements ChordFetchBack
     }
 
     getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const args: any = {
+        const args: { skip: number; take: number; artist?: string } = {
             skip,
             take
         };
@@ -46,6 +48,11 @@ export class ChordBackendOnline extends ApiServiceBase implements ChordFetchBack
             args.artist = artist;
         }
         return super.getJson(url, args);
+    }
+
+    getMyStarred(): Promise<ChordSheet[]> {
+        return super.getJson<ChordSheet[]>("/chords/getMyStarred")
+            .then(chords => this.cacheStarredChords(chords));
     }
 
     getByRandom(take: number): Promise<ChordSheet[]> {
@@ -100,5 +107,10 @@ export class ChordBackendOnline extends ApiServiceBase implements ChordFetchBack
 
     getCacheableChords(): Promise<ChordSheet[]> {
         return super.getJson("/chords/getCacheableChords");
+    }
+
+    private async cacheStarredChords(chords: ChordSheet[]): Promise<ChordSheet[]> {
+        await Promise.all(chords.map(chord => this.chordCache.add(chord)));
+        return chords;
     }
 }

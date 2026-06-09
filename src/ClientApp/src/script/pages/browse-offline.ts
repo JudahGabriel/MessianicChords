@@ -6,7 +6,7 @@ import { ChordSheet } from "../models/interfaces";
 import { PagedList } from "../models/paged-list";
 import { ChordBackendOffline } from "../services/chord-backend-offline";
 import { ChordBackendOnline } from "../services/chord-backend-online";
-import { ChordCache } from "../services/chord-cache";
+import { ChordsLocalDatabase } from "../services/chords-local-database";
 import { sharedStyles } from "../common/shared.styles";
 import { browseOfflineStyles } from "./browse-offline.styles";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
@@ -26,7 +26,7 @@ export class BrowseOffline extends LitElement {
 
     private readonly offlineBackend = new ChordBackendOffline();
     private readonly onlineBackend = new ChordBackendOnline();
-    private readonly chordCache = new ChordCache();
+    private readonly chordCache = new ChordsLocalDatabase();
     private readonly visibleChordsChanged = () => this.onVisibleChordsChanged();
 
     connectedCallback(): void {

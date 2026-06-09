@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { repeat } from "lit/directives/repeat.js";
-import { ChordCache } from "../services/chord-cache";
+import { ChordsLocalDatabase } from "../services/chords-local-database";
 import { ChordChartLine, ChordChartSpan, createChordChartLines } from "../models/chord-chart-line";
 import { Chord } from "../models/chord";
 import { chordDetailStyles } from "./chord-details.styles";
@@ -50,7 +50,7 @@ export class ChordDetails extends LitElement {
 
     chordChartLines: ChordChartLine[] | null = null;
     readonly chordService = new ChordService();
-    readonly chordCache = new ChordCache();
+    readonly chordCache = new ChordsLocalDatabase();
     static readonly defaultFontSize = 16;
 
     static styles = [sharedStyles, bootstrapUtilities, chordDetailStyles];
