@@ -1,6 +1,6 @@
 import { LitElement, html } from "lit";
 import { customElement } from "lit/decorators.js";
-import { footerStyles } from "./footer.styles";
+import { footerStyles } from "./app-footer.styles";
 import { sharedStyles } from "../common/shared.styles";
 
 @customElement("app-footer")
