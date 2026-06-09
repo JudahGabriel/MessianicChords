@@ -36,12 +36,6 @@
   },
   "icons": [
     {
-      "src": "/assets/images/16x16.ico",
-      "sizes": "16x16",
-      "purpose": "any",
-      "type": "image/x-icon"
-    },
-    {
       "src": "/assets/images/16x16.png",
       "sizes": "16x16",
       "purpose": "any",
