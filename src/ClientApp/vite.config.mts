@@ -30,7 +30,7 @@ export default defineConfig({
                     "offline.html",
                     "assets/js/*.js",
                     "assets/js/*.css",
-                    "assets/icons/**/*"
+                    "assets/icons/*.svg"
                 ]
             },
             devOptions: {
