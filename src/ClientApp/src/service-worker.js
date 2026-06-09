@@ -8,7 +8,6 @@ import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { StaleWhileRevalidate, NetworkFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
-import { RouteMatchCallbackOptions } from "workbox-core";
 
 self.addEventListener("message", event => {
     if (event.data && event.data.type === "SKIP_WAITING") {
@@ -18,7 +17,7 @@ self.addEventListener("message", event => {
 
 /**
  * Determines whether the specified route is an Messianic Chords API call and whether it matches the list of cacheable routes.
- * @param {RouteMatchCallbackOptions} e Route match details
+ * @param {import("workbox-core").RouteMatchCallbackOptions} e Route match details
  * @param {string[]} cacheableRoutes A list of routes that should match.
  * @returns Whether the route is a cachable API route.
  */
@@ -39,6 +38,7 @@ try {
 // Page cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#page_cache
 // This is a network-first stragety for HTML pages. If the page doesn't respond in 3 seconds, it falls back to cache.
 pageCache({
+    matchCallback: ({ request, url }) => request.mode === "navigate" && !url.pathname.toLowerCase().endsWith(".svg"),
     networkTimeoutSeconds: 3,
     warmCache: [
         "/",
@@ -122,6 +122,7 @@ staticResourceCache({
 // Image cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#image_cache
 // This is a cache-first strategy for all images. We specify a max number of images and max age of image.
 imageCache({
+    matchCallback: ({ request, url }) => request.destination === "image" || url.pathname.toLowerCase().endsWith(".svg"),
     maxAgeSeconds: 60 * 60 * 24 * 14, // 14 days: 60 seconds * 60 minutes in an hour * 24 hours in a day * 14 days
     maxEntries: 5000
 });

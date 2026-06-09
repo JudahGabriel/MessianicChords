@@ -18,6 +18,7 @@ export default defineConfig({
             scope: "/",
             registerType: "autoUpdate",
             injectRegister: "inline",
+            includeAssets: ["assets/icons/*.svg"],
             manifest: false,
             strategies: "injectManifest", // inject the file manifest into the service worker
             srcDir: "src",
@@ -29,8 +30,14 @@ export default defineConfig({
                 globPatterns: [
                     "offline.html",
                     "assets/js/*.js",
-                    "assets/js/*.css",
-                    "assets/icons/*.svg"
+                    "assets/icons/**/*.svg"
+                ]
+            },
+            injectManifest: {
+                globPatterns: [
+                    "offline.html",
+                    "assets/js/*.js",
+                    "assets/icons/**/*.svg"
                 ]
             },
             devOptions: {
