@@ -2,10 +2,10 @@ import {
     pageCache,
     imageCache,
     staticResourceCache,
-    offlineFallback,
 } from "workbox-recipes";
 import { precacheAndRoute } from "workbox-precaching";
-import { registerRoute } from "workbox-routing";
+import { matchPrecache } from "workbox-precaching";
+import { registerRoute, setCatchHandler } from "workbox-routing";
 import { StaleWhileRevalidate, NetworkFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
 
@@ -169,5 +169,11 @@ registerRoute(
     })
 );
 
-// Offline page recipe https://developers.google.com/web/tools/workbox/modules/workbox-recipes#offline_fallback
-offlineFallback();
+// Serve the precached offline page for navigation failures without re-fetching it during install.
+setCatchHandler(async ({ request }) => {
+    if (request.destination === "document") {
+        return (await matchPrecache("offline.html")) || Response.error();
+    }
+
+    return Response.error();
+});

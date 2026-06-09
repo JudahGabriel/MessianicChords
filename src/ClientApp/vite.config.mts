@@ -9,6 +9,7 @@ export default defineConfig({
     build: {
         sourcemap: true,
         assetsDir: "assets/js",
+        emptyOutDir: true,
         outDir: outDir
     },
     plugins: [
