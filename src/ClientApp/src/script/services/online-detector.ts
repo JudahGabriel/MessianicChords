@@ -16,7 +16,7 @@ export class OnlineDetector extends ApiServiceBase {
     constructor() {
         super();
         this.setOnlineStatus(navigator.onLine);
-        window.addEventListener("online", () => this.onlineStatus.next(navigator.onLine));
+        window.addEventListener("online", () => this.setOnlineStatus(navigator.onLine));
         
         this.runRecurringPing();
     }
@@ -29,7 +29,7 @@ export class OnlineDetector extends ApiServiceBase {
 
     private runRecurringPing(): void {
         this.pingApiWithTimeout(5000)
-            .then(onlineStatus => this.onlineStatus.next(onlineStatus))
+            .then(onlineStatus => this.setOnlineStatus(onlineStatus))
             .finally(() => setTimeout(() => this.runRecurringPing(), 5000));
     }
 

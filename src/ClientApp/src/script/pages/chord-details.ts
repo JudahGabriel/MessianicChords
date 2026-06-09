@@ -893,7 +893,7 @@ export class ChordDetails extends LitElement {
     downloadUrl(chord: ChordSheet): string {
 
         // If we've transposed the chords, we need to send the transposed version into the download URL so that the download will contain the transposed chords.
-        let transposedLyrics = null;
+        let transposedLyrics: string | null = null;
         if (this.chord?.chords && this.transpose !== 0) {
             transposedLyrics = this.shadowRoot?.querySelector(".plain-text-preview")?.textContent || null;
         }
@@ -918,7 +918,7 @@ export class ChordDetails extends LitElement {
     bumpTranspose(increment: 1 | -1) {
         this.transpose += increment;
 
-        // 12 half-steps in the musical scale (A, Bb, B, C, C#, D, D#, E, F, F#, G, G#)
+        // 12 half-steps in the musical scale (A, A#, B, C, C#, D, D#, E, F, F#, G, G#)
         // If we go outside the scale, wrap to the other side.
         if (this.transpose === 12 || this.transpose === -12) {
             this.transpose = 0;

@@ -10,6 +10,7 @@ import "@shoelace-style/shoelace/dist/components/input/input.js";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
 import "@shoelace-style/shoelace/dist/components/dropdown/dropdown.js";
 import "@shoelace-style/shoelace/dist/components/menu/menu.js";
 import "@shoelace-style/shoelace/dist/components/menu-item/menu-item.js";
@@ -21,8 +22,10 @@ export class AppHeader extends LitElement {
 
     @state() menuOpen = false;
     @state() user: UserViewModel | null = null;
+    @state() isOnline: boolean = navigator.onLine;
 
     private signedInStateSubscription: Subscription | null = null;
+    private onlineStatusSubscription: Subscription | null = null;
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -35,13 +38,18 @@ export class AppHeader extends LitElement {
         });
 
         this.loadUser();
+        window.addEventListener("online", this.onBrowserOnline);
         window.addEventListener("account-changed", this.loadUser);
+        this.listenForOfflineStatusChange();
     }
 
     disconnectedCallback(): void {
         super.disconnectedCallback();
         this.signedInStateSubscription?.unsubscribe();
         this.signedInStateSubscription = null;
+        this.onlineStatusSubscription?.unsubscribe();
+        this.onlineStatusSubscription = null;
+        window.removeEventListener("online", this.onBrowserOnline);
         window.removeEventListener("account-changed", this.loadUser);
     }
 
@@ -55,12 +63,18 @@ export class AppHeader extends LitElement {
                             <span class="app-name">Messianic Chords</span>
                         </a>
 
-                        <sl-icon-button
-                            class="menu-toggle"
-                            name="${this.menuOpen ? "x-lg" : "list"}"
-                            label="Toggle menu"
-                            @click="${this.toggleMenu}">
-                        </sl-icon-button>
+                        <div class="nav-left-right-group">
+                            <div class="offline-mobile">
+                                ${this.renderOfflineStatusIndicator()}
+                            </div>
+
+                            <sl-icon-button
+                                class="menu-toggle"
+                                name="${this.menuOpen ? "x-lg" : "list"}"
+                                label="Toggle menu"
+                                @click="${this.toggleMenu}">
+                            </sl-icon-button>
+                        </div>
                     </div>
 
                     <div class="nav-links ${this.menuOpen ? "open" : ""}">
@@ -70,6 +84,7 @@ export class AppHeader extends LitElement {
                         <a href="/browse/artists" @click="${this.closeMenu}">Artists</a>
                         <a href="/browse/tags" @click="${this.closeMenu}">Tags</a>
                         <a href="/browse/random" @click="${this.closeMenu}">Random</a>
+                        <a id="offline-menu-link" href="/browse/offline" @click="${this.closeMenu}">Offline</a>
                     </div>
 
                     <div class="nav-search ${this.menuOpen ? "open" : ""}">
@@ -85,10 +100,29 @@ export class AppHeader extends LitElement {
                     </div>
 
                     <div class="nav-right ${this.menuOpen ? "open" : ""}">
+                        <div class="offline-desktop">
+                            ${this.renderOfflineStatusIndicator()}
+                        </div>
                         ${this.renderAccountMenu()}
                     </div>
                 </nav>
             </header>
+        `;
+    }
+
+    private renderOfflineStatusIndicator(): TemplateResult {
+        if (this.isOnline) {
+            return html``;
+        }
+
+        return html`
+            <sl-tooltip content="You're offline. Any chord charts you viewed while online are available offline." trigger="hover click" placement="bottom-end">
+                <sl-icon-button
+                    class="offline-status-button"
+                    name="wifi-off"
+                    label="Offline status">
+                </sl-icon-button>
+            </sl-tooltip>
         `;
     }
 
@@ -193,5 +227,18 @@ export class AppHeader extends LitElement {
         accountService.getUser()
             .then(user => this.user = user)
             .catch(() => this.user = null);
+    }
+
+    private readonly onBrowserOnline = (): void => {
+        this.isOnline = navigator.onLine;
+    };
+
+    private async listenForOfflineStatusChange(): Promise<void> {
+        const module = await import("../services/online-detector");
+        this.onlineStatusSubscription = module.onlineDetector.onlineStatus.subscribe(status => {
+            if (status !== null) {
+                this.isOnline = status;
+            }
+        });
     }
 }

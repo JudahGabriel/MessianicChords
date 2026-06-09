@@ -1,59 +1,41 @@
-import { Subscription } from "rxjs";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
 import { homeJumbotronStyles } from "./home-jumbotron.styles";
 import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 
 @customElement("home-jumbotron")
 export class HomeJumbotron extends LitElement {
     static styles = [sharedStyles, bootstrapUtilities, homeJumbotronStyles];
 
-  @state() locationPath = "/";
-  @state() isOnline: boolean = navigator.onLine;
-  @state() hideOfflineAlert = false;
+    @state() locationPath = "/";
 
-  private readonly onAppRouteChanged = (e: Event) => this.routeChanged(e as CustomEvent);
-  private onlineStatusSubscription: Subscription | null = null;
+    private readonly onAppRouteChanged = (e: Event) => this.routeChanged(e as CustomEvent);
 
-  constructor() {
-      super();
-  }
+    constructor() {
+        super();
+    }
 
-  connectedCallback() {
-      super.connectedCallback();
-      window.addEventListener("app-route-changed", this.onAppRouteChanged);
-      window.addEventListener("online", () => this.isOnline = navigator.onLine);
-      this.listenForOfflineStatusChange();
-  }
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener("app-route-changed", this.onAppRouteChanged);
+    }
 
-  disconnectedCallback() {
-      super.disconnectedCallback();
-      window.removeEventListener("app-route-changed", this.onAppRouteChanged);
-      this.onlineStatusSubscription?.unsubscribe();
-  }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("app-route-changed", this.onAppRouteChanged);
+    }
 
-  async listenForOfflineStatusChange() {
-      const module = await import("../services/online-detector");
-      this.onlineStatusSubscription = module.onlineDetector.onlineStatus.subscribe(status => {
-          if (status !== null) {
-              this.isOnline = status;
-          }
-      });
-  }
+    routeChanged(e: CustomEvent) {
+        this.locationPath = e.detail?.context?.url?.pathname || "";
+    }
 
-  routeChanged(e: CustomEvent) {
-      this.locationPath = e.detail?.context?.url?.pathname || "";
-  }
+    get isOnHomePage(): boolean {
+        return this.locationPath === "/" || this.locationPath === "";
+    }
 
-  get isOnHomePage(): boolean {
-      return this.locationPath === "/" || this.locationPath === "";
-  }
-
-  render() {
-      return html`
+    render() {
+        return html`
       <header class="d-flex justify-content-center flex-wrap d-print-none">
         <a href="/">
           <img src="/assets/images/128x128.png" alt="Messianic Chords logo" />
@@ -68,43 +50,26 @@ export class HomeJumbotron extends LitElement {
         <!-- On XS screen, show the subtitle beneath the  -->
         ${this.renderPhoneSubheader()}
       </header>
-
-      <div class="d-flex justify-content-center d-print-none">
-        ${this.renderOfflineStatus()}
-      </div>
     `;
-  }
+    }
 
-  renderLargeSubheader(): TemplateResult {
-      return html`
+    renderLargeSubheader(): TemplateResult {
+        return html`
       <h2 class="d-none d-sm-inline-block">
         <span>Chord charts and lyrics for Messiah's music</span>
       </h2>
     `;
-  }
+    }
 
-  renderPhoneSubheader(): TemplateResult {
-      if (!this.isOnHomePage) {
-          return html``;
-      }
+    renderPhoneSubheader(): TemplateResult {
+        if (!this.isOnHomePage) {
+            return html``;
+        }
 
-      return html`
+        return html`
       <h2 class="d-block d-sm-none w-100 text-center">
         <span>Chord charts for Messiah's music</span>
       </h2>
     `;
-  }
-
-  renderOfflineStatus(): TemplateResult {
-      if (this.isOnline || this.hideOfflineAlert) {
-          return html``;
-      }
-
-      return html`
-        <sl-alert variant="primary" open closable class="alert-closable">
-            <sl-icon slot="icon" name="info-circle"></sl-icon>
-            <strong>You're offline.</strong> You can view chord charts you previously viewed while online.
-        </sl-alert>
-      `;
-  }
+    }
 }

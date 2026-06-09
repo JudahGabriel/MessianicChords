@@ -19,6 +19,15 @@ export class ChordBackendOnline extends ApiServiceBase implements ChordFetchBack
         return super.getJson("/chords/search", { search: query });
     }
 
+    searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const args = {
+            search: query,
+            skip,
+            take
+        };
+        return super.getJson("/chords/searchPaged", args);
+    }
+
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         const args = {
             skip,

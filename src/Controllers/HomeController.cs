@@ -79,13 +79,13 @@ namespace MessianicChords.Controllers
         }
 
         /// <summary>
-        /// Server side rendering for browse endpoints (/browse/newest, /browse/songs, /browse/artists, /browse/random)
+        /// Server side rendering for browse endpoints (/browse/newest, /browse/songs, /browse/artists, /browse/tags, /browse/random, /browse/offline)
         /// </summary>
         /// <returns></returns>
         [HttpGet("browse/{order}")]
         public IActionResult Browse(string order)
         {
-            if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random")
+            if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random" && order != "offline")
             {
                 return Redirect("/");
             }

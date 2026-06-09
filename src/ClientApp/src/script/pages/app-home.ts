@@ -15,6 +15,7 @@ import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
 import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
 import "@shoelace-style/shoelace/dist/components/divider/divider.js";
 import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
+import "../components/home-jumbotron.js";
 import { PagedList } from "../models/paged-list";
 
 @customElement("app-home")
@@ -126,6 +127,8 @@ export class AppHome extends LitElement {
                         <a class="fw-bold" href="/browse/tags" target="${target}">Tags</a>
                         <sl-divider vertical></sl-divider>
                         <a class="fw-bold" href="/browse/random" target="${target}">Random</a>
+                        <sl-divider vertical></sl-divider>
+                        <a class="fw-bold" href="/browse/offline" target="${target}">Offline</a>
                     </div>
                 </div>
 

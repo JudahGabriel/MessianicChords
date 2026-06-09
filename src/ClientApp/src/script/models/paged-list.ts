@@ -74,6 +74,7 @@ export class PagedList<T> {
                 return Promise.reject("PagedList was reset; skipping results.");
             }
 
+            this.totalCount = chunk.totalCount;
             this.items.push(...chunk.results);
             this.skip += chunk.results.length;
             this.hasMoreItems = this.items.length < chunk.totalCount;

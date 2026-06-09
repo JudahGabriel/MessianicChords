@@ -44,12 +44,12 @@ public class HomeViewModel
     /// <summary>
     /// Updates the home view model to include title, description, etc. for a browse page.
     /// </summary>
-    /// <param name="order">Must be 'newest', 'songs', 'artists', or 'random'.</param>
+    /// <param name="order">Must be 'newest', 'songs', 'artists', 'tags', 'random', or 'offline'.</param>
     public void UpdateFromBrowse(string order)
     {
-        if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random")
+        if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random" && order != "offline")
         {
-            throw new ArgumentException("Order must be 'newest', 'songs', 'artists', 'tags' or 'random'", nameof(order));
+            throw new ArgumentException("Order must be 'newest', 'songs', 'artists', 'tags', 'random' or 'offline'", nameof(order));
         }
 
         this.Description = $"Browse chord charts for songs by {order}";

@@ -3,9 +3,9 @@ import { ChordCache } from "./chord-cache";
 import { ChordFetchBackend } from "./chord-fetch-backend";
 
 /**
- * Implementation of ChordFetchService that loads chords from the local Chord Cache. Intended for use when offline.
+ * Implementation of ChordFetchBackend that loads chords from the local Chord Cache in IndexDB. Intended for use when offline.
  */
-export class CacheBackend implements ChordFetchBackend {
+export class ChordBackendOffline implements ChordFetchBackend {
     private chordCache: ChordCache | null = null;
 
     async getById(chordId: string): Promise<ChordSheet> {
@@ -25,6 +25,11 @@ export class CacheBackend implements ChordFetchBackend {
     async search(query: string): Promise<ChordSheet[]> {
         const cache = await this.getChordCache();
         return await cache.search(query);
+    }
+
+    async searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const cache = await this.getChordCache();
+        return await cache.searchPaged(query, skip, take);
     }
 
     async getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
@@ -61,6 +66,7 @@ export class CacheBackend implements ChordFetchBackend {
         return this.chordCache;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     submitChordEdit(_: ChordSheet, __: File[]): Promise<void> {
         throw new Error("Can't upload chords while offline.");
     }

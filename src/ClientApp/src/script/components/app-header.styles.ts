@@ -6,6 +6,7 @@ export const appHeaderStyles = css`
         background: var(--theme-color, #0b0974);
         padding: 0 var(--sl-spacing-medium);
         font-family: var(--subtitle-font);
+        position: relative;
     }
 
     nav {
@@ -83,8 +84,40 @@ export const appHeaderStyles = css`
     .nav-right {
         display: flex;
         align-items: center;
+        gap: var(--sl-spacing-x-small);
         margin-left: auto;
         flex-shrink: 0;
+    }
+
+    /* Desktop-only offline indicator; hidden on mobile where .offline-mobile is used instead */
+    .offline-desktop {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Groups the offline indicator and hamburger toggle together on the right of nav-left */
+    .nav-left-right-group {
+        display: none;
+        align-items: center;
+        gap: 0;
+    }
+
+    /* Mobile-only offline indicator; sits next to the hamburger toggle */
+    .offline-mobile {
+        display: flex;
+        align-items: center;
+    }
+
+    .offline-status-button {
+        color: white;
+        --sl-color-neutral-600: white;
+        --sl-color-primary-600: white;
+    }
+
+    .offline-status-button::part(base) {
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
     }
 
     .account-menu-trigger {
@@ -184,6 +217,22 @@ export const appHeaderStyles = css`
         .nav-left {
             width: 100%;
             justify-content: space-between;
+        }
+
+        .offline-desktop {
+            display: none;
+        }
+
+        .offline-mobile {
+            display: flex;
+        }
+
+        .nav-left-right-group {
+            display: flex;
+        }
+
+        .menu-toggle {
+            display: inline-flex;
         }
 
         .menu-toggle {

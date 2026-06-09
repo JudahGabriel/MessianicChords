@@ -89,6 +89,12 @@ export const appRouter = new Router({
             render: () => html`<browse-random></browse-random>`
         },
         {
+            path: "/browse/offline",
+            title: "Offline",
+            plugins: [lazy(() => import("../script/pages/browse-offline"))],
+            render: () => html`<browse-offline></browse-offline>`
+        },
+        {
             path: "/artist/:name",
             title: "Artist",
             plugins: [lazy(() => import("../script/pages/artist-songs"))],
