@@ -5,21 +5,15 @@ export const browseOfflineStyles = css`
         padding: 1rem 0 2rem;
     }
 
-    .toolbar {
+    .header-row {
         display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .toolbar sl-input {
-        flex: 1;
-        min-width: 220px;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
     }
 
     .status {
-        margin-bottom: 0.75rem;
         color: #6c757d;
         font-size: 0.95rem;
     }
@@ -34,5 +28,23 @@ export const browseOfflineStyles = css`
 
     .error {
         color: #b42318;
+    }
+
+    chord-collection {
+        display: block;
+        margin-top: 2rem;
+    }
+
+    @media (max-width: 640px) {
+        .header-row {
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .header-row sl-button {
+            flex: 1 0 100%;
+            width: 100%;
+            margin-left: auto;
+        }
     }
 `;

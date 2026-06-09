@@ -10,6 +10,7 @@ import { ChordsLocalDatabase } from "../services/chords-local-database";
 import { sharedStyles } from "../common/shared.styles";
 import { browseOfflineStyles } from "./browse-offline.styles";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/progress-bar/progress-bar.js";
 
 @customElement("browse-offline")
@@ -37,17 +38,18 @@ export class BrowseOffline extends LitElement {
     render(): TemplateResult {
         return html`
             <section class="container page">
-                <h2 class="highlight">Offline Chord Charts</h2>
-                <p>Chord charts you load while online are automatically available offline.</p>
-                <div class="toolbar">
+                <div class="header-row">
+                    <h2 class="highlight">Offline Chord Charts</h2>
                     <sl-button
-                        variant="primary"
+                        variant="default"
                         ?loading="${this.isCachingAll}"
                         ?disabled="${this.isLoading || this.isCachingAll}"
                         @click="${this.makeAllChordsOffline}">
+                        <sl-icon slot="prefix" name="download"></sl-icon>
                         Make all chords offline
                     </sl-button>
                 </div>
+                <p>Chord charts you load while online are automatically available offline.</p>
 
                 ${this.status ? html`<div class="status">${this.status}</div>` : html``}
                 ${this.error ? html`<div class="status error">${this.error}</div>` : html``}
