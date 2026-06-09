@@ -13,6 +13,14 @@ export const browseOfflineStyles = css`
         margin-bottom: 0.5rem;
     }
 
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
     .status {
         color: #6c757d;
         font-size: 0.95rem;
@@ -35,13 +43,26 @@ export const browseOfflineStyles = css`
         margin-top: 2rem;
     }
 
+    .media-prefetch-host {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+
     @media (max-width: 640px) {
         .header-row {
             flex-wrap: wrap;
             align-items: flex-start;
         }
 
-        .header-row sl-button {
+        .actions {
+            width: 100%;
+        }
+
+        .actions sl-button {
             flex: 1 0 100%;
             width: 100%;
             margin-left: auto;

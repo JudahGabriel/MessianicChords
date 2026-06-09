@@ -34,7 +34,7 @@ export class ChordsLocalDatabase {
      */
     public async get(chordId: string): Promise<ChordSheet | null> {
         const store = await this.openChordsStore("readonly");
-        const chordRequest = store.get(chordId);
+        const chordRequest = store.get(this.normalizeChordId(chordId));
         const chordTask = new Promise<ChordSheet | null>((resolve, reject) => {
             chordRequest.onsuccess = () => resolve(chordRequest.result as ChordSheet | null);
             chordRequest.onerror = e => {
@@ -43,6 +43,30 @@ export class ChordsLocalDatabase {
         });
 
         return await chordTask;
+    }
+
+    /**
+     * Returns whether a chord chart already exists in the offline cache.
+     */
+    public async has(chordId: string): Promise<boolean> {
+        const store = await this.openChordsStore("readonly");
+        const keyRequest = store.getKey(this.normalizeChordId(chordId));
+        return await new Promise<boolean>((resolve, reject) => {
+            keyRequest.onsuccess = () => resolve(keyRequest.result !== undefined);
+            keyRequest.onerror = e => reject(e);
+        });
+    }
+
+    /**
+     * Deletes all cached chord charts from IndexedDB.
+     */
+    public async deleteAll(): Promise<void> {
+        const store = await this.openChordsStore("readwrite");
+        const clearRequest = store.clear();
+        await new Promise<void>((resolve, reject) => {
+            clearRequest.onsuccess = () => resolve();
+            clearRequest.onerror = e => reject(e);
+        });
     }
 
     /**
@@ -428,6 +452,10 @@ export class ChordsLocalDatabase {
 
     private getWords(input: string): string[] {
         return input.split(/\s|,/); // space or comma
+    }
+
+    private normalizeChordId(chordId: string): string {
+        return (chordId || "").toLowerCase();
     }
 }
 

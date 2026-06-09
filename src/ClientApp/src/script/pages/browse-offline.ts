@@ -12,6 +12,7 @@ import { browseOfflineStyles } from "./browse-offline.styles";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/progress-bar/progress-bar.js";
+import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
 
 @customElement("browse-offline")
 export class BrowseOffline extends LitElement {
@@ -20,6 +21,7 @@ export class BrowseOffline extends LitElement {
     @state() private visibleChords: PagedList<ChordSheet> = PagedList.empty<ChordSheet>();
     @state() private isLoading = true;
     @state() private isCachingAll = false;
+    @state() private isDeletingAll = false;
     @state() private cacheCurrent = 0;
     @state() private cacheTotal = 0;
     @state() private status = "";
@@ -40,14 +42,28 @@ export class BrowseOffline extends LitElement {
             <section class="container page">
                 <div class="header-row">
                     <h2 class="highlight">Offline Chord Charts</h2>
-                    <sl-button
-                        variant="default"
-                        ?loading="${this.isCachingAll}"
-                        ?disabled="${this.isLoading || this.isCachingAll}"
-                        @click="${this.makeAllChordsOffline}">
-                        <sl-icon slot="prefix" name="download"></sl-icon>
-                        Make all chords offline
-                    </sl-button>
+                    <div class="actions">
+                        <sl-tooltip content="Downloads all chord charts to this device so they can be viewed while offline">
+                            <sl-button
+                                variant="default"
+                                ?loading="${this.isCachingAll}"
+                                ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
+                                @click="${this.makeAllChordsOffline}">
+                                <sl-icon slot="prefix" name="download"></sl-icon>
+                                Make all chords available offline
+                            </sl-button>
+                        </sl-tooltip>
+                        <sl-tooltip content="Removes all chord charts from your local device">
+                            <sl-button
+                                variant="danger"
+                                ?loading="${this.isDeletingAll}"
+                                ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
+                                @click="${this.deleteAllOfflineChords}">
+                                <sl-icon slot="prefix" name="trash"></sl-icon>
+                                Delete offline chords
+                            </sl-button>
+                        </sl-tooltip>
+                    </div>
                 </div>
                 <p>Chord charts you load while online are automatically available offline.</p>
 
@@ -55,6 +71,7 @@ export class BrowseOffline extends LitElement {
                 ${this.error ? html`<div class="status error">${this.error}</div>` : html``}
                 ${this.renderProgressBar()}
                 ${this.renderContent()}
+                <div id="media-prefetch-host" class="media-prefetch-host" aria-hidden="true"></div>
             </section>
         `;
     }
@@ -143,6 +160,7 @@ export class BrowseOffline extends LitElement {
             this.cacheTotal = cacheableChords.length;
             let succeeded = 0;
             let failed = 0;
+            let skipped = 0;
 
             if (cacheableChords.length === 0) {
                 this.status = "No cacheable chord charts were returned.";
@@ -155,6 +173,12 @@ export class BrowseOffline extends LitElement {
                 this.status = `Caching ${this.cacheCurrent} of ${this.cacheTotal} chord charts for offline use...`;
 
                 try {
+                    const isAlreadyOffline = await this.chordCache.has(chord.id);
+                    if (isAlreadyOffline) {
+                        skipped++;
+                        continue;
+                    }
+
                     await this.chordCache.add(chord);
                     await this.cacheChordMedia(chord);
                     succeeded++;
@@ -164,13 +188,39 @@ export class BrowseOffline extends LitElement {
                 }
             }
 
-            this.status = `Finished caching ${this.cacheTotal} chord charts: ${succeeded} succeeded, ${failed} failed.`;
+            this.status = `Finished processing ${this.cacheTotal} chord charts: ${succeeded} cached, ${skipped} skipped (already offline), ${failed} failed.`;
             await this.loadOfflineChords();
         } catch (error) {
             console.error("Failed to cache all chords", error);
             this.error = "Unable to make all chord charts available offline. Please try again.";
         } finally {
             this.isCachingAll = false;
+        }
+    }
+
+    private async deleteAllOfflineChords(): Promise<void> {
+        if (this.isDeletingAll) {
+            return;
+        }
+
+        const isConfirmed = window.confirm("Are you sure you want to delete all offline chord charts?");
+        if (!isConfirmed) {
+            return;
+        }
+
+        this.isDeletingAll = true;
+        this.error = null;
+        this.status = "Deleting offline chord charts...";
+
+        try {
+            await this.chordCache.deleteAll();
+            this.status = "All offline chord charts were deleted.";
+            await this.loadOfflineChords();
+        } catch (error) {
+            console.error("Failed deleting offline chord charts", error);
+            this.error = "Unable to delete offline chord charts. Please try again.";
+        } finally {
+            this.isDeletingAll = false;
         }
     }
 
@@ -193,10 +243,53 @@ export class BrowseOffline extends LitElement {
     private async fetchAndIgnoreErrors(url: string): Promise<void> {
         const absoluteUrl = this.toAbsoluteUrl(url);
         try {
-            await fetch(absoluteUrl);
+            await this.prefetchImage(absoluteUrl);
         } catch (error) {
             console.warn("Unable to prefetch media for offline cache", absoluteUrl, error);
         }
+    }
+
+    private async prefetchImage(url: string): Promise<void> {
+        const host = this.renderRoot.querySelector("#media-prefetch-host") as HTMLElement | null;
+        if (!host) {
+            throw new Error("Media prefetch host is missing from browse-offline page");
+        }
+
+        await new Promise<void>((resolve, reject) => {
+            const img = document.createElement("img");
+
+            const cleanup = () => {
+                img.removeEventListener("load", onLoad);
+                img.removeEventListener("error", onError);
+                img.remove();
+            };
+
+            const onLoad = () => {
+                cleanup();
+                resolve();
+            };
+
+            const onError = (event: Event) => {
+                const diagnostic = {
+                    requestedUrl: url,
+                    currentSrc: img.currentSrc || img.src,
+                    complete: img.complete,
+                    naturalWidth: img.naturalWidth,
+                    naturalHeight: img.naturalHeight,
+                    referrerPolicy: img.referrerPolicy
+                };
+                console.error("Image prefetch failed", diagnostic, event);
+                cleanup();
+                reject(new Error(`Failed loading image: ${url}`));
+            };
+
+            img.decoding = "async";
+            img.referrerPolicy = "no-referrer";
+            img.addEventListener("load", onLoad, { once: true });
+            img.addEventListener("error", onError, { once: true });
+            host.appendChild(img);
+            img.src = url;
+        });
     }
 
     private toAbsoluteUrl(url: string): string {
@@ -214,7 +307,7 @@ export class BrowseOffline extends LitElement {
         }
 
         const totalCount = this.visibleChords.totalCount ?? this.visibleChords.items.length;
-        this.status = `Showing ${this.visibleChords.items.length} of ${totalCount} offline chord charts.`;
+        this.status = `You have ${totalCount} chord charts available offline on this device.`;
         this.requestUpdate();
     }
 }

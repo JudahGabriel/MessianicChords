@@ -122,7 +122,11 @@ staticResourceCache({
 // Image cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#image_cache
 // This is a cache-first strategy for all images. We specify a max number of images and max age of image.
 imageCache({
-    matchCallback: ({ request, url }) => request.destination === "image" || url.pathname.toLowerCase().endsWith(".svg"),
+    matchCallback: ({ request, url }) => {
+        const path = url.pathname.toLowerCase();
+        const hasImageExtension = /\.(svg|png|jpe?g|webp|gif|avif)$/i.test(path);
+        return request.destination === "image" || (request.destination === "" && hasImageExtension);
+    },
     maxAgeSeconds: 60 * 60 * 24 * 14, // 14 days: 60 seconds * 60 minutes in an hour * 24 hours in a day * 14 days
     maxEntries: 5000
 });
