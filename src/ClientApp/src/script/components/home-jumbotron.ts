@@ -2,11 +2,10 @@ import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
 import { homeJumbotronStyles } from "./home-jumbotron.styles";
-import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 
 @customElement("home-jumbotron")
 export class HomeJumbotron extends LitElement {
-    static styles = [sharedStyles, bootstrapUtilities, homeJumbotronStyles];
+    static styles = [sharedStyles, homeJumbotronStyles];
 
     @state() locationPath = "/";
 
@@ -47,28 +46,14 @@ export class HomeJumbotron extends LitElement {
           <!-- This is hidden on xs screen -->
           ${this.renderLargeSubheader()}
         </div>
-        <!-- On XS screen, show the subtitle beneath the  -->
-        ${this.renderPhoneSubheader()}
       </header>
     `;
     }
 
     renderLargeSubheader(): TemplateResult {
         return html`
-      <h2 class="d-none d-sm-inline-block">
+      <h2 class="large-subheader d-none">
         <span>Chord charts and lyrics for Messiah's music</span>
-      </h2>
-    `;
-    }
-
-    renderPhoneSubheader(): TemplateResult {
-        if (!this.isOnHomePage) {
-            return html``;
-        }
-
-        return html`
-      <h2 class="d-block d-sm-none w-100 text-center">
-        <span>Chord charts for Messiah's music</span>
       </h2>
     `;
     }

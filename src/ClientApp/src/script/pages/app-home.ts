@@ -170,10 +170,10 @@ export class AppHome extends LitElement {
 
     renderNewChordsPlaceholder(): TemplateResult {
         return html`
-            <div class="new-chords-placeholder-container placeholder-glow row ms-sm-2 my-1 my-sm-auto">
-                <sl-skeleton effect="pulse" class="col-3"></sl-skeleton>
-                <sl-skeleton effect="pulse" class="col-5"></sl-skeleton>
-                <sl-skeleton effect="pulse" class="col-4"></sl-skeleton>
+            <div class="new-chords-placeholder-container" aria-hidden="true">
+                <div class="new-chord-skeleton"><sl-skeleton effect="pulse"></sl-skeleton></div>
+                <div class="new-chord-skeleton"><sl-skeleton effect="pulse"></sl-skeleton></div>
+                <div class="new-chord-skeleton"><sl-skeleton effect="pulse"></sl-skeleton></div>
             </div>
         `;
     }

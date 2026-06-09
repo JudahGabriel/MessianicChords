@@ -81,12 +81,36 @@ export const appHomeStyles = css`
     }
 
     .new-chords-placeholder-container {
-        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .new-chord-skeleton {
+        width: 18.5em;
+        aspect-ratio: 4 / 5;
+        --border-radius: 0;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .new-chord-skeleton sl-skeleton {
+        width: 100%;
+        height: 100%;
     }
 
     ${phonesOnly()} {
         .new-chords-placeholder-container {
-            width: 100%;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .new-chord-skeleton {
+            margin: 10px 20px;
         }
     }
 
