@@ -141,6 +141,8 @@ export class BrowseOffline extends LitElement {
         try {
             const cacheableChords = await this.onlineBackend.getCacheableChords();
             this.cacheTotal = cacheableChords.length;
+            let succeeded = 0;
+            let failed = 0;
 
             if (cacheableChords.length === 0) {
                 this.status = "No cacheable chord charts were returned.";
@@ -152,11 +154,17 @@ export class BrowseOffline extends LitElement {
                 this.cacheCurrent = i + 1;
                 this.status = `Caching ${this.cacheCurrent} of ${this.cacheTotal} chord charts for offline use...`;
 
-                await this.chordCache.add(chord);
-                await this.cacheChordMedia(chord);
+                try {
+                    await this.chordCache.add(chord);
+                    await this.cacheChordMedia(chord);
+                    succeeded++;
+                } catch (error) {
+                    failed++;
+                    console.warn("Failed to cache chord chart for offline use", chord.id, error);
+                }
             }
 
-            this.status = `Finished caching ${this.cacheTotal} chord charts for offline use.`;
+            this.status = `Finished caching ${this.cacheTotal} chord charts: ${succeeded} succeeded, ${failed} failed.`;
             await this.loadOfflineChords();
         } catch (error) {
             console.error("Failed to cache all chords", error);
