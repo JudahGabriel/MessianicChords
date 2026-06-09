@@ -142,6 +142,60 @@ namespace MessianicChords.Controllers
         }
 
         [HttpGet]
+        public async Task<PagedResults<ChordSheet>> GetBySongGroup(string group, int skip = 0, int take = 100)
+        {
+            var normalizedGroup = (group ?? string.Empty).Trim().ToUpperInvariant();
+            if (string.IsNullOrWhiteSpace(normalizedGroup))
+            {
+                return new PagedResults<ChordSheet>
+                {
+                    Results = new List<ChordSheet>(),
+                    Skip = skip,
+                    Take = take,
+                    TotalCount = 0
+                };
+            }
+
+            IQueryable<ChordSheet> query = DbSession.Query<ChordSheet>()
+                .Statistics(out var stats);
+
+            if (normalizedGroup == "0-9")
+            {
+                query = query.Where(sheet =>
+                    sheet.Song.StartsWith("0") ||
+                    sheet.Song.StartsWith("1") ||
+                    sheet.Song.StartsWith("2") ||
+                    sheet.Song.StartsWith("3") ||
+                    sheet.Song.StartsWith("4") ||
+                    sheet.Song.StartsWith("5") ||
+                    sheet.Song.StartsWith("6") ||
+                    sheet.Song.StartsWith("7") ||
+                    sheet.Song.StartsWith("8") ||
+                    sheet.Song.StartsWith("9"));
+            }
+            else
+            {
+                // Song group keys are single letters (A-Z).
+                var groupPrefix = normalizedGroup[0].ToString();
+                query = query.Where(sheet => sheet.Song.StartsWith(groupPrefix));
+            }
+
+            var chordSheets = await query
+                .OrderBy(sheet => sheet.Song)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return new PagedResults<ChordSheet>
+            {
+                Results = chordSheets,
+                Skip = skip,
+                Take = take,
+                TotalCount = stats.TotalResults
+            };
+        }
+
+        [HttpGet]
         public async Task<PagedResults<ChordSheet>> GetByArtistName(int skip, int take)
         {
             var chordSheets = await DbSession.Query<ChordSheet>()

@@ -1,94 +1,193 @@
-import { CSSResult, html, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import "../components/chord-card";
-import "../components/chord-card-loading";
-import "../components/load-more-button";
-import { ChordSheet, PagedResult } from "../models/interfaces";
-import { BootstrapBase } from "../common/bootstrap-base";
-import { BrowseSongs } from "./browse-songs";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
+import { ChordSheet } from "../models/interfaces";
+import { ChordService } from "../services/chord-service";
+import { PagedList } from "../models/paged-list";
+import { sharedStyles } from "../common/shared.styles";
 import { browseArtistsStyles } from "./browse-artists.styles";
+import "../components/chord-collection";
+import "../components/load-more-button";
+import "@shoelace-style/shoelace/dist/components/details/details.js";
 import "@shoelace-style/shoelace/dist/components/select/select.js";
 import "@shoelace-style/shoelace/dist/components/option/option.js";
 
-// This component is the same as browse songs, only the grouping is by artist, rather than by first letter of song name.
-// So, let's just inherit from BrowseSongs.
+type ArtistGroup = {
+    artist: string;
+    chordList: PagedList<ChordSheet> | null;
+};
+
 @customElement("browse-artists")
-export class BrowseArtists extends BrowseSongs {
-    @state() artists: string[] = [];
+export class BrowseArtists extends LitElement {
+    static styles = [browseArtistsStyles, sharedStyles];
 
-    static styles = [
-        BootstrapBase.styles,
-        BrowseSongs.styles,
-        browseArtistsStyles
-    ] as CSSResult[];
+    @property({ type: String, attribute: "jump-to-artist" }) jumpToArtist = "";
+    @state() private artistGroups: ArtistGroup[] = [];
+    @state() private loading = true;
+    @state() private error: string | null = null;
+    @state() private selectedArtist = "";
 
-    constructor() {
-        super();
+    private readonly chordService = new ChordService();
+
+    connectedCallback(): void {
+        super.connectedCallback();
+        this.loadArtists().catch(error => {
+            console.error("Failed loading artists", error);
+            this.error = "Unable to load artists right now. Please try again.";
+            this.loading = false;
+        });
     }
 
-    protected firstUpdated(changedProps: Map<string | number | symbol, unknown>): void {
-        super.firstUpdated(changedProps);
-        this.chordService.getAllArtists()
-            .then(a => this.artists = a);
+    private async loadArtists(): Promise<void> {
+        const artists = await this.chordService.getAllArtists();
+        this.artistGroups = artists
+            .filter(a => !!a)
+            .map(artist => ({
+                artist,
+                chordList: null
+            }));
+
+        this.loading = false;
+        await this.updateComplete;
+        this.autoExpandRequestedArtist();
     }
 
-    renderAdditionalContainerContent(): TemplateResult {
-        return this.renderAllArtistsDropdown();
+    private autoExpandRequestedArtist(): void {
+        const requestedArtist = this.getRequestedArtist();
+        if (!requestedArtist) {
+            return;
+        }
+
+        const artistIndex = this.findArtistIndex(requestedArtist);
+        if (artistIndex >= 0) {
+            this.loadArtistChords(artistIndex);
+        }
+
+        const artistKey = this.artistKey(requestedArtist);
+        const details = this.renderRoot.querySelector<HTMLElement>(`sl-details[data-artist-key="${artistKey}"]`) as HTMLElement & { open?: boolean };
+        if (!details) {
+            return;
+        }
+
+        details.open = true;
+        details.scrollIntoView({ behavior: "smooth", block: "start" });
+        this.selectedArtist = encodeURIComponent(requestedArtist);
     }
 
-    renderAllArtistsDropdown(): TemplateResult {
+    private onArtistSelectChanged(e: Event): void {
+        const selectedArtist = ((e.target as HTMLInputElement).value || "").trim();
+        this.selectedArtist = selectedArtist;
+        if (!selectedArtist) {
+            history.replaceState({}, "", "/browse/artists");
+            return;
+        }
+
+        const decodedArtist = decodeURIComponent(selectedArtist);
+        const artistIndex = this.findArtistIndex(decodedArtist);
+        if (artistIndex >= 0) {
+            this.loadArtistChords(artistIndex);
+        }
+
+        history.replaceState({}, "", `/browse/artists?jump-to-artist=${encodeURIComponent(decodedArtist)}`);
+
+        const details = this.renderRoot.querySelector<HTMLElement>(`sl-details[data-artist-key="${this.artistKey(decodedArtist)}"]`) as HTMLElement & { open?: boolean };
+        if (!details) {
+            return;
+        }
+
+        details.open = true;
+        details.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    private onArtistDetailsShow(index: number): void {
+        this.loadArtistChords(index);
+    }
+
+    private loadArtistChords(index: number): void {
+        const group = this.artistGroups[index];
+        if (!group || group.chordList) {
+            return;
+        }
+
+        const list = new PagedList<ChordSheet>((skip, take) => this.chordService.getByArtistName(group.artist, skip, take));
+        list.take = 100;
+        list.addEventListener("changed", () => this.requestUpdate());
+        group.chordList = list;
+        this.artistGroups = [...this.artistGroups];
+        list.fetch();
+    }
+
+    private getRequestedArtist(): string | null {
+        const fromQuery = new URLSearchParams(window.location.search).get("jump-to-artist");
+        const requested = (fromQuery || this.jumpToArtist || "").trim();
+        return requested || null;
+    }
+
+    private artistKey(artist: string): string {
+        return encodeURIComponent(artist.toLocaleLowerCase());
+    }
+
+    private findArtistIndex(artist: string): number {
+        const key = artist.toLocaleLowerCase();
+        return this.artistGroups.findIndex(g => g.artist.toLocaleLowerCase() === key);
+    }
+
+    render(): TemplateResult {
+        if (this.loading) {
+            return html`
+                <div class="container py-4">
+                    <h2 class="highlight">Songs By Artist</h2>
+                    <p>Loading artists...</p>
+                </div>
+            `;
+        }
+
+        if (this.error) {
+            return html`
+                <div class="container py-4">
+                    <h2 class="highlight">Songs By Artist</h2>
+                    <p class="text-danger">${this.error}</p>
+                </div>
+            `;
+        }
+
         return html`
-            <div class="artist-header-row mb-4 mb-sm-0">
-                <h2 class="highlight mb-0">Songs By Artist</h2>
-                <sl-select
-                    id="artistSelect"
-                    class="artist-jump-select"
-                    placeholder="Jump to artist"
-                    @sl-change="${this.jumpToArtistChanged}">
-                    ${repeat(this.artists, a => a, a => this.renderArtist(a))}
-                </sl-select>
+            <div class="container py-4">
+                <div class="artist-header-row mb-3">
+                    <h2 class="highlight mb-0">Songs By Artist</h2>
+                    <sl-select
+                        class="artist-jump-select"
+                        placeholder="Jump to artist"
+                        value="${this.selectedArtist}"
+                        @sl-change="${this.onArtistSelectChanged}">
+                        ${repeat(this.artistGroups, g => g.artist, g => html`<sl-option value="${encodeURIComponent(g.artist)}">${g.artist}</sl-option>`) }
+                    </sl-select>
+                </div>
+
+                ${this.artistGroups.length === 0 ? html`<p>No artists found.</p>` : html``}
+                ${repeat(this.artistGroups, g => g.artist, (g, i) => this.renderArtistGroup(g, i))}
             </div>
         `;
     }
 
-    renderArtist(artistName: string): TemplateResult {
-        if (!artistName) {
-            return html``;
-        }
-        const artistValue = encodeURIComponent(artistName);
+    private renderArtistGroup(group: ArtistGroup, index: number): TemplateResult {
         return html`
-            <sl-option value="${artistValue}">${artistName}</sl-option>
+            <sl-details
+                class="artist-details mb-3"
+                data-artist-index="${index}"
+                data-artist-key="${this.artistKey(group.artist)}"
+                ?open="${this.getRequestedArtist()?.toLocaleLowerCase() === group.artist.toLocaleLowerCase()}"
+                @sl-show="${() => this.onArtistDetailsShow(index)}">
+                <div slot="summary" class="artist-summary-text">${group.artist}</div>
+                <div class="artist-content">
+                    ${group.chordList ? html`
+                        <chord-collection .chords="${group.chordList}"></chord-collection>
+                        <div class="text-center mt-3">
+                            <load-more-button .list="${group.chordList}"></load-more-button>
+                        </div>
+                    ` : html`<p>Loading songs...</p>`}
+                </div>
+            </sl-details>
         `;
-    }
-
-    protected async fetchNextChunk(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const chunk = await this.chordService.getByArtistName(null, skip, take);
-
-        // Sort them into our artist group.
-        chunk.results.forEach(c => this.addToArtistGroup(c));
-
-        return chunk;
-    }
-
-    addToArtistGroup(chord: ChordSheet) {
-        const artist = chord.artist;
-        if (artist) {
-            const chordsGroup = this.chordGrouping[artist];
-            if (chordsGroup) {
-                chordsGroup.push(chord);
-            } else {
-                this.chordGrouping[artist] = [chord];
-            }
-        }
-    }
-
-    jumpToArtistChanged(e: Event) {
-        const input = e.target as HTMLInputElement;
-        const selectedArtist = input?.value ? decodeURIComponent(input.value) : "";
-        // If we selected an artist, jump to them.
-        if (selectedArtist && this.artists.includes(selectedArtist)) {
-            window.location.href = `/artist/${encodeURIComponent(selectedArtist)}`;
-        }
     }
 }

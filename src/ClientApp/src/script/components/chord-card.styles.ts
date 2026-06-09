@@ -21,6 +21,10 @@ export const chordCardStyles = css`
         color: inherit;
     }
 
+    .card-media-link {
+        cursor: pointer;
+    }
+
     .card-media {
         position: relative;
         aspect-ratio: 4 / 5;
@@ -52,7 +56,8 @@ export const chordCardStyles = css`
 
     ${phonesOnly()} {
         .chord-card {
-            margin: 10px 20px;
+            width: 16.5em;
+            margin: 8px 12px;
         }
     }
 
@@ -97,6 +102,18 @@ export const chordCardStyles = css`
         font-weight: 600;
         text-decoration: none;
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .artist-link {
+        position: relative;
+        z-index: 2;
+    }
+
+    .artist-link:link,
+    .artist-link:visited,
+    .artist-link:hover,
+    .artist-link:focus-visible {
+        color: #f4f7ff;
     }
 
     .artist:hover {

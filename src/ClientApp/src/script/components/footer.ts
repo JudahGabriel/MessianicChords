@@ -10,7 +10,7 @@ export class AppFooter extends LitElement {
 
     render() {
         return html`
-            <footer class="d-flex w-100 d-print-none">
+            <footer class="d-flex d-print-none">
                 <a href="/">Home</a>
                 <a href="/about">About us, legal</a>
                 <a href="/contact">Contact us</a>

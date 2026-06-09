@@ -82,6 +82,10 @@ export const appHeaderStyles = css`
         color: var(--highlight-orange);
     }
 
+    .nav-links a.active {
+        color: var(--highlight-orange);
+    }
+
     /* Search */
     .nav-search {
         display: flex;

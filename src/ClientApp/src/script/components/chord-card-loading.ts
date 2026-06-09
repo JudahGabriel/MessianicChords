@@ -1,9 +1,8 @@
-import { css, CSSResultGroup, html, TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
-import { BootstrapBase } from '../common/bootstrap-base';
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators.js";
 
-@customElement('chord-card-loading')
-export class ChordCardLoading extends BootstrapBase {
+@customElement("chord-card-loading")
+export class ChordCardLoading extends LitElement {
 
     static get styles(): CSSResultGroup {
         const localStyles = css`
@@ -15,7 +14,6 @@ export class ChordCardLoading extends BootstrapBase {
         `;
 
         return [
-            BootstrapBase.styles,
             localStyles
         ];
     }

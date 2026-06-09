@@ -18,29 +18,61 @@ export class ChordCard extends LitElement {
             return html``;
         }
 
-        const target = this.newWindow ? "_blank" : "_self";
         const artist = this.chord.artist || this.chord.authors.join(", ");
+        const artistHref = `/browse/artists?jump-to-artist=${encodeURIComponent(artist)}`;
 
         return html`
             <sl-card class="chord-card">
-                <a class="card-link" href="/${this.chord.id.toLowerCase()}" target="${target}">
-                    <div class="card-media">
-                        ${this.renderBackground()}
+                <div
+                    class="card-media card-media-link"
+                    role="link"
+                    tabindex="0"
+                    @click="${() => this.navigateToChordDetails()}"
+                    @keydown="${this.onCardKeydown}">
+                    ${this.renderBackground()}
 
-                        <div class="overlay overlay-top">
-                            <div class="song-name">${this.chord.song}</div>
-                        </div>
-
-                        <div class="overlay overlay-bottom">
-                            <div class="artist">
-                                ${artist}
-                            </div>
-                            ${this.renderKey()}
-                        </div>
+                    <div class="overlay overlay-top">
+                        <div class="song-name">${this.chord.song}</div>
                     </div>
-                </a>
+
+                    <div class="overlay overlay-bottom">
+                        <a
+                            class="artist artist-link"
+                            href="${artistHref}"
+                            @click="${this.onArtistClick}">
+                            ${artist}
+                        </a>
+                        ${this.renderKey()}
+                    </div>
+                </div>
             </sl-card>
         `;
+    }
+
+    private navigateToChordDetails(): void {
+        if (!this.chord) {
+            return;
+        }
+
+        const href = `/${this.chord.id.toLowerCase()}`;
+        if (this.newWindow) {
+            window.open(href, "_blank", "noopener");
+            return;
+        }
+
+        window.location.href = href;
+    }
+
+    private onCardKeydown(e: KeyboardEvent): void {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            this.navigateToChordDetails();
+        }
+    }
+
+    private onArtistClick(e: Event): void {
+        // Keep artist link navigation independent from the card click handler.
+        e.stopPropagation();
     }
 
     renderBackground(): TemplateResult {

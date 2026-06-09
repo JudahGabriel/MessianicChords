@@ -24,12 +24,15 @@ export class AppHeader extends LitElement {
     @state() searchOpen = false;
     @state() user: UserViewModel | null = null;
     @state() isOnline: boolean = navigator.onLine;
+    @state() locationPath = window.location.pathname;
 
     @query(".nav-search-desktop sl-input")
     private searchInput?: HTMLElement;
 
     private signedInStateSubscription: Subscription | null = null;
     private onlineStatusSubscription: Subscription | null = null;
+    private readonly onAppRouteChanged = (): void => this.updateCurrentPath();
+    private readonly onBrowserLocationChanged = (): void => this.updateCurrentPath();
 
     connectedCallback(): void {
         super.connectedCallback();
@@ -42,7 +45,10 @@ export class AppHeader extends LitElement {
         });
 
         this.loadUser();
+        this.updateCurrentPath();
         window.addEventListener("online", this.onBrowserOnline);
+        window.addEventListener("popstate", this.onBrowserLocationChanged);
+        window.addEventListener("app-route-changed", this.onAppRouteChanged);
         window.addEventListener("account-changed", this.loadUser);
         this.listenForOfflineStatusChange();
     }
@@ -54,6 +60,8 @@ export class AppHeader extends LitElement {
         this.onlineStatusSubscription?.unsubscribe();
         this.onlineStatusSubscription = null;
         window.removeEventListener("online", this.onBrowserOnline);
+        window.removeEventListener("popstate", this.onBrowserLocationChanged);
+        window.removeEventListener("app-route-changed", this.onAppRouteChanged);
         window.removeEventListener("account-changed", this.loadUser);
     }
 
@@ -83,14 +91,14 @@ export class AppHeader extends LitElement {
 
                     <div class="nav-center">
                         <div class="nav-links ${this.menuOpen ? "open" : ""}">
-                            <a href="/" @click="${this.closeMenu}">Home</a>
-                            <a href="/browse/newest" @click="${this.closeMenu}">Newest</a>
-                            <a href="/browse/songs" @click="${this.closeMenu}">Songs</a>
-                            <a href="/browse/artists" @click="${this.closeMenu}">Artists</a>
-                            <a href="/browse/tags" @click="${this.closeMenu}">Tags</a>
-                            <a href="/my/starred" @click="${this.closeMenu}">Starred</a>
-                            <a href="/browse/random" @click="${this.closeMenu}">Random</a>
-                            <a id="offline-menu-link" href="/browse/offline" @click="${this.closeMenu}">Offline</a>
+                            <a class="${this.navLinkClass(["/"])}" href="/" @click="${this.closeMenu}">Home</a>
+                            <a class="${this.navLinkClass(["/browse/newest"])}" href="/browse/newest" @click="${this.closeMenu}">Newest</a>
+                            <a class="${this.navLinkClass(["/browse/songs"])}" href="/browse/songs" @click="${this.closeMenu}">Songs</a>
+                            <a class="${this.navLinkClass(["/browse/artists", "/artist/"])}" href="/browse/artists" @click="${this.closeMenu}">Artists</a>
+                            <a class="${this.navLinkClass(["/browse/tags"])}" href="/browse/tags" @click="${this.closeMenu}">Tags</a>
+                            <a class="${this.navLinkClass(["/my/starred"])}" href="/my/starred" @click="${this.closeMenu}">Starred</a>
+                            <a class="${this.navLinkClass(["/browse/random"])}" href="/browse/random" @click="${this.closeMenu}">Random</a>
+                            <a id="offline-menu-link" class="${this.navLinkClass(["/browse/offline"])}" href="/browse/offline" @click="${this.closeMenu}">Offline</a>
                         </div>
 
                         <div class="nav-search nav-search-desktop ${this.searchOpen ? "open" : ""}">
@@ -239,6 +247,29 @@ export class AppHeader extends LitElement {
 
     private closeMenu(): void {
         this.menuOpen = false;
+    }
+
+    private navLinkClass(paths: string[]): string {
+        return this.isCurrentPath(paths) ? "active" : "";
+    }
+
+    private isCurrentPath(paths: string[]): boolean {
+        const path = this.locationPath || "/";
+        return paths.some(candidate => {
+            if (candidate === "/") {
+                return path === "/";
+            }
+
+            if (candidate.endsWith("/")) {
+                return path.startsWith(candidate);
+            }
+
+            return path === candidate;
+        });
+    }
+
+    private updateCurrentPath(): void {
+        this.locationPath = window.location.pathname;
     }
 
     private handleSearch(e: Event): void {

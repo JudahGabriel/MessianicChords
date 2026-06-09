@@ -75,6 +75,31 @@ export class ChordsLocalDatabase {
         return await this.getIndexResultsPaged(ChordsLocalDatabase.songIndex, null, store, skip, take);
     }
 
+    public async getBySongGroup(group: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const normalizedGroup = (group || "").trim().toLowerCase();
+        if (!normalizedGroup) {
+            return {
+                skip,
+                take,
+                results: [],
+                totalCount: 0
+            };
+        }
+
+        const store = await this.openChordsStore("readonly");
+        const allSongs = await this.getIndexResults(ChordsLocalDatabase.songIndex, null, store);
+        const filteredSongs = normalizedGroup === "0-9"
+            ? allSongs.filter(c => /^\d/.test((c.song || "").trim()))
+            : allSongs.filter(c => (c.song || "").toLowerCase().startsWith(normalizedGroup));
+
+        return {
+            skip,
+            take,
+            results: filteredSongs.slice(skip, skip + take),
+            totalCount: filteredSongs.length
+        };
+    }
+
     /**
      * Loads artists by name from the cache.
      * @param artist

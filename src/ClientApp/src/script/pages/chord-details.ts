@@ -7,7 +7,6 @@ import { ChordsLocalDatabase } from "../services/chords-local-database";
 import { ChordChartLine, ChordChartSpan, createChordChartLines } from "../models/chord-chart-line";
 import { Chord } from "../models/chord";
 import { chordDetailStyles } from "./chord-details.styles";
-import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 import { sharedStyles } from "../common/shared.styles";
 import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
@@ -53,7 +52,7 @@ export class ChordDetails extends LitElement {
     readonly chordCache = new ChordsLocalDatabase();
     static readonly defaultFontSize = 16;
 
-    static styles = [sharedStyles, bootstrapUtilities, chordDetailStyles];
+    static styles = [sharedStyles, chordDetailStyles];
 
     connectedCallback(): void {
         super.connectedCallback();

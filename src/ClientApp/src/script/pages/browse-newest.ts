@@ -1,4 +1,4 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "../components/chord-collection";
 import "../components/load-more-button";
@@ -13,15 +13,7 @@ export class BrowseNewest extends LitElement {
     @property({ type: Object }) chords: PagedList<ChordSheet>;
     readonly chordService = new ChordService();
 
-    static get styles() {
-        const localStyles = css`
-        `;
-
-        return [
-            sharedStyles,
-            localStyles
-        ];
-    }
+    static styles = [sharedStyles];
 
     constructor() {
         super();

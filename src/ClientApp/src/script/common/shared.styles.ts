@@ -93,6 +93,10 @@ export const sharedStyles = css`
         flex-direction: column !important;
     }
 
+    .flex-wrap {
+        flex-wrap: wrap !important;
+    }
+
     .gap-0 {
         gap: 0 !important;
     }
@@ -102,7 +106,7 @@ export const sharedStyles = css`
     }
 
     .gap-2 {
-    gap: 0.5rem !important;
+        gap: 0.5rem !important;
     }
 
     .gap-3 {
@@ -115,6 +119,22 @@ export const sharedStyles = css`
 
     .gap-5 {
         gap: 3rem !important;
+    }
+
+    .mt-0 {
+        margin-top: 0 !important;
+    }
+
+    .mt-1 {
+        margin-top: 0.25rem !important;
+    }
+
+    .mt-2 {
+        margin-top: 0.5rem !important;
+    }
+
+    .mt-3 {
+        margin-top: 1rem !important;
     }
 
     .justify-content-start {
@@ -211,5 +231,9 @@ export const sharedStyles = css`
 
     .fw-bolder {
         font-weight: bolder !important;
+    }
+
+    .w-100 {
+        width: 100% !important;
     }
 `;

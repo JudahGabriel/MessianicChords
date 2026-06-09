@@ -11,6 +11,7 @@ export interface ChordFetchBackend {
     search(query: string): Promise<ChordSheet[]>;
     searchPaged(query: string, skip: number, take: number): Promise<PagedResult<ChordSheet>>;
     getBySongName(skip: number, take: number): Promise<PagedResult<ChordSheet>>;
+    getBySongGroup(group: string, skip: number, take: number): Promise<PagedResult<ChordSheet>>;
     getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>>;
     getByRandom(take: number): Promise<ChordSheet[]>;
     getAllArtists(): Promise<string[]>;

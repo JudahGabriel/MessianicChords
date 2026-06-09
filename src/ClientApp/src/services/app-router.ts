@@ -98,7 +98,7 @@ export const appRouter = new Router({
             path: "/artist/:name",
             title: "Artist",
             plugins: [lazy(() => import("../script/pages/artist-songs"))],
-            render: (context: RouteContext) => html`<artist-songs .location=${context}></artist-songs>`
+            render: (context: RouteContext) => html`<artist-songs artist-name="${context.params?.name || ""}"></artist-songs>`
         },
         {
             path: "/my/starred",
@@ -127,8 +127,8 @@ export const appRouter = new Router({
         {
             path: "/about",
             title: "About",
-            plugins: [lazy(() => import("../script/pages/app-about"))],
-            render: () => html`<app-about></app-about>`
+            plugins: [lazy(() => import("../script/pages/about"))],
+            render: () => html`<about-page></about-page>`
         }
     ]
 });

@@ -38,6 +38,11 @@ export class ChordBackendOffline implements ChordFetchBackend {
         return await cache.getBySongName(skip, take);
     }
 
+    async getBySongGroup(group: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        const cache = await this.getChordCache();
+        return await cache.getBySongGroup(group, skip, take);
+    }
+
     async getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         const cache = await this.getChordCache();
         return await cache.getByArtistName(artist, skip, take);

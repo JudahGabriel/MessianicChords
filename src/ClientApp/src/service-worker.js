@@ -132,6 +132,7 @@ imageCache({
 // These cache results remain valid for a short period of time before we invalidate them.
 const staleWhileRevalidateRoutes = [
     "/chords/getbysongname", // chords by song name
+    "/chords/getbysonggroup", // chords by song letter/number group
     "/chords/getallartists", // list of all artists
     "/chords/getbyartistname", // list of artists sorted by name
     "/chords/search", // searches

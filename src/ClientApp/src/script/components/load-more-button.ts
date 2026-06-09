@@ -1,21 +1,13 @@
-import { css, html, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { BootstrapBase } from "../common/bootstrap-base";
 import { PagedList } from "../models/paged-list";
+import { sharedStyles } from "../common/shared.styles";
 
 @customElement("load-more-button")
-export class LoadMoreButton extends BootstrapBase {
+export class LoadMoreButton extends LitElement {
     @property({ type: Object }) list: PagedList<unknown> | null = null;
 
-    static get styles() {
-        const localStyles = css`
-        `;
-
-        return [
-            BootstrapBase.styles,
-            localStyles
-        ];
-    }
+    static styles = [sharedStyles];
 
     connectedCallback() {
         super.connectedCallback();

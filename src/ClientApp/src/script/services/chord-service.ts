@@ -35,6 +35,10 @@ export class ChordService extends ApiServiceBase {
         return this.backend.then(b => b.getBySongName(skip, take));
     }
 
+    getBySongGroup(group: string, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
+        return this.backend.then(b => b.getBySongGroup(group, skip, take));
+    }
+
     getByArtistName(artist: string | null, skip: number, take: number): Promise<PagedResult<ChordSheet>> {
         return this.backend.then(b => b.getByArtistName(artist, skip, take));
     }

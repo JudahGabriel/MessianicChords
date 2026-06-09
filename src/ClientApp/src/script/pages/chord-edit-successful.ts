@@ -1,10 +1,9 @@
-import { css, html, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
-import { BootstrapBase } from "../common/bootstrap-base";
 import { RouteLocation } from "../common/route-location";
 
-@customElement('chord-edit-successful')
-export class ChordEditSuccessful extends BootstrapBase {
+@customElement("chord-edit-successful")
+export class ChordEditSuccessful extends LitElement {
     location: RouteLocation | null = null; // injected by the router
 
     static get styles() {
@@ -15,7 +14,6 @@ export class ChordEditSuccessful extends BootstrapBase {
             }
         `;
         return [
-            BootstrapBase.styles,
             localStyles
         ];
     }

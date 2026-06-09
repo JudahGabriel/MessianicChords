@@ -5,7 +5,6 @@ import { PagedList } from "../models/paged-list";
 import { ChordSheet } from "../models/interfaces";
 import { sharedStyles } from "../common/shared.styles";
 import { chordCollectionStyles } from "./chord-collection.styles";
-import { bootstrapUtilities } from "../common/bootstrap-utilities.styles";
 import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
 import "../components/chord-card";
 
@@ -20,7 +19,7 @@ export class ChordCollection extends LitElement {
     readonly chordsChangedHandler = () => this.chordsChanged();
     readonly isInTabbedPwa = window.matchMedia("(display-mode: tabbed)").matches;
 
-    static styles = [sharedStyles, bootstrapUtilities, chordCollectionStyles];
+    static styles = [sharedStyles, chordCollectionStyles];
 
     updated(props: PropertyValueMap<this>) {
         if (props.has("chords")) {
@@ -65,18 +64,16 @@ export class ChordCollection extends LitElement {
 
     private renderLoadingCard(): TemplateResult {
         return html`
-            <sl-card class="loading-card">
-                <div slot="header">
-                    <sl-skeleton class="title" effect="pulse"></sl-skeleton>
-                </div>
+            <sl-card class="loading-card" aria-hidden="true">
+                <div class="loading-media">
+                    <div class="loading-overlay loading-overlay-top">
+                        <sl-skeleton class="title" effect="pulse"></sl-skeleton>
+                    </div>
 
-                <div>
-                    <h6>
+                    <div class="loading-overlay loading-overlay-bottom">
                         <sl-skeleton class="artist" effect="pulse"></sl-skeleton>
-                    </h6>
-                    <h6>
                         <sl-skeleton class="key" effect="pulse"></sl-skeleton>
-                    </h6>
+                    </div>
                 </div>
             </sl-card>
         `;

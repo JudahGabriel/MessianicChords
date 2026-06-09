@@ -1,32 +1,75 @@
-import { CSSResult } from "lit";
-import { customElement } from "lit/decorators.js";
-import { BootstrapBase } from "../common/bootstrap-base";
-import { ChordSheet, PagedResult } from "../models/interfaces";
-import { BrowseArtists } from "./browse-artists";
-import { RouteLocation } from "../common/route-location";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { ChordSheet } from "../models/interfaces";
+import { PagedList } from "../models/paged-list";
+import { ChordService } from "../services/chord-service";
+import { sharedStyles } from "../common/shared.styles";
+import { browseArtistsStyles } from "./browse-artists.styles";
+import "../components/chord-collection";
+import "../components/load-more-button";
 
-// This is the same functionality as browse artists page, only with a single artist
-// So, we inherit from that page and just tweak it to display this artist.
 @customElement("artist-songs")
-export class ArtistSongs extends BrowseArtists {
-    location: RouteLocation | null = null;
+export class ArtistSongs extends LitElement {
+    static styles = [sharedStyles, browseArtistsStyles];
 
-    static styles = [
-        BootstrapBase.styles,
-        BrowseArtists.styles
-    ] as CSSResult[];
+    @property({ attribute: "artist-name" }) artistName = "";
 
-    constructor() {
-        super();
+    @state() private chords = PagedList.empty<ChordSheet>();
+    @state() private error: string | null = null;
+
+    private readonly chordService = new ChordService();
+
+    connectedCallback(): void {
+        super.connectedCallback();
+        this.loadFromArtistName();
     }
 
-    protected async fetchNextChunk(skip: number, take: number): Promise<PagedResult<ChordSheet>> {
-        const artistName = this.location?.params?.["name"] as string || null;
-        const chunk = await this.chordService.getByArtistName(artistName, skip, take);
+    updated(changedProps: Map<string | number | symbol, unknown>): void {
+        if (changedProps.has("artistName")) {
+            this.loadFromArtistName();
+        }
+    }
 
-        // Sort them into our artist group.
-        chunk.results.forEach(c => this.addToArtistGroup(c));
+    private loadFromArtistName(): void {
+        const artist = decodeURIComponent(this.artistName || "").trim();
+        this.error = null;
 
-        return chunk;
+        if (!artist) {
+            this.chords = PagedList.empty<ChordSheet>();
+            this.error = "Artist not found.";
+            return;
+        }
+
+        const list = new PagedList<ChordSheet>((skip, take) =>
+            this.chordService.getByArtistName(artist, skip, take)
+        );
+        list.take = 100;
+        list.addEventListener("changed", () => this.requestUpdate());
+
+        this.chords = list;
+        list.fetch().catch(err => {
+            console.error("Failed loading artist songs", err);
+            this.error = "Unable to load songs for this artist right now.";
+        });
+    }
+
+    render(): TemplateResult {
+        const headingArtist = decodeURIComponent(this.artistName || "").trim() || "artist";
+        return html`
+            <div class="container py-4">
+                <h2 class="highlight mb-0">Songs by ${headingArtist}</h2>
+
+                ${this.error
+                ? html`<p class="text-danger mt-3">${this.error}</p>`
+                : html`
+                        <div class="mt-3">
+                            <chord-collection .chords="${this.chords}"></chord-collection>
+                            <div class="text-center mt-3">
+                                <load-more-button .list="${this.chords}"></load-more-button>
+                            </div>
+                        </div>
+                    `}
+            </div>
+        `;
     }
 }
