@@ -5,6 +5,22 @@ export const chordEditStyles = css`
         font-family: var(--subtitle-font);
     }
 
+    .page-heading-row {
+        max-width: 900px;
+        margin: 0 auto var(--sl-spacing-large);
+    }
+
+    .page-heading {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sl-spacing-x-small);
+        margin: 0;
+    }
+
+    .page-heading-icon {
+        font-size: 0.95em;
+    }
+
     form {
         max-width: 900px;
         margin: 0 auto;

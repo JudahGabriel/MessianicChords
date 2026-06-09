@@ -16,11 +16,12 @@ import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
 import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
 import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import { sharedStyles } from "../common/shared.styles";
 import { chordEditStyles } from "./chord-edit.styles";
 
 @customElement("chord-edit")
 export class ChordEdit extends LitElement {
-    static styles = [chordEditStyles];
+    static styles = [sharedStyles, chordEditStyles];
     @property({ attribute: "chord-id" }) chordId: string | null = null;
     @state() isNewChordSheet = false;
     @state() chord: ChordSheet | null = null;
@@ -88,6 +89,12 @@ export class ChordEdit extends LitElement {
 
     renderChordEditor(chord: ChordSheet): TemplateResult {
         return html`
+            <div class="page-heading-row">
+                <h2 class="highlight page-heading">
+                    <sl-icon name="pencil-square" class="page-heading-icon"></sl-icon>
+                    ${this.isNewChordSheet ? "Submit new chord chart" : "Edit chord chart"}
+                </h2>
+            </div>
             <form>
                 <!-- Name and Hebrew name row -->
                 <div class="form-row form-row-2">
