@@ -6,6 +6,7 @@ import { ChordSheet, PagedResult } from "../models/interfaces";
 export class ChordsLocalDatabase {
 
     private static readonly chordSheetDb = "chord-sheets-db";
+    private static readonly chordSheetDbVersion = 8;
     private static readonly chordStore = "chord-store";
     private static readonly songIndex = "songIndex";
     private static readonly artistIndex = "artistIndex";
@@ -157,13 +158,18 @@ export class ChordsLocalDatabase {
         }
 
         return new Promise<IDBDatabase>((resolve, reject) => {
-            const openReq = indexedDB.open(ChordsLocalDatabase.chordSheetDb, 4);
-            openReq.onsuccess = (e) => {
-                const db = (e.target as any).result as IDBDatabase;
-                resolve(db);
+            const openReq = indexedDB.open(ChordsLocalDatabase.chordSheetDb, ChordsLocalDatabase.chordSheetDbVersion);
+            openReq.onsuccess = () => resolve(openReq.result);
+
+            openReq.onerror = (e) => {
+                this.getExistingDatabaseVersion()
+                    .then(existingVersion => reject(this.createOpenDatabaseError(openReq, e, existingVersion)))
+                    .catch(() => reject(this.createOpenDatabaseError(openReq, e, null)));
             };
 
-            openReq.onerror = (e) => reject(`Error opening database: ${e}`);
+            openReq.onblocked = () => {
+                reject(new Error(`Error opening IndexedDB '${ChordsLocalDatabase.chordSheetDb}': request was blocked. Try closing other tabs/windows for this site and retry.`));
+            };
 
             openReq.onupgradeneeded = (e) => {
                 try {
@@ -176,13 +182,76 @@ export class ChordsLocalDatabase {
     }
 
     private createDatabase(e: IDBVersionChangeEvent) {
-        const db = (e.target as any).result as IDBDatabase;
-        const chordStore = db.createObjectStore(ChordsLocalDatabase.chordStore, {
-            keyPath: "id"
+        const openReq = e.target as IDBOpenDBRequest | null;
+        if (!openReq) {
+            throw new Error("Unable to upgrade IndexedDB: missing open request target");
+        }
+
+        const db = openReq.result;
+        const upgradeTransaction = openReq.transaction;
+        if (!upgradeTransaction) {
+            throw new Error("Unable to upgrade IndexedDB: missing upgrade transaction");
+        }
+
+        const chordStore = db.objectStoreNames.contains(ChordsLocalDatabase.chordStore)
+            ? upgradeTransaction.objectStore(ChordsLocalDatabase.chordStore)
+            : db.createObjectStore(ChordsLocalDatabase.chordStore, {
+                keyPath: "id"
+            });
+
+        if (!chordStore.indexNames.contains(ChordsLocalDatabase.songIndex)) {
+            chordStore.createIndex(ChordsLocalDatabase.songIndex, "songLowered", { unique: false });
+        }
+
+        if (!chordStore.indexNames.contains(ChordsLocalDatabase.artistIndex)) {
+            chordStore.createIndex(ChordsLocalDatabase.artistIndex, "artistLowered", { unique: false });
+        }
+
+        ChordsLocalDatabase.searchTermIndexes.forEach((indexName, i) => {
+            if (!chordStore.indexNames.contains(indexName)) {
+                chordStore.createIndex(indexName, `searchTerm${i + 1}`, { unique: false });
+            }
         });
-        chordStore.createIndex(ChordsLocalDatabase.songIndex, "songLowered", { unique: false });
-        chordStore.createIndex(ChordsLocalDatabase.artistIndex, "artistLowered", { unique: false });
-        ChordsLocalDatabase.searchTermIndexes.forEach((indexName, i) => chordStore.createIndex(indexName, `searchTerm${i+1}`, { unique: false }));
+    }
+
+    private createOpenDatabaseError(openReq: IDBOpenDBRequest, event: Event, existingVersion: number | null): Error {
+        const domError = openReq.error;
+        const details: string[] = [
+            `Error opening IndexedDB '${ChordsLocalDatabase.chordSheetDb}'`,
+            `requestedVersion=${ChordsLocalDatabase.chordSheetDbVersion}`,
+            `readyState=${openReq.readyState}`
+        ];
+
+        if (existingVersion !== null) {
+            details.push(`existingVersion=${existingVersion}`);
+        }
+
+        if (domError) {
+            details.push(`name=${domError.name}`);
+            details.push(`message=${domError.message}`);
+        }
+
+        if (domError?.name === "VersionError") {
+            details.push("hint=Requested version is older than the existing database. A stale client bundle or old service worker may be using an outdated schema version");
+        }
+
+        const eventType = (event && "type" in event) ? event.type : "unknown";
+        details.push(`eventType=${eventType}`);
+        return new Error(details.join("; "));
+    }
+
+    private getExistingDatabaseVersion(): Promise<number | null> {
+        return new Promise<number | null>((resolve) => {
+            const inspectReq = indexedDB.open(ChordsLocalDatabase.chordSheetDb);
+            inspectReq.onsuccess = () => {
+                const db = inspectReq.result;
+                const version = db.version;
+                db.close();
+                resolve(version);
+            };
+            inspectReq.onerror = () => resolve(null);
+            inspectReq.onblocked = () => resolve(null);
+        });
     }
 
     private async openChordsStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
