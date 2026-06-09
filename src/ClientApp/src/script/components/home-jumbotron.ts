@@ -1,5 +1,5 @@
 import { html, LitElement, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
 import { homeJumbotronStyles } from "./home-jumbotron.styles";
 

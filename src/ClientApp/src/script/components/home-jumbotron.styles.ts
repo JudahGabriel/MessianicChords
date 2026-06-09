@@ -1,5 +1,5 @@
 import { css } from "lit";
-import { BreakpointMax, mediaQuery, tabletsAndSmaller } from "../common/breakpoints";
+import { BreakpointMax, mediaQuery } from "../common/breakpoints";
 
 export const homeJumbotronStyles = css`
       header {
