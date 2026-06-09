@@ -81,14 +81,49 @@ export class AppHeader extends LitElement {
                         </div>
                     </div>
 
-                    <div class="nav-links ${this.menuOpen ? "open" : ""}">
-                        <a href="/" @click="${this.closeMenu}">Home</a>
-                        <a href="/browse/newest" @click="${this.closeMenu}">Newest</a>
-                        <a href="/browse/songs" @click="${this.closeMenu}">Songs</a>
-                        <a href="/browse/artists" @click="${this.closeMenu}">Artists</a>
-                        <a href="/browse/tags" @click="${this.closeMenu}">Tags</a>
-                        <a href="/browse/random" @click="${this.closeMenu}">Random</a>
-                        <a id="offline-menu-link" href="/browse/offline" @click="${this.closeMenu}">Offline</a>
+                    <div class="nav-center">
+                        <div class="nav-links ${this.menuOpen ? "open" : ""}">
+                            <a href="/" @click="${this.closeMenu}">Home</a>
+                            <a href="/browse/newest" @click="${this.closeMenu}">Newest</a>
+                            <a href="/browse/songs" @click="${this.closeMenu}">Songs</a>
+                            <a href="/browse/artists" @click="${this.closeMenu}">Artists</a>
+                            <a href="/browse/tags" @click="${this.closeMenu}">Tags</a>
+                            <a href="/my/starred" @click="${this.closeMenu}">Starred</a>
+                            <a href="/browse/random" @click="${this.closeMenu}">Random</a>
+                            <a id="offline-menu-link" href="/browse/offline" @click="${this.closeMenu}">Offline</a>
+                        </div>
+
+                        <div class="nav-search nav-search-desktop ${this.searchOpen ? "open" : ""}">
+                            ${this.searchOpen ? html`
+                                <div class="search-controls">
+                                    <sl-input
+                                        class="search-input"
+                                        type="search"
+                                        placeholder="Search chord charts"
+                                        size="small"
+                                        clearable
+                                        pill
+                                        @sl-change="${this.handleSearch}"
+                                        @keydown="${this.handleSearchKeydown}">
+                                        <sl-icon name="search" slot="prefix"></sl-icon>
+                                    </sl-input>
+
+                                    <sl-icon-button
+                                        class="search-close-button"
+                                        name="x-lg"
+                                        label="Close search"
+                                        @click="${this.closeSearch}">
+                                    </sl-icon-button>
+                                </div>
+                            ` : html`
+                                <sl-icon-button
+                                    class="search-toggle-button"
+                                    name="search"
+                                    label="Open search"
+                                    @click="${this.openSearch}">
+                                </sl-icon-button>
+                            `}
+                        </div>
                     </div>
 
                     <div class="nav-search nav-search-mobile ${this.menuOpen ? "open" : ""}">
@@ -101,38 +136,6 @@ export class AppHeader extends LitElement {
                             @sl-change="${this.handleSearch}">
                             <sl-icon name="search" slot="prefix"></sl-icon>
                         </sl-input>
-                    </div>
-
-                    <div class="nav-search nav-search-desktop ${this.searchOpen ? "open" : ""}">
-                        ${this.searchOpen ? html`
-                            <div class="search-controls">
-                                <sl-input
-                                    class="search-input"
-                                    type="search"
-                                    placeholder="Search chord charts"
-                                    size="small"
-                                    clearable
-                                    pill
-                                    @sl-change="${this.handleSearch}"
-                                    @keydown="${this.handleSearchKeydown}">
-                                    <sl-icon name="search" slot="prefix"></sl-icon>
-                                </sl-input>
-
-                                <sl-icon-button
-                                    class="search-close-button"
-                                    name="x-lg"
-                                    label="Close search"
-                                    @click="${this.closeSearch}">
-                                </sl-icon-button>
-                            </div>
-                        ` : html`
-                            <sl-icon-button
-                                class="search-toggle-button"
-                                name="search"
-                                label="Open search"
-                                @click="${this.openSearch}">
-                            </sl-icon-button>
-                        `}
                     </div>
 
                     <div class="nav-right ${this.menuOpen ? "open" : ""}">
@@ -169,7 +172,6 @@ export class AppHeader extends LitElement {
 
                 <sl-menu @sl-select="${this.onAccountMenuSelected}">
                     ${this.user ? html`<sl-menu-item value="/profile">My Profile</sl-menu-item>` : html``}
-                    ${this.user ? html`<sl-menu-item value="/my/starred">Starred Chord Charts</sl-menu-item>` : html``}
                     <sl-menu-item value="/contact">Contact Us</sl-menu-item>
                     <sl-menu-item value="/about">About</sl-menu-item>
                     ${this.user ? html`<sl-menu-item value="__signout">Sign Out</sl-menu-item>` : html``}

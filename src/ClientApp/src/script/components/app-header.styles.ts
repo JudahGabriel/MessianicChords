@@ -1,5 +1,5 @@
 import { css } from "lit";
-import { mediaQuery, BreakpointMax } from "../common/breakpoints";
+import { mediaQuery, BreakpointMax, phonesOnly } from "../common/breakpoints";
 
 export const appHeaderStyles = css`
     header {
@@ -10,12 +10,17 @@ export const appHeaderStyles = css`
     }
 
     nav {
-        display: flex;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
         align-items: center;
         gap: var(--sl-spacing-medium);
         max-width: 1200px;
         margin: 0 auto;
         height: 56px;
+
+        ${phonesOnly()} {
+            gap: 0;
+        }
     }
 
     /* Logo area */
@@ -43,6 +48,7 @@ export const appHeaderStyles = css`
     }
 
     .app-name {
+        display: none;
         font-family: var(--title-font, 'Homemade Apple', cursive);
         font-size: 1.1rem;
         white-space: nowrap;
@@ -53,6 +59,14 @@ export const appHeaderStyles = css`
         display: flex;
         align-items: center;
         gap: var(--sl-spacing-medium);
+    }
+
+    .nav-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--sl-spacing-medium);
+        min-width: 0;
     }
 
     .nav-links a {
@@ -117,8 +131,8 @@ export const appHeaderStyles = css`
         display: flex;
         align-items: center;
         gap: var(--sl-spacing-x-small);
-        margin-left: auto;
         flex-shrink: 0;
+        justify-self: end;
     }
 
     /* Desktop-only offline indicator; hidden on mobile where .offline-mobile is used instead */
@@ -241,14 +255,27 @@ export const appHeaderStyles = css`
     /* Mobile layout */
     ${mediaQuery(BreakpointMax.md)} {
         nav {
+            display: flex;
             flex-wrap: wrap;
             height: auto;
             padding: var(--sl-spacing-small) 0;
         }
 
+        .nav-center {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+        }
+
         .nav-left {
             width: 100%;
             justify-content: space-between;
+        }
+
+        .app-name {
+            display: inline;
         }
 
         .offline-desktop {

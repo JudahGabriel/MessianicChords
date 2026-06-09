@@ -58,7 +58,8 @@ export class MyStarredPage extends LitElement {
         try {
             const user = await accountService.getUser();
             if (!user) {
-                window.location.href = "/account";
+                this.error = "Sign in to view your starred chord charts.";
+                this.chords = [];
                 return;
             }
 
