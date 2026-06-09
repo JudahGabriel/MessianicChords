@@ -31,7 +31,7 @@ export const footerStyles = css`
 
         @media (max-width: 575px) {
             gap: 1em;
-            padding: 1em 0;
+            padding: 1em;
         }
     }
 `;

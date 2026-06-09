@@ -1,38 +1,108 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 import { RouteLocation } from "../common/route-location";
+import { sharedStyles } from "../common/shared.styles";
+import { phonesOnly } from "../common/breakpoints";
 
 @customElement("chord-edit-successful")
 export class ChordEditSuccessful extends LitElement {
     location: RouteLocation | null = null; // injected by the router
 
-    static get styles() {
-        const localStyles = css`
-            h1 {
-                font-family: var(--subtitle-font);
-                color: var(--theme-color);
+    static styles = [sharedStyles, css`
+        :host {
+            display: block;
+        }
+
+        .page-shell {
+            min-height: 72vh;
+            display: grid;
+            place-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .success-card {
+            width: min(680px, 100%);
+            border-radius: 18px;
+            border: 1px solid var(--sl-color-primary-200);
+            background: linear-gradient(160deg, #ffffff 0%, var(--sl-color-primary-50) 100%);
+            box-shadow: 0 18px 40px rgb(21 19 121 / 12%);
+            padding: 2rem;
+            text-align: center;
+
+            ${phonesOnly()} {
+                max-width: 95%;
             }
-        `;
-        return [
-            localStyles
-        ];
-    }
+        }
+
+        .badge {
+            width: 3rem;
+            height: 3rem;
+            margin: 0 auto 1rem;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            font-size: 1.5rem;
+            color: var(--sl-color-primary-900);
+            background: var(--sl-color-primary-100);
+            border: 1px solid var(--sl-color-primary-300);
+            box-shadow: 0 4px 10px rgb(21 19 121 / 12%);
+        }
+
+        h1 {
+            margin: 0 0 0.75rem;
+            font-family: var(--title-font);
+            font-size: 2rem;
+            color: var(--theme-color);
+            line-height: 1.25;
+        }
+
+        p {
+            margin: 0 0 1.5rem;
+            font-family: var(--subtitle-font);
+            font-size: 1.1rem;
+            color: var(--sl-color-primary-800);
+        }
+
+        .cta-link {
+            display: inline-block;
+            font-family: var(--subtitle-font);
+            font-weight: 700;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(180deg, var(--sl-color-primary-700) 0%, var(--sl-color-primary-900) 100%);
+            border-radius: 999px;
+            padding: 0.75rem 1.35rem;
+            box-shadow: 0 8px 16px rgb(21 19 121 / 24%);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .cta-link:hover,
+        .cta-link:focus-visible {
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgb(21 19 121 / 30%);
+        }
+
+        @media (max-width: 640px) {
+            .success-card {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    `];
 
     render(): TemplateResult {
         return html`
-            <div class="row">
-                <div class="col-12 col-lg-6 offset-lg-3">
-                    <div class="p-5 mb-4 bg-light rounded-3">
-                        <div class="container-fluid py-5">
-                            <h1 class="display-5 fw-bold">
-                                ✔
-                                Submission successful (✿◠‿◠)
-                            </h1>
-                            <p class="col-md-8 fs-4">Thank you! We'll review your submission soon.</p>
-                            ${this.renderReturnLink()}
-                        </div>
-                    </div>
-                </div>
+            <div class="page-shell">
+                <section class="success-card" aria-live="polite">
+                    <div class="badge" aria-hidden="true">✓</div>
+                    <h1>Submission successful</h1>
+                    <p>Thank you. We will review your submission soon.</p>
+                    ${this.renderReturnLink()}
+                </section>
             </div>
         `;
     }
@@ -40,9 +110,9 @@ export class ChordEditSuccessful extends LitElement {
     renderReturnLink(): TemplateResult {
         const id = this.location?.params?.["id"];
         if (id) {
-            return html`<a class="btn btn-primary btn-lg" href="/chordsheets/${id}">Return to chord sheet</a>`
+            return html`<a class="cta-link" href="/chordsheets/${id}">Return to chord sheet</a>`;
         }
 
-        return html`<a class="btn btn-primary btn-lg" href="/">Return to home</a>`;
+        return html`<a class="cta-link" href="/">Return home</a>`;
     }
 }
