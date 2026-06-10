@@ -85,8 +85,18 @@ export const sharedStyles = css`
         text-align: center !important;
     }
 
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .d-flex {
         display: flex !important;
+    }
+
+    .d-block {
+        display: block !important;
     }
 
     .flex-column {

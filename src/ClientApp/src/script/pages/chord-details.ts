@@ -257,38 +257,11 @@ export class ChordDetails extends LitElement {
 
                         ${this.renderAudioPlayer(chord)}
                         ${hasMediaLinks ? html`
-                            <ul class="media-links">
-                                ${repeat(chord.links, l => l, l => this.renderLink(l))}
-                            </ul>
+                            <div class="media-links d-flex flex-column gap-2 justify-content-start">
+                                ${repeat(chord.links, l => l, l => this.renderLink(l, chord))}
+                            </div>
                         ` : html``}
                         ${!hasAnyMedia ? html`<p class="comments-muted">No media attachments.</p>` : html``}
-
-                        <!-- <p class="d-flex gap-1 align-items-center">
-                            <span class="fs-5 pe-2 ps-2" lang="he" style="color: #e9dd9a; background-color: #2f3d58">ח</span>
-                            Chavah: 
-                            ${this.renderChavahLink(chord)}
-                        </p>
-                        <p class="d-flex gap-1 align-items-center">
-                            <sl-icon name="youtube" label="Youtube" style="color: red !important;"></sl-icon>
-                            Youtube: 
-                            ${this.renderYoutubeLink(chord)}
-                        </p>
-                        <p class="d-flex gap-1 align-items-center">
-                            <sl-icon name="music-note-list" label="Chordify" style="color: #0a8282"></sl-icon>
-                            <span>Chordify:</span> 
-                             ${this.renderChordifyLink(chord)}
-                        </p>
-                        <p class="d-flex gap-1 align-items-center">
-                            <sl-icon name="file-earmark-text" label="Google Docs" style="color: #387FF5"></sl-icon>
-                            <span>Google Docs:</span> 
-                             ${this.renderGoogleDocsLink(chord)}
-                        </p>
-                        <p>
-                            Other links:
-                        </p>
-                        <ul>
-                            ${repeat(chord.links, l => l, l => this.renderLink(l))}
-                        </ul> -->
                     </sl-card>
 
                     <sl-card class="card-header w-100">
@@ -497,14 +470,25 @@ export class ChordDetails extends LitElement {
         `;
     }
 
-    renderLink(link: string): TemplateResult {
-        const linkText = link.replace("https://", "").replace("http://", "");
+    renderLink(link: string, chart: ChordSheet): TemplateResult {
+        let linkText = link.replace("https://", "").replace("http://", "");
+
+        if (link.includes("messianicradio.com") && link.includes("song=")) {
+            linkText = `Play ${chart.song} on Chavah`;
+        } else if (link.includes("docs.google.com/document/d/e/")) {
+            linkText = `View ${chart.song} on Google Docs`;
+        } else if (link.includes("docs.google.com/document/d/0")) {
+            linkText = `Edit ${chart.song} on Google Docs`;
+        } else if (link.includes("chordify.net")) {
+            linkText = `View ${chart.song} on Chordify`;
+        } else {
+            linkText = linkText.substring(0, 30) + (linkText.length > 30 ? "..." : "");
+        }
+
         return html`
-            <li>
-                <a class="text-truncate d-block" href="${link}" target="_blank" rel="noopener">
-                    ${linkText}
-                </a>
-            </li>
+            <sl-button variant="text" class="text-truncate" href="${link}" target="_blank" rel="noopener">
+                ${linkText}
+            </sl-button>
         `;
     }
 

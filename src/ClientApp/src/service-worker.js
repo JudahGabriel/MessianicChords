@@ -47,8 +47,8 @@ pageCache({
         "/browse/tags",
         "/browse/artists",
         "/browse/offline",
-        "/artist/_",
-        "/chordsheets/_"
+        "/artist/james%20block",
+        "chordsheets/8964-c"
     ],
     plugins: [{
         // We want to override cache key for
@@ -90,8 +90,8 @@ pageCache({
                 return new URL(request.url).origin + "/chordsubmissions/review";
             }
 
-            // Normalize chord details pages regardless of specific sheet id.
-            const chordDetailsRegex = new RegExp(/\/ChordSheets\/[\w|\d|-]+$/, "i");
+            // All chord sheet cache keys are /chordsheets/_ - this avoid caching chord charts page layout for different chord sheets. 
+            const chordDetailsRegex = new RegExp(/\/chordsheets\/[\w|\d|-]+$/, "i");
             const isChordDetailsPage = !!request.url.match(chordDetailsRegex);
             if (isChordDetailsPage) {
                 return new URL(request.url).origin + "/chordsheets/_";

@@ -359,7 +359,9 @@ export const chordDetailStyles = css`
         }
 
         .media-links {
-            list-style: hebrew;
+            sl-button {
+                width: fit-content;
+            }
         }
 
         .tag-list {
