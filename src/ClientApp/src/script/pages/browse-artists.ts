@@ -8,9 +8,9 @@ import { sharedStyles } from "../common/shared.styles";
 import { browseArtistsStyles } from "./browse-artists.styles";
 import "../components/chord-collection";
 import "../components/load-more-button";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
-import "@shoelace-style/shoelace/dist/components/select/select.js";
-import "@shoelace-style/shoelace/dist/components/option/option.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/select/select.js";
+import "@awesome.me/webawesome/dist/components/option/option.js";
 
 type ArtistGroup = {
     artist: string;
@@ -64,7 +64,7 @@ export class BrowseArtists extends LitElement {
         }
 
         const artistKey = this.artistKey(requestedArtist);
-        const details = this.renderRoot.querySelector<HTMLElement>(`sl-details[data-artist-key="${artistKey}"]`) as HTMLElement & { open?: boolean };
+        const details = this.renderRoot.querySelector<HTMLElement>(`wa-details[data-artist-key="${artistKey}"]`) as HTMLElement & { open?: boolean };
         if (!details) {
             return;
         }
@@ -90,7 +90,7 @@ export class BrowseArtists extends LitElement {
 
         history.replaceState({}, "", `/browse/artists?jump-to-artist=${encodeURIComponent(decodedArtist)}`);
 
-        const details = this.renderRoot.querySelector<HTMLElement>(`sl-details[data-artist-key="${this.artistKey(decodedArtist)}"]`) as HTMLElement & { open?: boolean };
+        const details = this.renderRoot.querySelector<HTMLElement>(`wa-details[data-artist-key="${this.artistKey(decodedArtist)}"]`) as HTMLElement & { open?: boolean };
         if (!details) {
             return;
         }
@@ -155,13 +155,13 @@ export class BrowseArtists extends LitElement {
             <div class="container py-4">
                 <div class="artist-header-row mb-3">
                     <h2 class="highlight mb-0">Songs By Artist</h2>
-                    <sl-select
+                    <wa-select
                         class="artist-jump-select"
                         placeholder="Jump to artist"
                         value="${this.selectedArtist}"
-                        @sl-change="${this.onArtistSelectChanged}">
-                        ${repeat(this.artistGroups, g => g.artist, g => html`<sl-option value="${encodeURIComponent(g.artist)}">${g.artist}</sl-option>`) }
-                    </sl-select>
+                        @wa-change="${this.onArtistSelectChanged}">
+                        ${repeat(this.artistGroups, g => g.artist, g => html`<wa-option value="${encodeURIComponent(g.artist)}">${g.artist}</wa-option>`) }
+                    </wa-select>
                 </div>
 
                 ${this.artistGroups.length === 0 ? html`<p>No artists found.</p>` : html``}
@@ -172,12 +172,12 @@ export class BrowseArtists extends LitElement {
 
     private renderArtistGroup(group: ArtistGroup, index: number): TemplateResult {
         return html`
-            <sl-details
+            <wa-details
                 class="artist-details mb-3"
                 data-artist-index="${index}"
                 data-artist-key="${this.artistKey(group.artist)}"
                 ?open="${this.getRequestedArtist()?.toLocaleLowerCase() === group.artist.toLocaleLowerCase()}"
-                @sl-show="${() => this.onArtistDetailsShow(index)}">
+                @wa-show="${() => this.onArtistDetailsShow(index)}">
                 <div slot="summary" class="artist-summary-text">${group.artist}</div>
                 <div class="artist-content">
                     ${group.chordList ? html`
@@ -187,7 +187,7 @@ export class BrowseArtists extends LitElement {
                         </div>
                     ` : html`<p>Loading songs...</p>`}
                 </div>
-            </sl-details>
+            </wa-details>
         `;
     }
 }

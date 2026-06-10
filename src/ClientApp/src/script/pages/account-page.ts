@@ -4,15 +4,15 @@ import { accountPageStyles } from "./account-page.styles";
 import { SignInStatus, UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/checkbox/checkbox.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
-import "@shoelace-style/shoelace/dist/components/tab/tab.js";
-import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
-import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/checkbox/checkbox.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/tab/tab.js";
+import "@awesome.me/webawesome/dist/components/tab-group/tab-group.js";
+import "@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js";
 
 @customElement("account-page")
 export class AccountPage extends LitElement {
@@ -57,10 +57,10 @@ export class AccountPage extends LitElement {
         return html`
             <div class="signed-in">
                 <p class="intro">You're signed in as <strong>${this.user?.email || this.user?.userName}</strong>.</p>
-                <sl-button variant="primary" pill href="/">Return home</sl-button>
-                <sl-button variant="default" pill ?loading="${this.isSubmitting}" @click="${this.signOut}">
+                <wa-button variant="brand" pill href="/">Return home</wa-button>
+                <wa-button variant="neutral" pill ?loading="${this.isSubmitting}" @click="${this.signOut}">
                     Sign out
-                </sl-button>
+                </wa-button>
             </div>
         `;
     }
@@ -69,22 +69,22 @@ export class AccountPage extends LitElement {
         return html`
             <p class="intro">Sign in to your Messianic Chords account or create a new one.</p>
             <p class="intro">Signing in lets you upload new chord charts, edit chord charts, comment on charts, star your favorite charts, and more.</p>
-            <sl-tab-group @sl-tab-show="${this.tabChanged}">
-                <sl-tab slot="nav" panel="signin" ?active="${this.mode === "signin"}">Sign in</sl-tab>
-                <sl-tab slot="nav" panel="register" ?active="${this.mode === "register"}">Register</sl-tab>
+            <wa-tab-group @wa-tab-show="${this.tabChanged}">
+                <wa-tab slot="nav" panel="signin" ?active="${this.mode === "signin"}">Sign in</wa-tab>
+                <wa-tab slot="nav" panel="register" ?active="${this.mode === "register"}">Register</wa-tab>
 
-                <sl-tab-panel name="signin">
+                <wa-tab-panel name="signin">
                     ${this.renderAlert()}
                     <form @submit="${this.submitSignIn}">
-                        <sl-input
+                        <wa-input
                             label="Email"
                             type="email"
                             autocomplete="email"
                             required
                             value="${this.email}"
-                            @sl-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        <sl-input
+                            @wa-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        <wa-input
                             label="Password"
                             type="password"
                             autocomplete="current-password"
@@ -92,35 +92,35 @@ export class AccountPage extends LitElement {
                             minlength="6"
                             password-toggle
                             value="${this.password}"
-                            @sl-input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        <sl-checkbox
+                            @wa-input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        <wa-checkbox
                             ?checked="${this.staySignedIn}"
-                            @sl-change="${(e: Event) => this.staySignedIn = (e.target as HTMLInputElement).checked}">
+                            @wa-change="${(e: Event) => this.staySignedIn = (e.target as HTMLInputElement).checked}">
                             Stay signed in
-                        </sl-checkbox>
-                        <sl-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
+                        </wa-checkbox>
+                        <wa-button variant="brand" type="submit" pill ?loading="${this.isSubmitting}">
                             Sign in
-                        </sl-button>
+                        </wa-button>
                     </form>
                     <p class="toggle-copy">
                         Need an account?
                         <button class="link-button" type="button" @click="${() => this.switchMode("register")}">Register</button>
                     </p>
-                </sl-tab-panel>
+                </wa-tab-panel>
 
-                <sl-tab-panel name="register">
+                <wa-tab-panel name="register">
                     ${this.renderAlert()}
                     <form @submit="${this.submitRegister}">
-                        <sl-input
+                        <wa-input
                             label="Email"
                             type="email"
                             autocomplete="email"
                             required
                             value="${this.email}"
-                            @sl-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        <sl-input
+                            @wa-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        <wa-input
                             label="Password"
                             type="password"
                             autocomplete="new-password"
@@ -129,9 +129,9 @@ export class AccountPage extends LitElement {
                             help-text="Use at least 6 characters."
                             password-toggle
                             value="${this.password}"
-                            @sl-input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        <sl-input
+                            @wa-input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        <wa-input
                             label="Confirm password"
                             type="password"
                             autocomplete="new-password"
@@ -139,37 +139,37 @@ export class AccountPage extends LitElement {
                             minlength="6"
                             password-toggle
                             value="${this.confirmPassword}"
-                            @sl-input="${(e: Event) => this.confirmPassword = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        <sl-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
+                            @wa-input="${(e: Event) => this.confirmPassword = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        <wa-button variant="brand" type="submit" pill ?loading="${this.isSubmitting}">
                             Register
-                        </sl-button>
+                        </wa-button>
                     </form>
                     <p class="toggle-copy">
                         Already have an account?
                         <button class="link-button" type="button" @click="${() => this.switchMode("signin")}">Sign in</button>
                     </p>
-                </sl-tab-panel>
-            </sl-tab-group>
+                </wa-tab-panel>
+            </wa-tab-group>
         `;
     }
 
     private renderAlert(): TemplateResult {
         if (this.error) {
             return html`
-                <sl-alert variant="danger" open>
-                    <sl-icon slot="icon" name="exclamation-circle-fill"></sl-icon>
+                <wa-callout variant="danger" open>
+                    <wa-icon slot="icon" name="exclamation-circle-fill"></wa-icon>
                     ${this.error}
-                </sl-alert>
+                </wa-callout>
             `;
         }
 
         if (this.success) {
             return html`
-                <sl-alert variant="success" open>
-                    <sl-icon slot="icon" name="check-lg"></sl-icon>
+                <wa-callout variant="success" open>
+                    <wa-icon slot="icon" name="check-lg"></wa-icon>
                     ${this.success}
-                </sl-alert>
+                </wa-callout>
             `;
         }
 
@@ -185,7 +185,7 @@ export class AccountPage extends LitElement {
         this.mode = mode;
         this.error = null;
         this.success = null;
-        this.shadowRoot?.querySelector("sl-tab-group")?.show(mode);
+        (this.shadowRoot?.querySelector("wa-tab-group") as { show?: (name: string) => void } | null)?.show?.(mode);
     }
 
     private async submitSignIn(e: Event): Promise<void> {
@@ -302,3 +302,5 @@ export class AccountPage extends LitElement {
         }
     }
 }
+
+

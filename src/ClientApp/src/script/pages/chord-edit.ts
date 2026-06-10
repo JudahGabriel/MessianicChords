@@ -7,15 +7,14 @@ import { ChordService } from "../services/chord-service";
 import { accountService } from "../services/account-service";
 import "../components/multiple-items-input.js";
 
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/checkbox/checkbox.js";
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/textarea/textarea.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/checkbox/checkbox.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/skeleton/skeleton.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
 import { sharedStyles } from "../common/shared.styles";
 import { chordEditStyles } from "./chord-edit.styles";
 
@@ -39,7 +38,7 @@ export class ChordEdit extends LitElement {
         super();
 
         // When any input event fires, reset the validation field.
-        this.addEventListener("sl-input", () => this.invalidFieldName = "");
+        this.addEventListener("wa-input", () => this.invalidFieldName = "");
         this.addEventListener("input", () => this.invalidFieldName = "");
     }
 
@@ -91,7 +90,7 @@ export class ChordEdit extends LitElement {
         return html`
             <div class="page-heading-row">
                 <h2 class="highlight page-heading">
-                    <sl-icon name="pencil-square" class="page-heading-icon"></sl-icon>
+                    <wa-icon name="pencil-square" class="page-heading-icon"></wa-icon>
                     ${this.isNewChordSheet ? "Submit new chord chart" : "Edit chord chart"}
                 </h2>
             </div>
@@ -99,43 +98,43 @@ export class ChordEdit extends LitElement {
                 <!-- Name and Hebrew name row -->
                 <div class="form-row form-row-2">
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="song-name-input"
                             label="Song name"
                             placeholder="Shema Yisrael"
                             help-text="Required. The name of the song."
                             value="${chord.song}"
                             ?data-user-invalid="${this.invalidFieldName === "name"}"
-                            @sl-input="${(e: Event) => chord.song = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        ${this.invalidFieldName === "name" ? html`<small style="color: var(--sl-color-danger-500)">Please type a song name.</small>` : ""}
+                            @wa-input="${(e: Event) => chord.song = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        ${this.invalidFieldName === "name" ? html`<small style="color: var(--wa-color-danger-500)">Please type a song name.</small>` : ""}
                     </div>
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="hebrew-song-name-input"
                             label="Hebrew song name"
                             lang="he"
                             placeholder="שמע ישראל"
                             help-text="Optional. The Hebrew name of the song. If specified, this should use Hebrew characters."
                             value="${chord.hebrewSongName || ""}"
-                            @sl-input="${(e: Event) => chord.hebrewSongName = (e.target as HTMLInputElement).value}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.hebrewSongName = (e.target as HTMLInputElement).value}">
+                        </wa-input>
                     </div>
                 </div>
 
                 <!-- Artist and author row -->
                 <div class="form-row form-row-2">
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="artist-input"
                             label="Artist"
                             placeholder="Lamb"
                             help-text="Optional. The artist who performed this arrangement of the song."
                             value="${chord.artist}"
                             ?data-user-invalid="${this.invalidFieldName === "artist-authors"}"
-                            @sl-input="${(e: Event) => chord.artist = (e.target as HTMLInputElement).value}">
-                        </sl-input>
-                        ${this.invalidFieldName === "artist-authors" ? html`<small style="color: var(--sl-color-danger-500)">You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.</small>` : ""}
+                            @wa-input="${(e: Event) => chord.artist = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                        ${this.invalidFieldName === "artist-authors" ? html`<small style="color: var(--wa-color-danger-500)">You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.</small>` : ""}
                     </div>
                     <div class="form-group">
                         <label>Authors</label>
@@ -156,7 +155,7 @@ export class ChordEdit extends LitElement {
                 </div>
 
                 <div class="form-group">
-                    <sl-textarea
+                    <wa-textarea
                         id="chord-chart-input"
                         label="Chord chart"
                         class="chord-chart-text"
@@ -166,24 +165,24 @@ export class ChordEdit extends LitElement {
                         rows="20"
                         value="${chord.chords || ""}"
                         ?data-user-invalid="${this.invalidFieldName === "chords"}"
-                        @sl-input="${(e: Event) => chord.chords = (e.target as HTMLTextAreaElement).value}"
+                        @wa-input="${(e: Event) => chord.chords = (e.target as HTMLTextAreaElement).value}"
                         @paste="${this.chordsPasted}">
-                    </sl-textarea>
-                    ${this.invalidFieldName === "chords" ? html`<small style="color: var(--sl-color-danger-500)">You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.</small>` : ""}
+                    </wa-textarea>
+                    ${this.invalidFieldName === "chords" ? html`<small style="color: var(--wa-color-danger-500)">You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.</small>` : ""}
                 </div>
 
                 <!-- Attachments and links -->
                 <div class="form-row form-row-2">
                     <div class="form-group">
                         <label>
-                            <sl-icon name="paperclip"></sl-icon>
+                            <wa-icon name="paperclip"></wa-icon>
                             Attachments
                         </label>
                         <input class="hidden-file-input" type="file" id="attachments-input" multiple @input="${this.addAttachments}" />
                         <div class="attachment-picker-row">
-                            <sl-button type="button" @click="${this.chooseAttachmentFiles}">
+                            <wa-button type="button" @click="${this.chooseAttachmentFiles}">
                                 Choose files
-                            </sl-button>
+                            </wa-button>
                         </div>
                         <div class="help-text">Optional. Attachments for the chord sheet. For example, a chord chart file (.pdf, .docx, .jpg, etc.), an audio recording of the song, piano sheet music, or other related files.</div>
                         <ul class="attachment-list">
@@ -192,7 +191,7 @@ export class ChordEdit extends LitElement {
                     </div>
                     <div class="form-group">
                         <label>
-                            <sl-icon name="link"></sl-icon>
+                            <wa-icon name="link"></wa-icon>
                             Links
                         </label>
                         <multiple-items-input
@@ -212,7 +211,7 @@ export class ChordEdit extends LitElement {
 
                 <div class="form-group">
                     <label>
-                        <sl-icon name="tags"></sl-icon>
+                        <wa-icon name="tags"></wa-icon>
                         Tags
                     </label>
                     <multiple-items-input
@@ -231,17 +230,17 @@ export class ChordEdit extends LitElement {
                 <!-- Key, capo, and scripture row -->
                 <div class="form-row form-row-3">
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="key-input"
                             label="Key"
                             placeholder="Em"
                             help-text="Optional. The musical key in which this song is played."
                             value="${chord.key || ""}"
-                            @sl-input="${(e: Event) => chord.key = (e.target as HTMLInputElement).value}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.key = (e.target as HTMLInputElement).value}">
+                        </wa-input>
                     </div>
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="capo-input"
                             label="Capo"
                             type="number"
@@ -250,76 +249,76 @@ export class ChordEdit extends LitElement {
                             max="20"
                             help-text="Optional. The ideal guitar capo number used when playing this song."
                             value="${chord.capo || ""}"
-                            @sl-input="${(e: Event) => chord.capo = parseInt((e.target as HTMLInputElement).value) || 0}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.capo = parseInt((e.target as HTMLInputElement).value) || 0}">
+                        </wa-input>
                     </div>
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="scripture-input"
                             label="Scripture"
                             placeholder="Deuteronomy 6:4"
                             help-text="Optional. The segment of Scripture relevant to this song."
                             value="${chord.scripture || ""}"
-                            @sl-input="${(e: Event) => chord.scripture = (e.target as HTMLInputElement).value}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.scripture = (e.target as HTMLInputElement).value}">
+                        </wa-input>
                     </div>
                 </div>
 
                 <!-- Copyright, CCLI, Year row -->
                 <div class="form-row form-row-3">
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="copyright-input"
                             label="Copyright"
                             placeholder="Messianic Publishing Company"
                             help-text="Optional. The copyright of the song."
                             value="${chord.copyright || ""}"
-                            @sl-input="${(e: Event) => chord.copyright = (e.target as HTMLInputElement).value}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.copyright = (e.target as HTMLInputElement).value}">
+                        </wa-input>
                     </div>
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="ccli-input"
                             label="CCLI"
                             type="number"
                             placeholder="7112570"
                             help-text="Optional. The Christian Copyright Licensing International (CCLI) number of the song."
                             value="${chord.ccliNumber || ""}"
-                            @sl-input="${(e: Event) => chord.ccliNumber = parseInt((e.target as HTMLInputElement).value) || null}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.ccliNumber = parseInt((e.target as HTMLInputElement).value) || null}">
+                        </wa-input>
                     </div>
                     <div class="form-group">
-                        <sl-input
+                        <wa-input
                             id="year-input"
                             label="Year"
                             type="number"
                             placeholder="1978"
                             help-text="Optional. The year the song was authored."
                             value="${chord.year || ""}"
-                            @sl-input="${(e: Event) => chord.year = parseInt((e.target as HTMLInputElement).value) || null}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => chord.year = parseInt((e.target as HTMLInputElement).value) || null}">
+                        </wa-input>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <sl-checkbox
+                    <wa-checkbox
                         id="sheet-music-input"
-                        @sl-change="${(e: Event) => chord.isSheetMusic = (e.target as HTMLInputElement).checked}">
+                        @wa-change="${(e: Event) => chord.isSheetMusic = (e.target as HTMLInputElement).checked}">
                         Contains sheet music
-                    </sl-checkbox>
+                    </wa-checkbox>
                     <div class="help-text">If the attachments for this song contains musical notation files. <a href="/ChordSheets/4803" target="_blank">Example</a>.</div>
                 </div>
 
                 <div class="form-group">
-                    <sl-textarea
+                    <wa-textarea
                         id="about-input"
                         label="About"
                         rows="3"
                         placeholder="This song is based on..."
                         help-text="Optional. Additional information about the song, lyrics, or chord chart."
                         value="${chord.about || ""}"
-                        @sl-input="${(e: Event) => chord.about = (e.target as HTMLTextAreaElement).value}">
-                    </sl-textarea>
+                        @wa-input="${(e: Event) => chord.about = (e.target as HTMLTextAreaElement).value}">
+                    </wa-textarea>
                 </div>
 
                 ${this.renderSubmitButton()}
@@ -331,21 +330,21 @@ export class ChordEdit extends LitElement {
     renderLoading(): TemplateResult {
         return html`
             <div class="loading-skeleton">
-                <sl-skeleton effect="pulse"></sl-skeleton>
-                <sl-skeleton effect="pulse"></sl-skeleton>
+                <wa-skeleton effect="pulse"></wa-skeleton>
+                <wa-skeleton effect="pulse"></wa-skeleton>
             </div>
         `;
     }
 
     renderError(): TemplateResult {
         return html`
-            <sl-alert variant="warning" open>
-                <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+            <wa-callout variant="warning" open>
+                <wa-icon slot="icon" name="exclamation-triangle"></wa-icon>
                 Woops, we hit a problem loading this chord chart.
                 <a href="${window.location.href}">Try again</a>
                 <br><br>
                 Additional error details: ${this.error}
-            </sl-alert>
+            </wa-callout>
         `;
     }
 
@@ -366,16 +365,18 @@ export class ChordEdit extends LitElement {
                     ${sizeTemplate}
                     ${errorMessage}
                 </span>
-                <sl-icon-button name="x-lg" label="Remove" @click="${() => this.removeAttachment(attachment)}"></sl-icon-button>
+                <wa-button aria-label="Remove" @click="${() => this.removeAttachment(attachment)}">
+                    <wa-icon name="x-lg"></wa-icon>
+                </wa-button>
             </li>
         `;
     }
 
     renderSubmitButton(): TemplateResult {
         return html`
-            <sl-button variant="primary" ?loading=${this.isSubmitting} ?disabled=${this.isSubmitting} @click="${this.submit}">
+            <wa-button variant="brand" ?loading=${this.isSubmitting} ?disabled=${this.isSubmitting} @click="${this.submit}">
                 Submit
-            </sl-button>
+            </wa-button>
         `;
     }
 
@@ -386,10 +387,10 @@ export class ChordEdit extends LitElement {
 
         return html`
             <br>
-            <sl-alert variant="danger" open>
-                <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <wa-callout variant="danger" open>
+                <wa-icon slot="icon" name="exclamation-octagon"></wa-icon>
                 ${this.submitError}
-            </sl-alert>
+            </wa-callout>
         `;
     }
 
@@ -523,3 +524,4 @@ export class ChordEdit extends LitElement {
         return true;
     }
 }
+

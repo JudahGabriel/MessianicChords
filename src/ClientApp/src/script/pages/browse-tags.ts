@@ -7,9 +7,9 @@ import { PagedList } from "../models/paged-list";
 import { sharedStyles } from "../common/shared.styles";
 import "../components/chord-collection";
 import { browseTagsStyles } from "./browse-tags.styles";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
-import "@shoelace-style/shoelace/dist/components/select/select.js";
-import "@shoelace-style/shoelace/dist/components/option/option.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/select/select.js";
+import "@awesome.me/webawesome/dist/components/option/option.js";
 
 type TagGroup = {
     tag: string;
@@ -65,7 +65,7 @@ export class BrowseTags extends LitElement {
         }
 
         // Auto-expand the requested tag
-        const detailsElement = this.renderRoot.querySelector<HTMLElement>("sl-details") as HTMLElement & { open?: boolean };
+        const detailsElement = this.renderRoot.querySelector<HTMLElement>("wa-details") as HTMLElement & { open?: boolean };
         if (detailsElement) {
             detailsElement.open = true;
         }
@@ -81,7 +81,7 @@ export class BrowseTags extends LitElement {
             return;
         }
 
-        const detailsElement = this.renderRoot.querySelector<HTMLElement>(`sl-details[data-tag-key="${selectedTagKey}"]`) as HTMLElement & { open?: boolean };
+        const detailsElement = this.renderRoot.querySelector<HTMLElement>(`wa-details[data-tag-key="${selectedTagKey}"]`) as HTMLElement & { open?: boolean };
         if (!detailsElement) {
             return;
         }
@@ -146,14 +146,14 @@ export class BrowseTags extends LitElement {
             <div class="container py-4">
                 <div class="title-row mb-3">
                     <h2 class="highlight mb-0">Songs By Tag</h2>
-                    <sl-select
+                    <wa-select
                         class="tag-jump-select"
                         size="small"
                         placeholder="Jump to tag"
                         value="${this.selectedTag}"
-                        @sl-change="${this.onTagSelectChanged}">
-                        ${repeat(this.tagGroups, g => g.tag, g => html`<sl-option value="${encodeURIComponent(g.tag.toLocaleLowerCase())}">${g.tag}</sl-option>`)}
-                    </sl-select>
+                        @wa-change="${this.onTagSelectChanged}">
+                        ${repeat(this.tagGroups, g => g.tag, g => html`<wa-option value="${encodeURIComponent(g.tag.toLocaleLowerCase())}">${g.tag}</wa-option>`)}
+                    </wa-select>
                 </div>
                 ${this.tagGroups.length === 0 ? html`<p>No tags found.</p>` : html``}
                 ${repeat(this.tagGroups, (g) => g.tag, (g, i) => this.renderTagGroup(g, i))}
@@ -163,12 +163,13 @@ export class BrowseTags extends LitElement {
 
     private renderTagGroup(group: TagGroup, index: number): TemplateResult {
         return html`
-            <sl-details class="tag-details mb-3" data-tag-index="${index}" data-tag-key="${encodeURIComponent(group.tag.toLocaleLowerCase())}" ?open="${this.highlightedTag === group.tag.toLocaleLowerCase()}" @sl-show="${() => this.onTagDetailsShow(index)}">
+            <wa-details class="tag-details mb-3" data-tag-index="${index}" data-tag-key="${encodeURIComponent(group.tag.toLocaleLowerCase())}" ?open="${this.highlightedTag === group.tag.toLocaleLowerCase()}" @wa-show="${() => this.onTagDetailsShow(index)}">
                 <div slot="summary" class="tag-summary-text">${group.tag}</div>
                 <div class="tag-content">
                     <chord-collection .chords="${group.chordList}"></chord-collection>
                 </div>
-            </sl-details>
+            </wa-details>
         `;
     }
 }
+

@@ -6,14 +6,12 @@ import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 import { Subscription } from "rxjs";
 
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
-import "@shoelace-style/shoelace/dist/components/dropdown/dropdown.js";
-import "@shoelace-style/shoelace/dist/components/menu/menu.js";
-import "@shoelace-style/shoelace/dist/components/menu-item/menu-item.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
+import "@awesome.me/webawesome/dist/components/dropdown/dropdown.js";
+import "@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js";
 
 @customElement("app-header")
 export class AppHeader extends LitElement {
@@ -26,7 +24,7 @@ export class AppHeader extends LitElement {
     @state() isOnline: boolean = navigator.onLine;
     @state() locationPath = window.location.pathname;
 
-    @query(".nav-search-desktop sl-input")
+    @query(".nav-search-desktop wa-input")
     private searchInput?: HTMLElement;
 
     private signedInStateSubscription: Subscription | null = null;
@@ -80,12 +78,12 @@ export class AppHeader extends LitElement {
                                 ${this.renderOfflineStatusIndicator()}
                             </div>
 
-                            <sl-icon-button
+                            <wa-button
                                 class="menu-toggle"
-                                name="${this.menuOpen ? "x-lg" : "list"}"
-                                label="Toggle menu"
+                                aria-label="Toggle menu"
                                 @click="${this.toggleMenu}">
-                            </sl-icon-button>
+                                <wa-icon name="${this.menuOpen ? "x-lg" : "list"}"></wa-icon>
+                            </wa-button>
                         </div>
                     </div>
 
@@ -103,47 +101,38 @@ export class AppHeader extends LitElement {
 
                         <div class="nav-search nav-search-desktop ${this.searchOpen ? "open" : ""}">
                             ${this.searchOpen ? html`
-                                <div class="search-controls">
-                                    <sl-input
-                                        class="search-input"
-                                        type="search"
-                                        placeholder="Search chord charts"
-                                        size="small"
-                                        clearable
-                                        pill
-                                        @sl-change="${this.handleSearch}"
-                                        @keydown="${this.handleSearchKeydown}">
-                                        <sl-icon name="search" slot="prefix"></sl-icon>
-                                    </sl-input>
-
-                                    <sl-icon-button
-                                        class="search-close-button"
-                                        name="x-lg"
-                                        label="Close search"
-                                        @click="${this.closeSearch}">
-                                    </sl-icon-button>
-                                </div>
+                                <wa-input
+                                    class="search-input"
+                                    type="search"
+                                    placeholder="Search chord charts"
+                                    size="small"
+                                    clearable
+                                    pill
+                                    @wa-change="${this.handleSearch}"
+                                    @keydown="${this.handleSearchKeydown}">
+                                    <wa-icon name="search" slot="start"></wa-icon>
+                                </wa-input>
                             ` : html`
-                                <sl-icon-button
+                                <wa-button
                                     class="search-toggle-button"
-                                    name="search"
-                                    label="Open search"
+                                    aria-label="Open search"
                                     @click="${this.openSearch}">
-                                </sl-icon-button>
+                                    <wa-icon name="search"></wa-icon>
+                                </wa-button>
                             `}
                         </div>
                     </div>
 
                     <div class="nav-search nav-search-mobile ${this.menuOpen ? "open" : ""}">
-                        <sl-input
+                        <wa-input
                             type="search"
                             placeholder="Search chord charts"
                             size="small"
                             clearable
                             pill
-                            @sl-change="${this.handleSearch}">
-                            <sl-icon name="search" slot="prefix"></sl-icon>
-                        </sl-input>
+                            @wa-change="${this.handleSearch}">
+                            <wa-icon name="search" slot="start"></wa-icon>
+                        </wa-input>
                     </div>
 
                     <div class="nav-right ${this.menuOpen ? "open" : ""}">
@@ -163,71 +152,69 @@ export class AppHeader extends LitElement {
         }
 
         return html`
-            <sl-tooltip content="You're offline. Any chord charts you viewed while online are available offline." trigger="hover click" placement="bottom-end">
-                <sl-icon-button
+            <wa-tooltip content="You're offline. Any chord charts you viewed while online are available offline." trigger="hover click" placement="bottom-end">
+                <wa-button
                     class="offline-status-button"
-                    name="wifi-off"
-                    label="Offline status">
-                </sl-icon-button>
-            </sl-tooltip>
+                    aria-label="Offline status">
+                    <wa-icon name="wifi-off"></wa-icon>
+                </wa-button>
+            </wa-tooltip>
         `;
     }
 
     private renderAccountMenu(): TemplateResult {
         return html`
-            <sl-dropdown placement="bottom-end" @sl-hide="${this.closeMenu}">
+            <wa-dropdown placement="bottom-end" @wa-select="${this.onAccountMenuSelected}" @wa-hide="${this.closeMenu}">
                 ${this.renderAccountMenuTrigger()}
 
-                <sl-menu @sl-select="${this.onAccountMenuSelected}">
-                    ${this.user ? html`<sl-menu-item value="/profile">My Profile</sl-menu-item>` : html``}
-                    <sl-menu-item value="/contact">Contact Us</sl-menu-item>
-                    <sl-menu-item value="/about">About</sl-menu-item>
-                    ${this.user ? html`<sl-menu-item value="__signout">Sign Out</sl-menu-item>` : html``}
-                    ${this.user ? html`` : html`<sl-menu-item value="/account">Sign In</sl-menu-item>`}
-                    ${this.user ? html`` : html`<sl-menu-item value="/account?mode=register">Register</sl-menu-item>`}
-                </sl-menu>
-            </sl-dropdown>
+                ${this.user ? html`<wa-dropdown-item value="/profile">My Profile</wa-dropdown-item>` : html``}
+                <wa-dropdown-item value="/contact">Contact Us</wa-dropdown-item>
+                <wa-dropdown-item value="/about">About</wa-dropdown-item>
+                ${this.user ? html`<wa-dropdown-item value="__signout">Sign Out</wa-dropdown-item>` : html``}
+                ${this.user ? html`` : html`<wa-dropdown-item value="/account">Sign In</wa-dropdown-item>`}
+                ${this.user ? html`` : html`<wa-dropdown-item value="/account?mode=register">Register</wa-dropdown-item>`}
+            </wa-dropdown>
         `;
     }
 
     private renderAccountMenuTrigger(): TemplateResult {
         if (!this.user) {
             return html`
-                <sl-button 
+                <wa-button 
                     class="account-menu-trigger-signed-out" 
                     slot="trigger" 
-                    variant="text">
-                    <sl-icon name="person-circle" label="Account menu"></sl-icon>
-                </sl-button>
+                    appearance="plain">
+                    <wa-icon name="person-circle" label="Account menu"></wa-icon>
+                </wa-button>
             `;
         }
 
         // We have a user. Do we have a profile pic?
         if (this.user.profilePictureUrl) {
             return html`
-                <sl-button 
+                <wa-button 
                     class="account-menu-trigger" 
                     slot="trigger" 
-                    variant="text">
+                    appearance="plain">
                     <img class="avatar-image" src="${this.user.profilePictureUrl}" alt="Profile picture" />
-                </sl-button>
+                </wa-button>
             `;
         }
         
         // We have a user without a profile pic. Show the generic person icon.
         return html`
-            <sl-button 
+            <wa-button 
                 class="account-menu-trigger" 
                 slot="trigger" 
-                variant="text">
-                <sl-icon name="person-circle" label="Account menu"></sl-icon>
-            </sl-button>
+                appearance="plain">
+                <wa-icon name="person-circle" label="Account menu"></wa-icon>
+            </wa-button>
         `;
 
         // return html`
-        //     <sl-button slot="trigger" variant="${triggerVariant}" class="${triggerClass}" ?circle="${useCircularTrigger}">
-        //         ${profilePictureUrl ? html`` : initial ? html`` : html`<sl-icon name="list" label="Account menu"></sl-icon>`}
-        //     </sl-button>
+        //     <wa-button slot="trigger" variant="${triggerVariant}" class="${triggerClass}" ?circle="${useCircularTrigger}">
+        //         ${profilePictureUrl ? html`` : initial ? html`` : html`<wa-icon name="list" label="Account menu"></wa-icon>`}
+        //     </wa-button>
         // `;
     }
 
@@ -280,6 +267,11 @@ export class AppHeader extends LitElement {
     }
 
     private handleSearchKeydown(e: KeyboardEvent): void {
+        if (e.key === "Escape") {
+            this.closeSearch();
+            return;
+        }
+
         if (e.key !== "Enter") {
             return;
         }
@@ -329,3 +321,4 @@ export class AppHeader extends LitElement {
         });
     }
 }
+

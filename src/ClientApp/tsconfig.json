@@ -17,7 +17,8 @@
       "experimentalDecorators": true,
       "forceConsistentCasingInFileNames": true,
       "useDefineForClassFields": false,
-      "isolatedModules": true
+        "isolatedModules": true,
+        "skipLibCheck": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

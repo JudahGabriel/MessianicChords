@@ -6,9 +6,7 @@ import { ChordSheet, PagedResult } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { browseRandomStyles } from "./browse-random.styles";
 import { sharedStyles } from "../common/shared.styles";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import { SlIcon } from "@shoelace-style/shoelace";
+import "@awesome.me/webawesome/dist/components/button/button.js";
 import { PagedList } from "../models/paged-list";
 import "../components/chord-collection.js";
 
@@ -19,6 +17,10 @@ export class BrowseRandom extends LitElement {
     @state() isLoading = false;
     readonly chordService = new ChordService();
     readonly chordsPerRoll = 7;
+
+    private static asDiceIcon(element: Element | null): HTMLElement & { name: string } | null {
+        return element as (HTMLElement & { name: string }) | null;
+    }
 
     static styles = [sharedStyles, browseRandomStyles];
 
@@ -46,8 +48,8 @@ export class BrowseRandom extends LitElement {
     }
 
     rollDice() {
-        const diceBlock1 = this.shadowRoot?.querySelector(".dice-block-1") as SlIcon;
-        const diceBlock2 = this.shadowRoot?.querySelector(".dice-block-2") as SlIcon;
+        const diceBlock1 = BrowseRandom.asDiceIcon(this.shadowRoot?.querySelector(".dice-block-1") ?? null);
+        const diceBlock2 = BrowseRandom.asDiceIcon(this.shadowRoot?.querySelector(".dice-block-2") ?? null);
 
         // Set each dice block to a random number between 1 and 6, but make sure the total of the two dice is always 7 (just for fun :-)).
         const diceBlock1Number = Math.floor(Math.random() * 6) + 1;
@@ -74,13 +76,13 @@ export class BrowseRandom extends LitElement {
             <div class="container">
                 <div class="random-header">
                     <h3 class="highlight">Random</h3>
-                    <sl-button variant="default" ?disabled="${this.isLoading}" class="btn btn-light" @click="${this.resetAndFetchChords}">
-                        <div slot="prefix">
-                            <sl-icon class="dice-block-1" name="dice-1"></sl-icon>
-                            <sl-icon class="dice-block-2" name="dice-6"></sl-icon>
+                    <wa-button variant="neutral" ?disabled="${this.isLoading}" class="btn btn-light" @click="${this.resetAndFetchChords}">
+                        <div slot="start">
+                            <wa-icon class="dice-block-1" name="dice-1"></wa-icon>
+                            <wa-icon class="dice-block-2" name="dice-6"></wa-icon>
                         </div>
                         Roll again
-                    </sl-button>
+                    </wa-button>
                 </div>
                 ${this.renderMainContent()}
             </div>
@@ -98,3 +100,4 @@ export class BrowseRandom extends LitElement {
         this.chords.fetch();
     }
 }
+

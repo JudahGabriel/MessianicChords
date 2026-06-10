@@ -9,19 +9,19 @@ export const accountPageStyles = css`
     .account-page {
         max-width: 520px;
         margin: 0 auto;
-        padding: var(--sl-spacing-2x-large) var(--sl-spacing-medium);
+        padding: var(--wa-spacing-2x-large) var(--wa-spacing-medium);
     }
 
     .card {
         background: white;
-        border: 1px solid var(--sl-color-neutral-200);
-        border-radius: var(--sl-border-radius-large);
-        box-shadow: var(--sl-shadow-medium);
-        padding: var(--sl-spacing-large);
+        border: 1px solid var(--wa-color-neutral-200);
+        border-radius: var(--wa-border-radius-large);
+        box-shadow: var(--wa-shadow-medium);
+        padding: var(--wa-spacing-large);
     }
 
     h1 {
-        margin: 0 0 var(--sl-spacing-small);
+        margin: 0 0 var(--wa-spacing-small);
         color: var(--theme-color);
         font-family: var(--title-font, 'Homemade Apple', cursive);
         font-size: 2rem;
@@ -29,39 +29,39 @@ export const accountPageStyles = css`
     }
 
     .intro {
-        margin: 0 0 var(--sl-spacing-large);
-        color: var(--sl-color-neutral-600);
+        margin: 0 0 var(--wa-spacing-large);
+        color: var(--wa-color-neutral-600);
         text-align: center;
     }
 
-    sl-tab-panel {
-        padding: var(--sl-spacing-small);
+    wa-tab-panel {
+        padding: var(--wa-spacing-small);
     }
 
     form {
         display: grid;
-        gap: var(--sl-spacing-medium);
-        margin-top: var(--sl-spacing-large);
+        gap: var(--wa-spacing-medium);
+        margin-top: var(--wa-spacing-large);
     }
 
-    sl-alert {
-        margin-top: var(--sl-spacing-medium);
+    wa-callout {
+        margin-top: var(--wa-spacing-medium);
     }
 
-    sl-button[type="submit"] {
+    wa-button[type="submit"] {
         width: 100%;
     }
 
     .toggle-copy {
-        margin: var(--sl-spacing-medium) 0 0;
-        color: var(--sl-color-neutral-600);
+        margin: var(--wa-spacing-medium) 0 0;
+        color: var(--wa-color-neutral-600);
         text-align: center;
     }
 
     .link-button {
         background: none;
         border: 0;
-        color: var(--sl-color-primary-600);
+        color: var(--wa-color-primary-600);
         cursor: pointer;
         font: inherit;
         padding: 0;
@@ -70,7 +70,10 @@ export const accountPageStyles = css`
 
     .signed-in {
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-spacing-medium);
         text-align: center;
     }
 `;
+
+
+

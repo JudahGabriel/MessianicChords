@@ -18,8 +18,8 @@ export const appHomeStyles = css`
         justify-content: center;
         align-items: center;
         font-family: var(--subtitle-font);
-        margin-top: var(--sl-spacing-large);
-        margin-bottom: var(--sl-spacing-large);
+        margin-top: var(--wa-spacing-large);
+        margin-bottom: var(--wa-spacing-large);
     }
 
     /* On phones and tablets, make the search container margin cancel out the parent's padding */
@@ -97,7 +97,7 @@ export const appHomeStyles = css`
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
-    .new-chord-skeleton sl-skeleton {
+    .new-chord-skeleton wa-skeleton {
         width: 100%;
         height: 100%;
     }
@@ -133,7 +133,7 @@ export const appHomeStyles = css`
         margin-top: 50px;
     }
 
-    .browse-by-container sl-divider {
+    .browse-by-container wa-divider {
         height: 1em;
         --spacing: 0;
     }
@@ -146,3 +146,4 @@ export const appHomeStyles = css`
         }
     }
 `;
+

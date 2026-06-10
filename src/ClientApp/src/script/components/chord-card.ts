@@ -3,8 +3,8 @@ import { property, customElement } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
 import { sharedStyles } from "../common/shared.styles";
 import { chordCardStyles } from "./chord-card.styles";
-import "@shoelace-style/shoelace/dist/components/card/card.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/card/card.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
 
 @customElement("chord-card")
 export class ChordCard extends LitElement {
@@ -22,7 +22,7 @@ export class ChordCard extends LitElement {
         const artistHref = `/browse/artists?jump-to-artist=${encodeURIComponent(artist)}`;
 
         return html`
-            <sl-card class="chord-card">
+            <wa-card class="chord-card">
                 <div
                     class="card-media card-media-link"
                     role="link"
@@ -45,7 +45,7 @@ export class ChordCard extends LitElement {
                         ${this.renderKey()}
                     </div>
                 </div>
-            </sl-card>
+            </wa-card>
         `;
     }
 
@@ -82,7 +82,7 @@ export class ChordCard extends LitElement {
 
         return html`
             <div class="fallback-art" aria-hidden="true">
-                <sl-icon name="file-text"></sl-icon>
+                <wa-icon name="file-text"></wa-icon>
             </div>
         `;
     }
@@ -99,3 +99,4 @@ export class ChordCard extends LitElement {
         return html``;
     }
 }
+

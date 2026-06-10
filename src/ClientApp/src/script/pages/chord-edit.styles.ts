@@ -7,13 +7,13 @@ export const chordEditStyles = css`
 
     .page-heading-row {
         max-width: 900px;
-        margin: 0 auto var(--sl-spacing-large);
+        margin: 0 auto var(--wa-spacing-large);
     }
 
     .page-heading {
         display: inline-flex;
         align-items: center;
-        gap: var(--sl-spacing-x-small);
+        gap: var(--wa-spacing-x-small);
         margin: 0;
     }
 
@@ -28,7 +28,7 @@ export const chordEditStyles = css`
 
     .form-row {
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-spacing-medium);
     }
 
     .form-row-2 {
@@ -46,22 +46,22 @@ export const chordEditStyles = css`
     }
 
     .form-group {
-        margin-bottom: var(--sl-spacing-medium);
+        margin-bottom: var(--wa-spacing-medium);
     }
 
     .form-group > label {
         display: block;
-        margin-bottom: var(--sl-spacing-x-small);
+        margin-bottom: var(--wa-spacing-x-small);
     }
 
     .help-text {
-        font-size: var(--sl-font-size-small);
-        color: var(--sl-color-neutral-500);
-        margin-top: var(--sl-spacing-x-small);
+        font-size: var(--wa-font-size-small);
+        color: var(--wa-color-neutral-500);
+        margin-top: var(--wa-spacing-x-small);
     }
 
     .attachment-picker-row {
-        margin-top: var(--sl-spacing-2x-small);
+        margin-top: var(--wa-spacing-2x-small);
     }
 
     #chord-chart-input::part(textarea) {
@@ -81,22 +81,22 @@ export const chordEditStyles = css`
     .attachment-list {
         list-style: none;
         padding: 0;
-        margin-top: var(--sl-spacing-small);
+        margin-top: var(--wa-spacing-small);
     }
 
     .attachment-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: var(--sl-spacing-small) var(--sl-spacing-medium);
-        border: 1px solid var(--sl-color-neutral-200);
-        border-radius: var(--sl-border-radius-medium);
-        margin-bottom: var(--sl-spacing-x-small);
+        padding: var(--wa-spacing-small) var(--wa-spacing-medium);
+        border: 1px solid var(--wa-color-neutral-200);
+        border-radius: var(--wa-border-radius-medium);
+        margin-bottom: var(--wa-spacing-x-small);
     }
 
     .attachment-item-error {
-        border-color: var(--sl-color-danger-500);
-        background: var(--sl-color-danger-50);
+        border-color: var(--wa-color-danger-500);
+        background: var(--wa-color-danger-50);
     }
 
     .text-break {
@@ -104,8 +104,8 @@ export const chordEditStyles = css`
     }
 
     .size-label {
-        color: var(--sl-color-neutral-500);
-        font-size: var(--sl-font-size-small);
+        color: var(--wa-color-neutral-500);
+        font-size: var(--wa-font-size-small);
     }
 
     .hidden-file-input {
@@ -115,12 +115,13 @@ export const chordEditStyles = css`
     .loading-skeleton {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-spacing-medium);
         max-width: 600px;
         margin: 0 auto;
     }
 
-    sl-button[variant="primary"] {
+    wa-button[variant="brand"] {
         width: 100%;
     }
 `;
+

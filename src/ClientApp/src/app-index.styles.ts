@@ -19,7 +19,7 @@ export const indexStyles = css`
     }
 
     app-footer {
-        z-index: var(--sl-z-index-drawer);
+        z-index: var(--wa-z-index-drawer);
     }
 
     ${tabletsAndSmaller()} {
