@@ -602,9 +602,4 @@ namespace MessianicChords.Controllers
         }
 
     }
-
-    public class ChavahSong
-    {
-        public List<string> Tags { get; set; } = new List<string>();
-    }
 }

@@ -48,7 +48,7 @@ pageCache({
         "/browse/artists",
         "/browse/offline",
         "/artist/_",
-        "/ChordSheets/_"
+        "/chordsheets/_"
     ],
     plugins: [{
         // We want to override cache key for
