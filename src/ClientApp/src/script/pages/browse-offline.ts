@@ -179,8 +179,11 @@ export class BrowseOffline extends LitElement {
                         continue;
                     }
 
-                    await this.chordCache.add(chord);
-                    await this.cacheChordMedia(chord);
+                    await Promise.all([
+                        this.chordCache.add(chord),
+                        this.prefetchChordDetailsPage(chord),
+                        this.cacheChordMedia(chord)
+                    ]);
                     succeeded++;
                 } catch (error) {
                     failed++;
@@ -240,6 +243,16 @@ export class BrowseOffline extends LitElement {
         }
     }
 
+    private async prefetchChordDetailsPage(chord: ChordSheet): Promise<void> {
+        const detailsUrl = this.chordDetailsUrl(chord);
+
+        await this.prefetchIframe(detailsUrl);
+    }
+
+    private chordDetailsUrl(chord: ChordSheet): string {
+        return this.toAbsoluteUrl(`/${chord.id.toLowerCase()}`);
+    }
+
     private async fetchAndIgnoreErrors(url: string): Promise<void> {
         const absoluteUrl = this.toAbsoluteUrl(url);
         try {
@@ -289,6 +302,42 @@ export class BrowseOffline extends LitElement {
             img.addEventListener("error", onError, { once: true });
             host.appendChild(img);
             img.src = url;
+        });
+    }
+
+    private async prefetchIframe(url: string): Promise<void> {
+        const host = this.renderRoot.querySelector("#media-prefetch-host") as HTMLElement | null;
+        if (!host) {
+            throw new Error("Media prefetch host is missing from browse-offline page");
+        }
+
+        await new Promise<void>((resolve, reject) => {
+            const iframe = document.createElement("iframe");
+
+            const cleanup = () => {
+                iframe.removeEventListener("load", onLoad);
+                iframe.removeEventListener("error", onError);
+                iframe.remove();
+            };
+
+            const onLoad = () => {
+                cleanup();
+                resolve();
+            };
+
+            const onError = (event: Event) => {
+                console.error("Iframe prefetch failed", { requestedUrl: url }, event);
+                cleanup();
+                reject(new Error(`Failed loading iframe: ${url}`));
+            };
+
+            iframe.setAttribute("title", "offline-prefetch");
+            iframe.setAttribute("aria-hidden", "true");
+            iframe.tabIndex = -1;
+            iframe.addEventListener("load", onLoad, { once: true });
+            iframe.addEventListener("error", onError, { once: true });
+            host.appendChild(iframe);
+            iframe.src = url;
         });
     }
 
