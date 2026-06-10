@@ -52,10 +52,10 @@ export class ChordCard extends LitElement {
 
     private getArtistWithAuthors(chord: ChordSheet): string {
         if (!chord.authors || chord.authors.length === 0) {
-            return chord.artist;
+            return chord.artist?.trim() || "Unknown artist";
         }
 
-        const artistAuthorsSet = new Set([chord.artist, ...chord.authors]);
+        const artistAuthorsSet = new Set([chord.artist?.trim(), ...chord.authors.map(a => a.trim())]);
         return Array.from(artistAuthorsSet).join(", ");
     }
 
