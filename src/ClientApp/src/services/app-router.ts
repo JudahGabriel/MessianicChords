@@ -8,25 +8,27 @@ export interface RouteContext {
     url?: URL;
 }
 
+export const appTitle = "Messianic Chords, guitar chord charts and lyrics for Messianic music";
+
 export const appRouter = new Router({
     fallback: "/",
     plugins: [],
     routes: [
         {
             path: "/",
-            title: "Home",
+            title: appTitle,
             plugins: [lazy(() => import("../script/pages/app-home"))],
             render: () => html`<app-home></app-home>`
         },
         {
             path: "/chordsheets/new",
-            title: "Add Chord Sheet",
+            title: "Contribute a chord chart - " + appTitle,
             plugins: [lazy(() => import("../script/pages/chord-edit"))],
             render: () => html`<chord-edit></chord-edit>`
         },
         {
             path: "/chordsheets/new/success",
-            title: "Submission Successful",
+            title: "Chord chart submission successful - " + appTitle,
             plugins: [lazy(() => import("../script/pages/chord-edit-successful"))],
             render: () => html`<chord-edit-successful></chord-edit-successful>`
         },
@@ -38,83 +40,83 @@ export const appRouter = new Router({
         },
         {
             path: "/chordsheets/:id/edit",
-            title: "Edit Chord Sheet",
+            title: "Edit a chord chart - " + appTitle,
             plugins: [lazy(() => import("../script/pages/chord-edit"))],
             render: (context: RouteContext) => html`<chord-edit chord-id="${context.params?.id || ""}"></chord-edit>`
         },
         {
             path: "/ChordSheets/:id/edit", // ChordSheet legacy upper-case variant
-            title: "Edit Chord Sheet",
+            title: "Edit a chord chart - " + appTitle,
             plugins: [redirect((context: RouteContext) => `/chordsheets/${context.params?.id || ""}/edit`)]
         },
         {
             path: "/ChordSheets/:id",
-            title: "Chord Details",
+            title: "Chord chart details - " + appTitle, // will be replaced with the real description once the chart is loaded in chord-details
             plugins: [redirect((context: RouteContext) => `/chordsheets/${context.params?.id || ""}`)]
         },
         {
             path: "/chordsheets/:id",
-            title: "Chord Details",
+            title: "Chord chart details - " + appTitle, // will be replaced with the real description once the chart is loaded in chord-details
             plugins: [lazy(() => import("../script/pages/chord-details"))],
             render: (context: RouteContext) => html`<chord-details chord-id="${context.params?.id || ""}"></chord-details>`
         },
         {
             path: "/browse/newest",
-            title: "Newest",
+            title: "Newest chord charts - " + appTitle,
             plugins: [lazy(() => import("../script/pages/browse-newest"))],
             render: () => html`<browse-newest></browse-newest>`
         },
         {
             path: "/browse/songs",
-            title: "Browse Songs",
+            title: "Chord charts by song name - " + appTitle,
             plugins: [lazy(() => import("../script/pages/browse-songs"))],
             render: () => html`<browse-songs></browse-songs>`
         },
         {
             path: "/browse/tags",
-            title: "Browse Tags",
+            title: "Chord charts by song tag - " + appTitle,
             plugins: [lazy(() => import("../script/pages/browse-tags"))],
             render: () => html`<browse-tags></browse-tags>`
         },
         {
             path: "/browse/artists",
-            title: "Browse Artists",
+            title: "Chord charts by artist - " + appTitle,
             plugins: [lazy(() => import("../script/pages/browse-artists"))],
             render: () => html`<browse-artists></browse-artists>`
         },
         {
             path: "/browse/random",
-            title: "Random",
+            title: "Random chord charts - " + appTitle,
             plugins: [lazy(() => import("../script/pages/browse-random"))],
             render: () => html`<browse-random></browse-random>`
         },
         {
             path: "/browse/offline",
-            title: "Offline",
+            title: "Offline chord charts - " + appTitle,
             plugins: [lazy(() => import("../script/pages/browse-offline"))],
             render: () => html`<browse-offline></browse-offline>`
         },
         {
             path: "/artist/:name",
-            title: "Artist",
+            title: context => `Chord charts by ${decodeURIComponent(context.params?.name || "") || "artist"} - ${appTitle}`,
             plugins: [lazy(() => import("../script/pages/artist-songs"))],
             render: (context: RouteContext) => html`<artist-songs artist-name="${context.params?.name || ""}"></artist-songs>`
         },
         {
             path: "/my/starred",
-            title: "My Starred",
+            title: "My starred chord charts - " + appTitle,
             plugins: [lazy(() => import("../script/pages/my-starred-page"))],
             render: () => html`<my-starred-page></my-starred-page>`
         },
         {
             path: "/profile",
-            title: "Profile",
+            title: "My profile - " + appTitle,
             plugins: [lazy(() => import("../script/pages/profile-page"))],
             render: () => html`<profile-page></profile-page>`
         },
         {
             path: "/account",
-            title: "Account",
+            title: "Sign in or register - " + appTitle,
             plugins: [lazy(() => import("../script/pages/account-page"))],
             render: () => html`<account-page></account-page>`
         },
@@ -126,7 +128,7 @@ export const appRouter = new Router({
         },
         {
             path: "/about",
-            title: "About",
+            title: "About - " + appTitle,
             plugins: [lazy(() => import("../script/pages/about"))],
             render: () => html`<about-page></about-page>`
         }

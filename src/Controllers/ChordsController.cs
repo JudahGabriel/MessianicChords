@@ -218,7 +218,7 @@ namespace MessianicChords.Controllers
         {
             var chordSheets = await DbSession.Query<ChordSheet>()
                 .Statistics(out var stats)
-                .Where(a => a.Artist == artist)
+                .Where(a => a.Artist == artist || a.Authors.Contains(artist))
                 .OrderBy(a => a.Song)
                 .Skip(skip)
                 .Take(take)

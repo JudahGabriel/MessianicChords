@@ -7,6 +7,7 @@ import { sharedStyles } from "../common/shared.styles";
 import { browseArtistsStyles } from "./browse-artists.styles";
 import "../components/chord-collection";
 import "../components/load-more-button";
+import { appTitle } from "../../services/app-router";
 
 @customElement("artist-songs")
 export class ArtistSongs extends LitElement {

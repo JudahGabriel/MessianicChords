@@ -18,8 +18,9 @@ export class ChordCard extends LitElement {
             return html``;
         }
 
-        const artist = this.chord.artist || this.chord.authors.join(", ");
-        const artistHref = `/browse/artists?jump-to-artist=${encodeURIComponent(artist)}`;
+        const artist = this.getArtistWithAuthors(this.chord);
+        const artistRouteName = this.chord.artist || this.chord.authors[0] || "";
+        const artistHref = `/artist/${encodeURIComponent(artistRouteName)}`;
 
         return html`
             <sl-card class="chord-card">
@@ -47,6 +48,15 @@ export class ChordCard extends LitElement {
                 </div>
             </sl-card>
         `;
+    }
+
+    private getArtistWithAuthors(chord: ChordSheet): string {
+        if (!chord.authors || chord.authors.length === 0) {
+            return chord.artist;
+        }
+
+        const artistAuthorsSet = new Set([chord.artist, ...chord.authors]);
+        return Array.from(artistAuthorsSet).join(", ");
     }
 
     private navigateToChordDetails(): void {
