@@ -56,7 +56,7 @@ pageCache({
         //  - Approve/reject page: /chords/ApproveRejectSubmission
         //  - Chord edit page: /chordsheets/{id}/edit
         //  - Submission review page: /chordsubmissions/review?id=...
-        //  - Chord details page: /ChordSheets/2630
+        //  - Chord details page: /chordsheets/2630
         // Reason is, these pages are the same HTML, just different behavior.
         cacheKeyWillBeUsed: async function ({ request }) {
             // Normalize all artist profile URLs to a single cache entry.
@@ -94,7 +94,7 @@ pageCache({
             const chordDetailsRegex = new RegExp(/\/ChordSheets\/[\w|\d|-]+$/, "i");
             const isChordDetailsPage = !!request.url.match(chordDetailsRegex);
             if (isChordDetailsPage) {
-                return new URL(request.url).origin + "/ChordSheets/_";
+                return new URL(request.url).origin + "/chordsheets/_";
             }
 
             // Keep all other URLs keyed by their original full request URL.
