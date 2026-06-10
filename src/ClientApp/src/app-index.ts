@@ -37,7 +37,7 @@ export class AppIndex extends LitElement {
                     ${this.route}
                 </main>
 
-                <app-footer></app-footer>
+                
             </div>
         `;
     }
