@@ -97,6 +97,12 @@ pageCache({
                 return new URL(request.url).origin + "/chordsheets/_";
             }
 
+            // Strip query string for home page (e.g. /?search=king) so it always serves the cached home page.
+            const isHomePage = new URL(request.url).pathname === "/";
+            if (isHomePage) {
+                return new URL(request.url).origin + "/";
+            }
+
             // Keep all other URLs keyed by their original full request URL.
             return request.url;
         }
