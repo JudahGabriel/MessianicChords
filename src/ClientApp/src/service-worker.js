@@ -122,7 +122,11 @@ const staticResourceDestinations = [
 ];
 staticResourceCache({
     matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination) || e.url?.href.endsWith("dice.mp3"),
-    warmCache: ["/assets/audio/dice.mp3"]
+    warmCache: [
+        "/assets/audio/dice.mp3",
+        "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css",
+        "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css"
+    ]
 });
 
 // Image cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#image_cache
