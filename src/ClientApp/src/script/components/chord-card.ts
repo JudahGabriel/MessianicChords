@@ -56,7 +56,7 @@ export class ChordCard extends LitElement {
         }
 
         const artistAuthorsSet = new Set([chord.artist?.trim(), ...chord.authors.map(a => a.trim())]);
-        return Array.from(artistAuthorsSet).join(", ");
+        return Array.from(artistAuthorsSet).filter(a => !!a).join(", ");
     }
 
     private navigateToChordDetails(): void {
