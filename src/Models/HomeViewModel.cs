@@ -19,13 +19,14 @@ public class HomeViewModel
     /// <param name="chordSheet"></param>
     public void UpdateFromChordSheet(ChordSheet chordSheet)
     {
-        this.Description = $"Chord chart for {chordSheet.GetSongName()} by {chordSheet.Artist}. {new[] { chordSheet.Chords, chordSheet.PlainTextContents }.FirstOrDefault(i => !string.IsNullOrEmpty(i)) ?? string.Empty}";
+        var artistAndAuthors = string.Join(", ", new[] { chordSheet.Artist }.Concat(chordSheet.Authors).Where(s => !string.IsNullOrEmpty(s)));
+        this.Description = $"Chord chart for {chordSheet.GetSongName()} by {artistAndAuthors}. {new[] { chordSheet.Chords, chordSheet.PlainTextContents }.FirstOrDefault(i => !string.IsNullOrEmpty(i)) ?? string.Empty}";
         this.Keywords = string.Join(", ", new[] { chordSheet.GetSongName(), chordSheet.Artist }.Concat(chordSheet.Authors)) + ", " + this.Keywords;
         if (!string.IsNullOrEmpty(chordSheet.ThumbnailUrl))
         {
             this.SocialCardImage = new Uri(chordSheet.ThumbnailUrl);
         }
-        this.Title = $"Chord chart for {chordSheet.GetSongName()} by {chordSheet.Artist} - Messianic Chords";
+        this.Title = $"Chord chart for {chordSheet.GetSongName()} by {artistAndAuthors} - Messianic Chords";
         this.SocialCardUrl = new Uri($"https://messianicchords.com/{chordSheet.Id}");
     }
 
