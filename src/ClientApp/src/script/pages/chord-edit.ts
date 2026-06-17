@@ -91,7 +91,7 @@ export class ChordEdit extends LitElement {
         return html`
             <div class="page-heading-row">
                 <h2 class="highlight page-heading">
-                    <sl-icon name="pencil-square" class="page-heading-icon"></sl-icon>
+                    <sl-icon name="pencil" class="page-heading-icon"></sl-icon>
                     ${this.isNewChordSheet ? "Submit new chord chart" : "Edit chord chart"}
                 </h2>
             </div>
