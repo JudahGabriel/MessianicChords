@@ -75,4 +75,4 @@ jobs:
           Set-Content -Path $publishProfilePath -Value $env:PUBLISH_PROFILE -NoNewline
           
       - name: dotnet publish
-        run: dotnet publish src/MessianicChords.csproj -c Release -o Publish -p:TargetFramework=net10.0 -p:PublishProfileFullPath=${{ runner.temp }}/MessianicChordsOnVm.pubxml --no-build
+        run: dotnet publish src/MessianicChords.csproj -c Release -o Publish -p:TargetFramework=net10.0 -p:PublishProfileFullPath=${{ runner.temp }}/MessianicChordsOnVm.pubxml -p:DeleteExistingFiles=true --no-build
