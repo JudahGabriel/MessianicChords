@@ -34,8 +34,8 @@ public class ChordSubmissionService
     /// Creates a new chord submission, uploading any attachments to the CDN for later review.
     /// </summary>
     /// <param name="request">The submission request.</param>
-    /// <returns>A new ChordSubmission saved to the database.</returns>
-    public async Task<ChordSubmission> Create(ChordSubmissionRequest request)
+    /// <returns>A tuple containing the new ChordSubmission and its approval token.</returns>
+    public async Task<(ChordSubmission Submission, string ApprovalToken)> Create(ChordSubmissionRequest request)
     {
         try
         {
@@ -62,7 +62,7 @@ public class ChordSubmissionService
             .ToListAsync();
     }
 
-    private async Task<ChordSubmission> CreateCore(ChordSubmissionRequest request)
+    private async Task<(ChordSubmission Submission, string ApprovalToken)> CreateCore(ChordSubmissionRequest request)
     {
         // We can't have more than 10 attachments.
         if (request.AttachmentUploads.Count > 10)
@@ -111,7 +111,7 @@ public class ChordSubmissionService
         // Send off an email to admins.
         await emailService.SendChordSubmissionEmail(submission, existingChordSheet, approvalToken.Token);
 
-        return submission;
+        return (submission, token);
     }
 
     /// <summary>

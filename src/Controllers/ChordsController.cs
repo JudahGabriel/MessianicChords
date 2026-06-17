@@ -425,9 +425,20 @@ namespace MessianicChords.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public Task SubmitEdit(ChordSubmissionRequest request, [FromServices]ChordSubmissionService submissionService)
+        public async Task SubmitEdit(ChordSubmissionRequest request, [FromServices]ChordSubmissionService submissionService)
         {
-            return submissionService.Create(request);
+            var (submission, approvalToken) = await submissionService.Create(request);
+            
+            // If the user is an admin, automatically approve their submission
+            if (User.IsInRole(AppUser.AdminRole))
+            {
+                var approval = new ChordSubmissionApproval
+                {
+                    SubmissionId = submission.Id!,
+                    Approved = true
+                };
+                await submissionService.ApproveOrReject(approval, approvalToken);
+            }
         }
 
         [HttpGet]
