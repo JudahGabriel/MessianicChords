@@ -13,19 +13,16 @@ public class ChordSubmissionService
     private readonly ILogger<ChordSubmissionService> logger;
     private readonly IAsyncDocumentSession dbSession;
     private readonly BunnyCdnManagerService cdnService;
-    private readonly EmailService emailService;
     private readonly AlbumArtFetcher albumArtFetcher;
 
     public ChordSubmissionService(
         IAsyncDocumentSession dbSession,
         BunnyCdnManagerService cdnService,
-        EmailService emailService,
         AlbumArtFetcher albumArtFetcher,
         ILogger<ChordSubmissionService> logger)
     {
         this.dbSession = dbSession;
         this.cdnService = cdnService;
-        this.emailService = emailService;
         this.albumArtFetcher = albumArtFetcher;
         this.logger = logger;
     }
@@ -104,12 +101,7 @@ public class ChordSubmissionService
         await dbSession.StoreAsync(approvalToken);
         dbSession.SetRavenExpiration(approvalToken, DateTime.Now.AddDays(30));
 
-        var existingChordSheet = string.IsNullOrWhiteSpace(request.Id) ? null : await dbSession.LoadRequiredAsync<ChordSheet>(request.Id!);
-
         await dbSession.SaveChangesAsync();
-
-        // Send off an email to admins.
-        await emailService.SendChordSubmissionEmail(submission, existingChordSheet, approvalToken.Token);
 
         return (submission, token);
     }
