@@ -106,6 +106,11 @@ namespace MessianicChords.Models
         public List<string> Roles { get; set; } = new List<string>();
 
         /// <summary>
+        /// Whether the user is an admin.
+        /// </summary>
+        public bool IsAdmin => Roles.Contains(AppUser.AdminRole);
+
+        /// <summary>
         /// The IDs of the chord charts the user has starred.
         /// </summary>
         public List<string> StarredChartIds { get; set; } = new List<string>();

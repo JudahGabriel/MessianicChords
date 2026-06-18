@@ -14,6 +14,7 @@ export interface UserViewModel {
     lastName?: string;
     registrationDate?: string;
     profilePictureUrl?: string | null;
+    isAdmin: boolean;
     starredChartIds: string[];
     starredChordCharts: Record<string, string>;
     editedChordCharts: Record<string, string>;
