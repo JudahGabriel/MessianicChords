@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
@@ -322,7 +322,7 @@ export class ChordDetails extends LitElement {
         const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
-        const fontSizeClass = chord.chords ? "" : "d-none";
+        const hasChords = !!chord.chords;
         const starTitle = this.isCurrentChordStarred() ? "You already have starred this chord chart. Tap to unstar." : "Star this chord chart";
         const hasAudio = this.hasAudioPlayer(chord);
         const playPauseTooltip = this.isAudioPlaying
@@ -395,7 +395,8 @@ export class ChordDetails extends LitElement {
                             </sl-tooltip>
                         </sl-button-group>
                         
-                        <sl-button-group class="${fontSizeClass}" label="Font Size">
+                        ${hasChords ? html`
+                        <sl-button-group label="Font Size">
                             <sl-tooltip content="Increase font size" hoist>
                                 <sl-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
                                     <strong>A</strong> <sl-icon name="caret-up-fill"></sl-icon>
@@ -412,6 +413,7 @@ export class ChordDetails extends LitElement {
                                 </sl-button>
                             </sl-tooltip>
                         </sl-button-group>
+                        ` : nothing}
 
                     </div>
                     
