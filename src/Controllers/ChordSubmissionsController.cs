@@ -81,13 +81,33 @@ namespace MessianicChords.Controllers
         }
 
         /// <summary>
-        /// Gets all pending chord submissions. Admin only.
+        /// Gets all pending chord submissions with their original chord sheets (for edits). Admin only.
         /// </summary>
         [HttpGet("~/api/chordsubmissions/pending")]
         [Authorize(Roles = AppUser.AdminRole)]
-        public async Task<List<ChordSubmission>> GetPending()
+        public async Task<List<PendingChordSubmission>> GetPending()
         {
-            return await chordSubmissionService.GetAll(0, 100);
+            var submissions = await chordSubmissionService.GetAll(0, 100);
+
+            // Load the original chord sheets for edit submissions.
+            var editedIds = submissions
+                .Where(s => !string.IsNullOrWhiteSpace(s.EditedChordSheetId))
+                .Select(s => s.EditedChordSheetId!)
+                .Distinct()
+                .ToList();
+            var originals = editedIds.Count > 0
+                ? await dbSession.LoadAsync<ChordSheet>(editedIds)
+                : new Dictionary<string, ChordSheet>();
+
+            return submissions.Select(s =>
+            {
+                ChordSheet? original = null;
+                if (!string.IsNullOrWhiteSpace(s.EditedChordSheetId))
+                {
+                    originals.TryGetValue(s.EditedChordSheetId!, out original);
+                }
+                return new PendingChordSubmission(s, original);
+            }).ToList();
         }
 
         /// <summary>

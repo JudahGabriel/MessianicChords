@@ -1,9 +1,9 @@
-import { ChordSubmission } from "../models/chord-submission";
+import { PendingChordSubmission } from "../models/chord-submission";
 import { ApiServiceBase } from "./api-service-base";
 
 class AdminService extends ApiServiceBase {
-    getPendingSubmissions(): Promise<ChordSubmission[]> {
-        return this.getJson<ChordSubmission[]>("/api/chordsubmissions/pending");
+    getPendingSubmissions(): Promise<PendingChordSubmission[]> {
+        return this.getJson<PendingChordSubmission[]>("/api/chordsubmissions/pending");
     }
 
     approveSubmission(submissionId: string): Promise<{ message: string }> {

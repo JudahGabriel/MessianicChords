@@ -2,7 +2,8 @@ import { html, LitElement, TemplateResult, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
 import { adminSubmissionsStyles } from "./admin-submissions.styles";
-import { ChordSubmission } from "../models/chord-submission";
+import { ChordSubmission, PendingChordSubmission } from "../models/chord-submission";
+import { ChordSheet } from "../models/interfaces";
 import { adminService } from "../services/admin-service";
 import { accountService } from "../services/account-service";
 
@@ -14,7 +15,7 @@ import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
 export class AdminSubmissions extends LitElement {
     static styles = [sharedStyles, adminSubmissionsStyles];
 
-    @state() submissions: ChordSubmission[] = [];
+    @state() pendingSubmissions: PendingChordSubmission[] = [];
     @state() isLoading = true;
     @state() error: string | null = null;
     @state() processingIds: Set<string> = new Set();
@@ -45,7 +46,7 @@ export class AdminSubmissions extends LitElement {
         this.isLoading = true;
         this.error = null;
         try {
-            this.submissions = await adminService.getPendingSubmissions();
+            this.pendingSubmissions = await adminService.getPendingSubmissions();
         } catch {
             this.error = "Failed to load submissions.";
         } finally {
@@ -88,7 +89,7 @@ export class AdminSubmissions extends LitElement {
             `;
         }
 
-        if (this.submissions.length === 0) {
+        if (this.pendingSubmissions.length === 0) {
             return html`
                 <div class="empty-state">
                     <p>🎉 No pending submissions. All caught up!</p>
@@ -97,12 +98,13 @@ export class AdminSubmissions extends LitElement {
         }
 
         return html`
-            <p>${this.submissions.length} pending submission${this.submissions.length === 1 ? "" : "s"}</p>
-            ${this.submissions.map(s => this.renderSubmission(s))}
+            <p>${this.pendingSubmissions.length} pending submission${this.pendingSubmissions.length === 1 ? "" : "s"}</p>
+            ${this.pendingSubmissions.map(p => this.renderSubmission(p))}
         `;
     }
 
-    private renderSubmission(submission: ChordSubmission): TemplateResult {
+    private renderSubmission(pending: PendingChordSubmission): TemplateResult {
+        const { submission, original } = pending;
         const isNew = !submission.editedChordSheetId;
         const isProcessing = this.processingIds.has(submission.id);
 
@@ -114,66 +116,19 @@ export class AdminSubmissions extends LitElement {
                         <span class="submitted-date">Submitted ${this.formatDate(submission.created)}</span>
                     </div>
                     <span class="submission-badge ${isNew ? "badge-new" : "badge-edit"}">
-                        ${isNew ? "New" : "Edit"}
+                        ${isNew ? "🆕 New Chart" : "✏️ Edit"}
                     </span>
                 </div>
 
-                <div class="submission-details">
-                    ${submission.key ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Key</span>
-                            <span class="detail-value">${submission.key}</span>
-                        </div>
-                    ` : nothing}
-                    ${submission.capo ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Capo</span>
-                            <span class="detail-value">${submission.capo}</span>
-                        </div>
-                    ` : nothing}
-                    ${submission.authors.length > 0 ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Authors</span>
-                            <span class="detail-value">${submission.authors.join(", ")}</span>
-                        </div>
-                    ` : nothing}
-                    ${submission.copyright ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Copyright</span>
-                            <span class="detail-value">${submission.copyright}</span>
-                        </div>
-                    ` : nothing}
-                    ${submission.scripture ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Scripture</span>
-                            <span class="detail-value">${submission.scripture}</span>
-                        </div>
-                    ` : nothing}
-                    ${submission.year ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Year</span>
-                            <span class="detail-value">${submission.year}</span>
-                        </div>
-                    ` : nothing}
-                    ${submission.isSheetMusic ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Sheet Music</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    ` : nothing}
-                    ${!isNew ? html`
-                        <div class="detail-item">
-                            <span class="detail-label">Editing</span>
-                            <span class="detail-value">
-                                <a href="/chordsheets/${encodeURIComponent(submission.editedChordSheetId!.replace(/^ChordSheets\//i, ""))}">${submission.editedChordSheetId}</a>
-                            </span>
-                        </div>
-                    ` : nothing}
-                </div>
-
-                ${submission.chords ? html`
-                    <div class="chords-preview">${submission.chords}</div>
+                ${!isNew && original ? html`
+                    <p class="editing-info">
+                        Editing <a href="/chordsheets/${encodeURIComponent(submission.editedChordSheetId!.replace(/^ChordSheets\//i, ""))}">${original.artist} - ${original.song}</a>
+                    </p>
                 ` : nothing}
+
+                ${isNew
+                    ? this.renderNewSubmissionDetails(submission)
+                    : this.renderEditDiff(submission, original)}
 
                 ${submission.savedAttachments.length > 0 ? html`
                     <ul class="attachments-list">
@@ -181,13 +136,6 @@ export class AdminSubmissions extends LitElement {
                             <li>📎 <a href="${a.cdnUri}" target="_blank">${a.untrustedFileName}</a></li>
                         `)}
                     </ul>
-                ` : nothing}
-
-                ${submission.links.length > 0 ? html`
-                    <div class="detail-item" style="margin-bottom: 16px;">
-                        <span class="detail-label">Links</span>
-                        ${submission.links.map(link => html`<a href="${link}" target="_blank" style="display:block; font-size: 0.9rem;">${link}</a>`)}
-                    </div>
                 ` : nothing}
 
                 <div class="submission-actions">
@@ -210,6 +158,136 @@ export class AdminSubmissions extends LitElement {
         `;
     }
 
+    private renderNewSubmissionDetails(submission: ChordSubmission): TemplateResult {
+        return html`
+            <div class="submission-details">
+                ${this.renderDetailIfPresent("Song", submission.song)}
+                ${this.renderDetailIfPresent("Hebrew Name", submission.hebrewSongName)}
+                ${this.renderDetailIfPresent("Artist", submission.artist)}
+                ${this.renderDetailIfPresent("Key", submission.key)}
+                ${submission.capo ? this.renderDetailIfPresent("Capo", String(submission.capo)) : nothing}
+                ${submission.authors.length > 0 ? this.renderDetailIfPresent("Authors", submission.authors.join(", ")) : nothing}
+                ${this.renderDetailIfPresent("Copyright", submission.copyright)}
+                ${this.renderDetailIfPresent("Scripture", submission.scripture)}
+                ${submission.year ? this.renderDetailIfPresent("Year", String(submission.year)) : nothing}
+                ${submission.isSheetMusic ? this.renderDetailIfPresent("Sheet Music", "Yes") : nothing}
+                ${this.renderDetailIfPresent("About", submission.about)}
+            </div>
+
+            ${submission.chords ? html`
+                <div class="chords-preview">${submission.chords}</div>
+            ` : nothing}
+
+            ${submission.links.length > 0 ? html`
+                <div class="detail-item" style="margin-bottom: 16px;">
+                    <span class="detail-label">Links</span>
+                    ${submission.links.map(link => html`<a href="${link}" target="_blank" style="display:block; font-size: 0.9rem;">${link}</a>`)}
+                </div>
+            ` : nothing}
+        `;
+    }
+
+    private renderEditDiff(submission: ChordSubmission, original: ChordSheet | null): TemplateResult {
+        if (!original) {
+            return this.renderNewSubmissionDetails(submission);
+        }
+
+        const fields: Array<{ label: string; newVal: string; oldVal: string }> = [
+            { label: "Song", newVal: submission.song ?? "", oldVal: original.song ?? "" },
+            { label: "Hebrew Name", newVal: submission.hebrewSongName ?? "", oldVal: original.hebrewSongName ?? "" },
+            { label: "Artist", newVal: submission.artist ?? "", oldVal: original.artist ?? "" },
+            { label: "Key", newVal: submission.key ?? "", oldVal: original.key ?? "" },
+            { label: "Capo", newVal: submission.capo ? String(submission.capo) : "", oldVal: original.capo ? String(original.capo) : "" },
+            { label: "Authors", newVal: (submission.authors ?? []).join(", "), oldVal: (original.authors ?? []).join(", ") },
+            { label: "Copyright", newVal: submission.copyright ?? "", oldVal: original.copyright ?? "" },
+            { label: "Scripture", newVal: submission.scripture ?? "", oldVal: original.scripture ?? "" },
+            { label: "Year", newVal: submission.year ? String(submission.year) : "", oldVal: original.year ? String(original.year) : "" },
+            { label: "Sheet Music", newVal: submission.isSheetMusic ? "Yes" : "No", oldVal: original.isSheetMusic ? "Yes" : "No" },
+            { label: "About", newVal: submission.about ?? "", oldVal: original.about ?? "" },
+        ];
+
+        const changedFields = fields.filter(f => f.newVal !== f.oldVal);
+        const unchangedFields = fields.filter(f => f.newVal !== "" && f.newVal === f.oldVal);
+
+        const chordsChanged = (submission.chords ?? "") !== (original.chords ?? "");
+        const linksChanged = JSON.stringify(submission.links ?? []) !== JSON.stringify(original.links ?? []);
+
+        return html`
+            ${changedFields.length > 0 ? html`
+                <h4 class="diff-section-title">Changed Fields</h4>
+                <table class="diff-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>New Value</th>
+                            <th>Old Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${changedFields.map(f => html`
+                            <tr class="diff-changed">
+                                <td class="diff-field-name">${f.label}</td>
+                                <td class="diff-new">${f.newVal || html`<span class="empty-val">(empty)</span>`}</td>
+                                <td class="diff-old">${f.oldVal || html`<span class="empty-val">(empty)</span>`}</td>
+                            </tr>
+                        `)}
+                    </tbody>
+                </table>
+            ` : nothing}
+
+            ${chordsChanged ? html`
+                <h4 class="diff-section-title">Chords Changed</h4>
+                <div class="chords-diff">
+                    <div class="chords-diff-panel">
+                        <div class="chords-diff-label">New</div>
+                        <div class="chords-preview">${submission.chords || "(empty)"}</div>
+                    </div>
+                    <div class="chords-diff-panel">
+                        <div class="chords-diff-label">Old</div>
+                        <div class="chords-preview chords-old">${original.chords || "(empty)"}</div>
+                    </div>
+                </div>
+            ` : nothing}
+
+            ${linksChanged ? html`
+                <h4 class="diff-section-title">Links Changed</h4>
+                <div class="links-diff">
+                    <div>
+                        <span class="detail-label">New</span>
+                        ${(submission.links ?? []).map(link => html`<a href="${link}" target="_blank" style="display:block; font-size: 0.9rem;">${link}</a>`)}
+                    </div>
+                    <div>
+                        <span class="detail-label">Old</span>
+                        ${(original.links ?? []).map(link => html`<a href="${link}" target="_blank" style="display:block; font-size: 0.9rem;">${link}</a>`)}
+                    </div>
+                </div>
+            ` : nothing}
+
+            ${changedFields.length === 0 && !chordsChanged && !linksChanged ? html`
+                <p class="no-changes">No field changes detected (only new attachments).</p>
+            ` : nothing}
+
+            ${unchangedFields.length > 0 ? html`
+                <details class="unchanged-details">
+                    <summary>Unchanged fields (${unchangedFields.length})</summary>
+                    <div class="submission-details">
+                        ${unchangedFields.map(f => this.renderDetailIfPresent(f.label, f.newVal))}
+                    </div>
+                </details>
+            ` : nothing}
+        `;
+    }
+
+    private renderDetailIfPresent(label: string, value: string | null | undefined): TemplateResult | typeof nothing {
+        if (!value) return nothing;
+        return html`
+            <div class="detail-item">
+                <span class="detail-label">${label}</span>
+                <span class="detail-value">${value}</span>
+            </div>
+        `;
+    }
+
     private async approve(submission: ChordSubmission): Promise<void> {
         if (!submission.id) return;
         await this.processSubmission(submission.id, () => adminService.approveSubmission(submission.id));
@@ -225,7 +303,7 @@ export class AdminSubmissions extends LitElement {
         this.error = null;
         try {
             await action();
-            this.submissions = this.submissions.filter(s => s.id !== submissionId);
+            this.pendingSubmissions = this.pendingSubmissions.filter(p => p.submission.id !== submissionId);
         } catch {
             this.error = `Failed to process submission ${submissionId}.`;
         } finally {

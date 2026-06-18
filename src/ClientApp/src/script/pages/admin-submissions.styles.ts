@@ -43,10 +43,11 @@ export const adminSubmissionsStyles = css`
     .submission-badge {
         display: inline-block;
         font-size: 0.75rem;
-        padding: 2px 8px;
+        padding: 4px 10px;
         border-radius: 12px;
         font-weight: 600;
         text-transform: uppercase;
+        white-space: nowrap;
     }
 
     .badge-new {
@@ -57,6 +58,16 @@ export const adminSubmissionsStyles = css`
     .badge-edit {
         background: #e8e6f0;
         color: #35338c;
+    }
+
+    .editing-info {
+        font-size: 0.9rem;
+        color: #555;
+        margin: 0 0 12px 0;
+    }
+
+    .editing-info a {
+        color: var(--sl-color-primary-700, #6665a8);
     }
 
     .submission-details {
@@ -82,17 +93,123 @@ export const adminSubmissionsStyles = css`
         font-size: 0.95rem;
     }
 
+    /* Diff table styles */
+    .diff-section-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 16px 0 8px 0;
+        color: #333;
+    }
+
+    .diff-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+    }
+
+    .diff-table th {
+        text-align: left;
+        padding: 8px 12px;
+        background: #eee;
+        border-bottom: 2px solid #ddd;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #555;
+    }
+
+    .diff-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #e8e8e8;
+        vertical-align: top;
+    }
+
+    .diff-field-name {
+        font-weight: 600;
+        white-space: nowrap;
+        width: 120px;
+    }
+
+    .diff-new {
+        background: #e6ffec;
+    }
+
+    .diff-old {
+        background: #fff1e5;
+        color: #7a5a3a;
+    }
+
+    .empty-val {
+        color: #aaa;
+        font-style: italic;
+    }
+
+    .chords-diff {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .chords-diff-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chords-diff-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #555;
+        margin-bottom: 4px;
+    }
+
     .chords-preview {
         max-height: 200px;
         overflow-y: auto;
-        background: white;
-        border: 1px solid #ddd;
+        background: #e6ffec;
+        border: 1px solid #b7d9b7;
         border-radius: 4px;
         padding: 12px;
         font-family: monospace;
         font-size: 0.85rem;
         white-space: pre-wrap;
+        flex: 1;
+    }
+
+    .chords-old {
+        background: #fff1e5;
+        border-color: #e0c9a8;
+    }
+
+    .links-diff {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
         margin-bottom: 16px;
+    }
+
+    .no-changes {
+        color: #888;
+        font-style: italic;
+        margin: 8px 0 16px 0;
+    }
+
+    .unchanged-details {
+        margin-bottom: 16px;
+    }
+
+    .unchanged-details summary {
+        cursor: pointer;
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .unchanged-details summary:hover {
+        color: #555;
     }
 
     .attachments-list {
@@ -134,5 +251,12 @@ export const adminSubmissionsStyles = css`
     .submitted-date {
         font-size: 0.85rem;
         color: #888;
+    }
+
+    @media (max-width: 600px) {
+        .chords-diff,
+        .links-diff {
+            grid-template-columns: 1fr;
+        }
     }
 `;

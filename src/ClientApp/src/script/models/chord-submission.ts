@@ -10,3 +10,8 @@ export interface ChordSubmissionAttachment {
     untrustedFileName: string;
     cdnUri: string;
 }
+
+export interface PendingChordSubmission {
+    submission: ChordSubmission;
+    original: ChordSheet | null;
+}
