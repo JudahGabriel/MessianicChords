@@ -8,20 +8,17 @@ using System.Xml;
 namespace MessianicChords.Controllers
 {
     [Route("")]
-    public class HomeController : Controller
+    public class HomeController : RavenController
     {
-        private readonly IAsyncDocumentSession dbSession;
         private readonly IWebHostEnvironment webHost;
-        private readonly ILogger<HomeController> logger;
 
         public HomeController(
             IAsyncDocumentSession dbSession, 
             IWebHostEnvironment webHost, 
             ILogger<HomeController> logger)
+            : base(dbSession, logger)
         {
-            this.dbSession = dbSession;
             this.webHost = webHost;
-            this.logger = logger;
         }
 
         /// <summary>
@@ -32,9 +29,10 @@ namespace MessianicChords.Controllers
         [Route("/")]
         [Route("{*url}")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var model = new HomeViewModel();
+            model.UpdateWithUser(await this.GetUserAsync());
             return View("Index", model);
         }
 
@@ -47,13 +45,14 @@ namespace MessianicChords.Controllers
         public async Task<IActionResult> ChordDetails(string id)
         {
             var model = new HomeViewModel();
-            var chordSheet = await dbSession.LoadOptionalAsync<ChordSheet>("chordsheets/" + id);
+            var chordSheet = await DbSession.LoadOptionalAsync<ChordSheet>("chordsheets/" + id);
             if (chordSheet == null)
             {
                 return Redirect("/");
             }
 
             model.UpdateFromChordSheet(chordSheet);
+            model.UpdateWithUser(await this.GetUserAsync());
             return View("Index", model);
         }
 
@@ -66,7 +65,7 @@ namespace MessianicChords.Controllers
         public async Task<IActionResult> Artist(string artistName)
         {
             var model = new HomeViewModel();
-            var chordSheetByArtist = await dbSession.Query<ChordSheet>()
+            var chordSheetByArtist = await DbSession.Query<ChordSheet>()
                 .Where(c => c.Artist == artistName)
                 .FirstOrDefaultAsync();
             if (chordSheetByArtist == null)
@@ -75,6 +74,7 @@ namespace MessianicChords.Controllers
             }
 
             model.UpdateFromArtist(chordSheetByArtist.Artist);
+            model.UpdateWithUser(await this.GetUserAsync());
             return View("Index", model);
         }
 
@@ -83,7 +83,7 @@ namespace MessianicChords.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("browse/{order}")]
-        public IActionResult Browse(string order)
+        public async Task<IActionResult> Browse(string order)
         {
             if (order != "newest" && order != "songs" && order != "artists" && order != "tags" && order != "random" && order != "offline")
             {
@@ -92,6 +92,7 @@ namespace MessianicChords.Controllers
 
             var model = new HomeViewModel();
             model.UpdateFromBrowse(order);
+            model.UpdateWithUser(await this.GetUserAsync());
             return View("Index", model);
         }
 
@@ -100,10 +101,11 @@ namespace MessianicChords.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("about")]
-        public IActionResult About()
+        public async Task<IActionResult> About()
         {
             var model = new HomeViewModel();
             model.UpdateFromAbout();
+            model.UpdateWithUser(await this.GetUserAsync());
             return View("Index", model);
         }
 
@@ -113,7 +115,7 @@ namespace MessianicChords.Controllers
             // Grab all the chord sheets with which we'll generate our site map.
             var chords = new List<ChordSheet>(3000);
             var artists = new HashSet<string>(1000);
-            await foreach (var doc in dbSession.Advanced.Stream<ChordSheet>())
+            await foreach (var doc in DbSession.Advanced.Stream<ChordSheet>())
             {
                 chords.Add(doc);
                 if (!string.IsNullOrEmpty(doc.Artist))
