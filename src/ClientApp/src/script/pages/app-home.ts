@@ -26,6 +26,7 @@ export class AppHome extends LitElement {
     @state() newChords: ChordSheet[] = [];
     @state() newChordsSkip = 0;
     @state() hasSearchResults = false;
+    @state() isSearchActive = false;
     searchResults = new PagedList<ChordSheet>((skip, take) => this.chordService.searchPaged(this.searchText.value, skip, take));
     readonly chordService = new ChordService();
     readonly searchText = new BehaviorSubject("");
@@ -81,6 +82,8 @@ export class AppHome extends LitElement {
     }
 
     async runSearch(query: string) {
+        this.isSearchActive = !!query;
+
         if (!query) {
             this.searchResults.reset();
             this.updateSearchQueryString("");
@@ -93,7 +96,7 @@ export class AppHome extends LitElement {
     }
 
     render(): TemplateResult {
-        const showNewChords = this.searchResults.items.length === 0;
+        const showNewChords = !this.isSearchActive;
         const target = this.isInTabbedPwa ? "_blank" : "_self";
         return html`
             <section class="home-page">
