@@ -9,6 +9,7 @@ import { accountService } from "../services/account-service";
 
 import "@shoelace-style/shoelace/dist/components/alert/alert.js";
 import "@shoelace-style/shoelace/dist/components/button/button.js";
+import "@shoelace-style/shoelace/dist/components/icon/icon.js";
 import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
 
 @customElement("admin-submissions")
@@ -133,7 +134,7 @@ export class AdminSubmissions extends LitElement {
                 ${submission.savedAttachments.length > 0 ? html`
                     <ul class="attachments-list">
                         ${submission.savedAttachments.map(a => html`
-                            <li>📎 <a href="${a.cdnUri}" target="_blank">${a.untrustedFileName}</a></li>
+                            <li><sl-icon name="paperclip"></sl-icon> <a href="${a.cdnUri}" target="_blank">${a.untrustedFileName}</a></li>
                         `)}
                     </ul>
                 ` : nothing}

@@ -61,7 +61,7 @@ public class ThumbnailFetcher : TimedBackgroundServiceBase
 
     private async Task UpdateThumbnailForDoc(ChordSheet chart)
     {
-        if (chart.GoogleDocId != null)
+        if (!string.IsNullOrWhiteSpace(chart.GoogleDocId))
         {
             var temporalThumb = await TryGetThumbnail(chart.GoogleDocId, chart.GoogleDocResourceKey);
             await TrySaveThumbnailAsAttachment(chart, temporalThumb);

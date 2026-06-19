@@ -45,12 +45,12 @@ public class ChordSheet
     /// <summary>
     /// The Google Doc ID of the chord sheet. This will be null if the chord sheet doesn't exist on Google Docs.
     /// </summary>
-    public string? GoogleDocId { get; set; } = string.Empty;
+    public string? GoogleDocId { get; set; }
 
     /// <summary>
     /// The resource key of the Google Doc.
     /// </summary>
-    public string? GoogleDocResourceKey { get; set; } = string.Empty;
+    public string? GoogleDocResourceKey { get; set; }
 
     public string? Id { get; set; }
     public bool HasFetchedPlainTextContents { get; set; }
