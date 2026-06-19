@@ -127,9 +127,7 @@ export class AdminSubmissions extends LitElement {
                     </p>
                 ` : nothing}
 
-                ${isNew
-                    ? this.renderNewSubmissionDetails(submission)
-                    : this.renderEditDiff(submission, original)}
+                ${isNew ? this.renderNewSubmissionDetails(submission) : this.renderEditDiff(submission, original)}
 
                 ${submission.savedAttachments.length > 0 ? html`
                     <ul class="attachments-list">

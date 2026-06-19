@@ -133,5 +133,36 @@ namespace MessianicChords.Controllers
             await chordSubmissionService.ApproveOrRejectByAdmin(decision);
             return Ok(new { message = "Chord chart submission rejected." });
         }
+
+        [HttpGet("ApproveRejectSubmission")]
+        [Authorize(Roles = AppUser.AdminRole)]
+        public async Task<string> ApproveRejectSubmission([FromQuery] ChordSubmissionApproval decision)
+        {
+            await chordSubmissionService.ApproveOrRejectByAdmin(decision);
+            var approvalOrRejection = decision.Approved ? "approved" : "rejected";
+            return $"Chord chart submission {approvalOrRejection}.";
+        }
+
+        /// <summary>
+        /// Submits an edit for an existing chord sheet, or a new chord sheet.
+        /// </summary>
+        /// <param name="request">The chord edit request.</param>
+        [HttpPost("submitEdit")]
+        [Authorize]
+        public async Task SubmitEdit(ChordSubmissionRequest request)
+        {
+            var (submission, approvalToken) = await chordSubmissionService.Create(request);
+
+            // If the user is an admin, automatically approve their submission
+            if (User.IsInRole(AppUser.AdminRole))
+            {
+                var approval = new ChordSubmissionApproval
+                {
+                    SubmissionId = submission.Id!,
+                    Approved = true
+                };
+                await chordSubmissionService.ApproveOrReject(approval, approvalToken);
+            }
+        }
     }
 }

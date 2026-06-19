@@ -419,39 +419,6 @@ namespace MessianicChords.Controllers
         }
 
         /// <summary>
-        /// Submits an edit for an existing chord sheet, or a new chord sheet.
-        /// </summary>
-        /// <param name="request">The chord edit request.</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Authorize]
-        public async Task SubmitEdit(ChordSubmissionRequest request, [FromServices]ChordSubmissionService submissionService)
-        {
-            var (submission, approvalToken) = await submissionService.Create(request);
-            
-            // If the user is an admin, automatically approve their submission
-            if (User.IsInRole(AppUser.AdminRole))
-            {
-                var approval = new ChordSubmissionApproval
-                {
-                    SubmissionId = submission.Id!,
-                    Approved = true
-                };
-                await submissionService.ApproveOrReject(approval, approvalToken);
-            }
-        }
-
-        [HttpGet]
-        [Authorize(Roles = AppUser.AdminRole)]
-        public async Task<string> ApproveRejectSubmission(
-            [FromQuery] ChordSubmissionApproval decision,
-            [FromServices]ChordSubmissionService submissionService)
-        {
-            await submissionService.ApproveOrRejectByAdmin(decision);
-            var approvalOrRejection = decision.Approved ? "approved" : "rejected";
-            return $"Chord chart submission {approvalOrRejection}.";
-        }
-
         /// <summary>
         /// Gets the list of all cacheable chords: those that have plain text chord format, or have screenshots. Used for caching chords offline quickly.
         /// </summary>

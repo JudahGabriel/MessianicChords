@@ -111,7 +111,7 @@ export class ChordBackendOnline extends ApiServiceBase implements ChordFetchBack
             attachments.forEach(a => formData.append("attachments", a, a.name));
         }
 
-        return super.postFormData("/chords/submitEdit", formData);
+        return super.postFormData("/chordSubmissions/submitEdit", formData);
     }
 
     getCacheableChords(): Promise<ChordSheet[]> {

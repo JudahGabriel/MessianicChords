@@ -53,7 +53,7 @@ pageCache({
     plugins: [{
         // We want to override cache key for
         //  - Artist page: /artist/Joe%20Artist
-        //  - Approve/reject page: /chords/ApproveRejectSubmission
+        //  - Approve/reject page: /chordSubmissions/ApproveRejectSubmission
         //  - Chord edit page: /chordsheets/{id}/edit
         //  - Submission review page: /chordsubmissions/review?id=...
         //  - Chord details page: /chordsheets/2630
@@ -69,9 +69,9 @@ pageCache({
             const isApproveRejectSubmissionPage = new URL(request.url)
                 .pathname
                 .toLowerCase()
-                .startsWith("/chords/approverejectsubmission");
+                .startsWith("/chordsubmissions/approverejectsubmission");
             if (isApproveRejectSubmissionPage) {
-                return new URL(request.url).origin + "/chords/approvereject";
+                return new URL(request.url).origin + "/chordsubmissions/approvereject";
             }
 
             // Normalize chord edit pages regardless of specific sheet id.
