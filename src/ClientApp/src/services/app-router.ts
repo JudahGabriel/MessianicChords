@@ -131,6 +131,12 @@ export const appRouter = new Router({
             title: "About - " + appTitle,
             plugins: [lazy(() => import("../script/pages/about"))],
             render: () => html`<about-page></about-page>`
+        },
+        {
+            path: "/admin/submissions",
+            title: "Admin - Pending Submissions - " + appTitle,
+            plugins: [lazy(() => import("../script/pages/admin-submissions"))],
+            render: () => html`<admin-submissions></admin-submissions>`
         }
     ]
 });

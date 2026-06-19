@@ -3,8 +3,9 @@ import { BehaviorSubject } from "rxjs";
 import { ApiServiceBase } from "./api-service-base";
 
 class AccountService extends ApiServiceBase {
-    currentUser: UserViewModel | null = null;
-    signedInState = new BehaviorSubject<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentUser: UserViewModel | null = (window as any)["messianicChords"]?.user || null;
+    signedInState = new BehaviorSubject<boolean>(!!this.currentUser);
 
     async getUser(): Promise<UserViewModel | null> {
         if (this.currentUser) {

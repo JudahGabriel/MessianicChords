@@ -13,19 +13,16 @@ public class ChordSubmissionService
     private readonly ILogger<ChordSubmissionService> logger;
     private readonly IAsyncDocumentSession dbSession;
     private readonly BunnyCdnManagerService cdnService;
-    private readonly EmailService emailService;
     private readonly AlbumArtFetcher albumArtFetcher;
 
     public ChordSubmissionService(
         IAsyncDocumentSession dbSession,
         BunnyCdnManagerService cdnService,
-        EmailService emailService,
         AlbumArtFetcher albumArtFetcher,
         ILogger<ChordSubmissionService> logger)
     {
         this.dbSession = dbSession;
         this.cdnService = cdnService;
-        this.emailService = emailService;
         this.albumArtFetcher = albumArtFetcher;
         this.logger = logger;
     }
@@ -104,12 +101,7 @@ public class ChordSubmissionService
         await dbSession.StoreAsync(approvalToken);
         dbSession.SetRavenExpiration(approvalToken, DateTime.Now.AddDays(30));
 
-        var existingChordSheet = string.IsNullOrWhiteSpace(request.Id) ? null : await dbSession.LoadRequiredAsync<ChordSheet>(request.Id!);
-
         await dbSession.SaveChangesAsync();
-
-        // Send off an email to admins.
-        await emailService.SendChordSubmissionEmail(submission, existingChordSheet, approvalToken.Token);
 
         return (submission, token);
     }
@@ -133,22 +125,54 @@ public class ChordSubmissionService
         }
     }
 
-    private async Task ApproveOrRejectCore(ChordSubmissionApproval decision, string token)
+    /// <summary>
+    /// Approves or rejects a chord submission by an admin without requiring an approval token.
+    /// </summary>
+    /// <param name="decision">The approval or rejection decision.</param>
+    public async Task ApproveOrRejectByAdmin(ChordSubmissionApproval decision)
     {
-        if (!decision.SubmissionId.StartsWith("ChordSubmissions/", StringComparison.OrdinalIgnoreCase))
+        try
         {
-            var badChordSubmissionIdError = new ArgumentException("Invalid chord submission ID");
-            badChordSubmissionIdError.Data.Add("chordSubmissionId", decision.SubmissionId);
-            throw badChordSubmissionIdError;
+            await ApproveOrRejectByAdminCore(decision);
+        }
+        catch (Exception error)
+        {
+            logger.LogError(error, "Admin unable to approve/deny chord submission {id} due to error. Submission details: {details}", decision.SubmissionId, decision);
+            throw;
+        }
+    }
+
+    private async Task ApproveOrRejectByAdminCore(ChordSubmissionApproval decision)
+    {
+        var submission = await LoadSubmissionOrThrow(decision.SubmissionId);
+
+        // Try to find and delete any associated approval token, but don't require it.
+        var approvalToken = string.IsNullOrEmpty(submission.ApproveRejectKey)
+            ? null
+            : await dbSession.LoadOptionalAsync<ApprovalToken>($"ApprovalTokens/{submission.ApproveRejectKey}");
+
+        var isNew = string.IsNullOrWhiteSpace(submission.EditedChordSheetId);
+        var chordSheet = isNew ? new ChordSheet() : await dbSession.LoadAsync<ChordSheet>(submission.EditedChordSheetId);
+        if (chordSheet == null)
+        {
+            var chordNotFoundError = new ArgumentException("Chord sheet was not found.");
+            chordNotFoundError.Data.Add("chordId", submission.EditedChordSheetId);
+            throw chordNotFoundError;
         }
 
-        var submission = await dbSession.LoadAsync<ChordSubmission>(decision.SubmissionId);
-        if (submission == null)
+        if (decision.Approved)
         {
-            var submissionNotFoundError = new ArgumentException("Chord submission was not found.");
-            submissionNotFoundError.Data.Add("chordSubmissionId", decision.SubmissionId);
-            throw submissionNotFoundError;
+            await this.Approve(decision, submission, chordSheet, approvalToken);
         }
+        else
+        {
+            await this.Reject(submission, approvalToken);
+        }
+    }
+
+    private async Task ApproveOrRejectCore(ChordSubmissionApproval decision, string token)
+    {
+        var submission = await LoadSubmissionOrThrow(decision.SubmissionId);
 
         var approvalToken = await dbSession.LoadOptionalAsync<ApprovalToken>($"ApprovalTokens/{token}");
         if (approvalToken == null)
@@ -178,12 +202,32 @@ public class ChordSubmissionService
         }
     }
 
+    private async Task<ChordSubmission> LoadSubmissionOrThrow(string submissionId)
+    {
+        if (!submissionId.StartsWith("ChordSubmissions/", StringComparison.OrdinalIgnoreCase))
+        {
+            var badChordSubmissionIdError = new ArgumentException("Invalid chord submission ID");
+            badChordSubmissionIdError.Data.Add("chordSubmissionId", submissionId);
+            throw badChordSubmissionIdError;
+        }
+
+        var submission = await dbSession.LoadAsync<ChordSubmission>(submissionId);
+        if (submission == null)
+        {
+            var submissionNotFoundError = new ArgumentException("Chord submission was not found.");
+            submissionNotFoundError.Data.Add("chordSubmissionId", submissionId);
+            throw submissionNotFoundError;
+        }
+
+        return submission;
+    }
+
     /// <summary>
     /// Approves the submission: applies the proposed changes in the submission to the target chord sheet. The submission will then be deleted.
     /// </summary>
     /// <param name="dbSession"></param>
     /// <returns></returns>
-    private async Task Approve(ChordSubmissionApproval approval, ChordSubmission submission, ChordSheet chordSheet, ApprovalToken token)
+    private async Task Approve(ChordSubmissionApproval approval, ChordSubmission submission, ChordSheet chordSheet, ApprovalToken? token)
     {
         // Fill the submission with data from the approval.
         // Then copy the submission to the real chord sheet.
@@ -219,7 +263,10 @@ public class ChordSubmissionService
 
         // Delete the submission, as its changes have been applied.
         dbSession.Delete(submission);
-        dbSession.Delete(token);
+        if (token != null)
+        {
+            dbSession.Delete(token);
+        }
         await dbSession.SaveChangesAsync(); // Save changes now before we delete the files from CDN
         await this.TryDeleteTempAttachments(submission);
     }
@@ -229,10 +276,13 @@ public class ChordSubmissionService
     /// </summary>
     /// <param name="dbSession"></param>
     /// <returns></returns>
-    private async Task Reject(ChordSubmission submission, ApprovalToken token)
+    private async Task Reject(ChordSubmission submission, ApprovalToken? token)
     {
         dbSession.Delete(submission);
-        dbSession.Delete(token);
+        if (token != null)
+        {
+            dbSession.Delete(token);
+        }
         await dbSession.SaveChangesAsync();
         await TryDeleteTempAttachments(submission);
     }

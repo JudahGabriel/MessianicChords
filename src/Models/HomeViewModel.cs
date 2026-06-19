@@ -12,6 +12,7 @@ public class HomeViewModel
     public string SocialCardType { get; set; } = "website"; // For possible values, see https://ogp.me/
     public Uri SocialCardImage { get; set; } = new Uri("https://messianicchords.com/assets/images/512x512.png");
     public string TwitterHandle { get; set; } = "@MessianicChords";
+    public UserViewModel? User { get; set; }
 
     /// <summary>
     /// Updates the home view model to include title, description, etc. of a specific chord sheet.
@@ -66,5 +67,17 @@ public class HomeViewModel
         this.Description = $"About - Messianic Chords";
         this.Title = $"About - Messianic Chords";
         this.SocialCardUrl = new Uri($"https://messianicchords.com/about");
+    }
+
+    /// <summary>
+    /// Updates the view model with information about the current user.
+    /// </summary>
+    /// <param name="user">The current user.</param>
+    public void UpdateWithUser(AppUser? user)
+    {
+        if (user != null)
+        {
+            this.User = new UserViewModel(user);
+        }
     }
 }

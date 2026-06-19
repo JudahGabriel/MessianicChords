@@ -445,10 +445,9 @@ namespace MessianicChords.Controllers
         [Authorize(Roles = AppUser.AdminRole)]
         public async Task<string> ApproveRejectSubmission(
             [FromQuery] ChordSubmissionApproval decision,
-            [FromQuery] string token,
             [FromServices]ChordSubmissionService submissionService)
         {
-            await submissionService.ApproveOrReject(decision, token);
+            await submissionService.ApproveOrRejectByAdmin(decision);
             var approvalOrRejection = decision.Approved ? "approved" : "rejected";
             return $"Chord chart submission {approvalOrRejection}.";
         }

@@ -21,22 +21,6 @@ public class EmailService
         this.logger = logger;
     }
 
-    /// <summary>
-    /// Sends an email notifying that a chord sheet has been edited or created and is awaiting approval.
-    /// </summary>
-    /// <param name="submission"></param>
-    /// <param name="original">The original chord sheet being edited. If this is a new chord sheet being submitted, this will be null.</param>
-    /// <param name="token">The approval token.</param>
-    /// <returns></returns>
-    public Task SendChordSubmissionEmail(ChordSubmission submission, ChordSheet? original, string token)
-    {
-        var htmlBody = original == null ?
-            this.GetNewChordsEmailHtml(submission, token) :
-            this.GetUpdatedChordsEmailHtml(submission, token);
-        var email = this.CreateEmail("MessianicChords: chord chart edit awaiting your approval", new EmailAddress(settings.UploadedAttachmentEmailRecipient), null, htmlBody);
-        return this.SendEmail(email);
-    }
-
     public Task SendWelcomeEmailAsync(string to)
     {
         var htmlBody = "<h1>Welcome to MessianicChords!</h1>" + 
@@ -73,24 +57,6 @@ public class EmailService
             $"<p><a href='https://messianicchords.com/confirmemail?email={destinationAddress}&token={token}'>Confirm email</a></p>";
         var email = this.CreateEmail("MessianicChords: Confirm your email", new EmailAddress(destinationAddress), null, body);
         return this.SendEmail(email);
-    }
-
-    private string GetNewChordsEmailHtml(ChordSubmission submission, string token)
-    {
-        return
-            "<h1>New chords uploaded to MessianicChords</h1>" +
-            "<p>" +
-            $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id?.ToLower()}&token={token}'>Review new chord chart</a>" +
-            "</p>";
-    }
-
-    private string GetUpdatedChordsEmailHtml(ChordSubmission submission, string token)
-    {
-        return "" +
-            "<h1>Chord chart edited on MessianicChords</h1>" +
-            "<p>" +
-            $"<a href='https://messianicchords.com/chordsubmissions/review?id={submission.Id?.ToLower()}&token={token}'>Review edited chord chart</a>" +
-            "</p>";
     }
 
     private SendGridMessage CreateEmail(string subject, EmailAddress to, string? plainText, string html)

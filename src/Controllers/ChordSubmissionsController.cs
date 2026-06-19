@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents.Session;
 using MessianicChords.Services;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 using System.Xml;
 using System.ServiceModel.Syndication;
 
@@ -77,6 +78,60 @@ namespace MessianicChords.Controllers
             writer.Flush();
 
             return Content(sw.ToString(), "application/xml");
+        }
+
+        /// <summary>
+        /// Gets all pending chord submissions with their original chord sheets (for edits). Admin only.
+        /// </summary>
+        [HttpGet("~/api/chordsubmissions/pending")]
+        [Authorize(Roles = AppUser.AdminRole)]
+        public async Task<List<PendingChordSubmission>> GetPending()
+        {
+            var submissions = await chordSubmissionService.GetAll(0, 100);
+
+            // Load the original chord sheets for edit submissions.
+            var editedIds = submissions
+                .Where(s => !string.IsNullOrWhiteSpace(s.EditedChordSheetId))
+                .Select(s => s.EditedChordSheetId!)
+                .Distinct()
+                .ToList();
+            var originals = editedIds.Count > 0
+                ? await dbSession.LoadAsync<ChordSheet>(editedIds)
+                : new Dictionary<string, ChordSheet>();
+
+            return submissions.Select(s =>
+            {
+                ChordSheet? original = null;
+                if (!string.IsNullOrWhiteSpace(s.EditedChordSheetId))
+                {
+                    originals.TryGetValue(s.EditedChordSheetId!, out original);
+                }
+                return new PendingChordSubmission(s, original);
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Approves a chord submission. Admin only, no token required.
+        /// </summary>
+        [HttpPost("~/api/chordsubmissions/approve")]
+        [Authorize(Roles = AppUser.AdminRole)]
+        public async Task<IActionResult> Approve([FromBody] ChordSubmissionApproval decision)
+        {
+            decision.Approved = true;
+            await chordSubmissionService.ApproveOrRejectByAdmin(decision);
+            return Ok(new { message = "Chord chart submission approved." });
+        }
+
+        /// <summary>
+        /// Rejects a chord submission. Admin only, no token required.
+        /// </summary>
+        [HttpPost("~/api/chordsubmissions/reject")]
+        [Authorize(Roles = AppUser.AdminRole)]
+        public async Task<IActionResult> Reject([FromBody] ChordSubmissionApproval decision)
+        {
+            decision.Approved = false;
+            await chordSubmissionService.ApproveOrRejectByAdmin(decision);
+            return Ok(new { message = "Chord chart submission rejected." });
         }
     }
 }
