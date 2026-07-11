@@ -22,14 +22,15 @@ export class ChordCard extends LitElement {
         const artistRouteName = this.chord.artist || this.chord.authors[0] || "";
         const artistHref = `/artist/${encodeURIComponent(artistRouteName)}`;
 
+        const chordHref = `/${this.chord.id.toLowerCase()}`;
         return html`
             <sl-card class="chord-card">
-                <div
-                    class="card-media card-media-link"
-                    role="link"
-                    tabindex="0"
-                    @click="${() => this.navigateToChordDetails()}"
-                    @keydown="${this.onCardKeydown}">
+                <a
+                    class="card-media card-media-link card-link"
+                    href="${chordHref}"
+                    .target="${this.newWindow ? "_blank" : ""}"
+                    rel="${this.newWindow ? "noopener" : ""}"
+                    @click="${this.onCardClick}">
                     ${this.renderBackground()}
 
                     <div class="overlay overlay-top">
@@ -45,7 +46,7 @@ export class ChordCard extends LitElement {
                         </a>
                         ${this.renderKey()}
                     </div>
-                </div>
+                </a>
             </sl-card>
         `;
     }
@@ -59,24 +60,17 @@ export class ChordCard extends LitElement {
         return Array.from(artistAuthorsSet).filter(a => !!a).join(", ");
     }
 
-    private navigateToChordDetails(): void {
-        if (!this.chord) {
+    private onCardClick(e: MouseEvent): void {
+        // Allow default browser behavior for ctrl+click, cmd+click, middle-click, etc.
+        // These open in a new tab/window natively via the <a> element.
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) {
             return;
         }
 
-        const href = `/${this.chord.id.toLowerCase()}`;
-        if (this.newWindow) {
-            window.open(href, "_blank", "noopener");
-            return;
-        }
-
-        window.location.href = href;
-    }
-
-    private onCardKeydown(e: KeyboardEvent): void {
-        if (e.key === "Enter" || e.key === " ") {
+        // For normal clicks, navigate via JS for SPA-like behavior.
+        if (!this.newWindow) {
             e.preventDefault();
-            this.navigateToChordDetails();
+            window.location.href = (e.currentTarget as HTMLAnchorElement).href;
         }
     }
 
