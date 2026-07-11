@@ -38,12 +38,12 @@ export class ChordCard extends LitElement {
                     </div>
 
                     <div class="overlay overlay-bottom">
-                        <a
+                        <span
                             class="artist artist-link"
-                            href="${artistHref}"
-                            @click="${this.onArtistClick}">
+                            role="link"
+                            @click="${(e: Event) => this.onArtistClick(e, artistHref)}">
                             ${artist}
-                        </a>
+                        </span>
                         ${this.renderKey()}
                     </div>
                 </a>
@@ -74,9 +74,11 @@ export class ChordCard extends LitElement {
         }
     }
 
-    private onArtistClick(e: Event): void {
-        // Keep artist link navigation independent from the card click handler.
+    private onArtistClick(e: Event, href: string): void {
+        // Stop propagation so the parent <a> doesn't navigate to the chord detail page.
+        e.preventDefault();
         e.stopPropagation();
+        window.location.href = href;
     }
 
     renderBackground(): TemplateResult {

@@ -107,10 +107,9 @@ export const chordCardStyles = css`
     .artist-link {
         position: relative;
         z-index: 2;
+        cursor: pointer;
     }
 
-    .artist-link:link,
-    .artist-link:visited,
     .artist-link:hover,
     .artist-link:focus-visible {
         color: #f4f7ff;
