@@ -31,7 +31,7 @@ export class ChordCard extends LitElement {
                     .target="${this.newWindow ? "_blank" : ""}"
                     rel="${this.newWindow ? "noopener" : ""}"
                     @click="${this.onCardClick}">
-                    ${this.renderBackground()}
+                    ${this.renderBackground()}>
 
                     <div class="overlay overlay-top">
                         <div class="song-name">${this.chord.song}</div>
