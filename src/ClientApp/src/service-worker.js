@@ -8,12 +8,13 @@ import { matchPrecache } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
 import { StaleWhileRevalidate, NetworkFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
+import { clientsClaim } from "workbox-core";
 
-self.addEventListener("message", event => {
-    if (event.data && event.data.type === "SKIP_WAITING") {
-        self.skipWaiting();
-    }
-});
+// Activate new service workers immediately without waiting for all tabs to close.
+// This ensures new deploys take effect right away rather than being gated on
+// the old client code sending a SKIP_WAITING message.
+self.skipWaiting();
+clientsClaim();
 
 /**
  * Determines whether the specified route is an Messianic Chords API call and whether it matches the list of cacheable routes.
@@ -110,24 +111,50 @@ pageCache({
 });
 
 // Static resource recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#static_resources_cache
-// This is a stale-while-revalidate strategy for CSS, JS, and web workers.
-// By default, this recipe matches styles, scripts, and workers.
-// We override matchCallback to also include fonts and our JSON strings
-const staticResourceDestinations = [
-    "style",
-    "script",
-    "worker",
+// For fonts and media, use stale-while-revalidate (safe since they rarely change).
+// Same-origin JS/CSS are excluded here — they're already handled by precacheAndRoute
+// with proper revision tracking, so we don't want StaleWhileRevalidate to serve stale
+// bundles after a deploy.
+const swrResourceDestinations = [
     "font",
     "media"
 ];
 staticResourceCache({
-    matchCallback: e => staticResourceDestinations.some(dest => dest === e.request.destination) || e.url?.href.endsWith("dice.mp3"),
+    matchCallback: e => swrResourceDestinations.some(dest => dest === e.request.destination) || e.url?.href.endsWith("dice.mp3"),
     warmCache: [
         "/assets/audio/dice.mp3",
-        "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css",
-        "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css"
     ]
 });
+
+// Third-party CDN styles (e.g. Shoelace) use stale-while-revalidate since they're
+// versioned in the URL and safe to serve from cache.
+registerRoute(
+    ({ url }) => url.origin !== self.location.origin && (url.pathname.endsWith(".css") || url.pathname.endsWith(".js")),
+    new StaleWhileRevalidate({
+        cacheName: "cdn-resources",
+        plugins: [
+            new ExpirationPlugin({
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+            })
+        ]
+    })
+);
+
+// Same-origin JS/CSS that somehow isn't in the precache manifest (e.g. dynamically
+// loaded chunks) should use NetworkFirst so deploys take effect immediately.
+registerRoute(
+    ({ url, request }) => url.origin === self.location.origin && (request.destination === "script" || request.destination === "style" || request.destination === "worker"),
+    new NetworkFirst({
+        cacheName: "same-origin-scripts-styles",
+        plugins: [
+            new ExpirationPlugin({
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+            })
+        ]
+    })
+);
 
 // Image cache recipe: https://developers.google.com/web/tools/workbox/modules/workbox-recipes#image_cache
 // This is a cache-first strategy for all images. We specify a max number of images and max age of image.
