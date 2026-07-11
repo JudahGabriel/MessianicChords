@@ -41,7 +41,8 @@ export class ChordCard extends LitElement {
                         <span
                             class="artist artist-link"
                             role="link"
-                            @click="${(e: Event) => this.onArtistClick(e, artistHref)}">
+                            @click="${(e: Event) => this.onArtistClick(e, artistHref)}"
+                            @auxclick="${(e: MouseEvent) => this.onArtistAuxClick(e, artistHref)}">
                             ${artist}
                         </span>
                         ${this.renderKey()}
@@ -75,10 +76,27 @@ export class ChordCard extends LitElement {
     }
 
     private onArtistClick(e: Event, href: string): void {
+        const mouseEvent = e as MouseEvent;
         // Stop propagation so the parent <a> doesn't navigate to the chord detail page.
         e.preventDefault();
         e.stopPropagation();
+
+        // Ctrl+click or cmd+click opens in new tab.
+        if (mouseEvent.ctrlKey || mouseEvent.metaKey) {
+            window.open(href, "_blank", "noopener");
+            return;
+        }
+
         window.location.href = href;
+    }
+
+    private onArtistAuxClick(e: MouseEvent, href: string): void {
+        // Middle-click (button 1) opens artist page in new tab.
+        if (e.button === 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.open(href, "_blank", "noopener");
+        }
     }
 
     renderBackground(): TemplateResult {
