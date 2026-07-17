@@ -235,7 +235,6 @@ public class ChordSubmissionService
         submission.GoogleDocId = approval.GoogleDocId ?? chordSheet.GoogleDocId;
         submission.PublishUri = approval.GoogleDocPublishUri ?? chordSheet.PublishUri;
         submission.Extension = approval.GoogleDocExtension ?? chordSheet.Extension ?? "mc";
-        submission.AlbumArtUrl = await albumArtFetcher.TryFetchAlbumArt(submission);
 
         var allLinks = chordSheet.Links
             .Concat(submission.Links)
@@ -250,6 +249,7 @@ public class ChordSubmissionService
             .Distinct() // Remove dupes
             .ToList();
         submission.Links = allLinks;
+        submission.AlbumArtUrl = await albumArtFetcher.TryFetchAlbumArt(submission);
         chordSheet.UpdateFrom(submission);
         chordSheet.LastUpdated = DateTime.UtcNow;
         chordSheet.Attachments.AddRange(submission.SavedAttachments);
