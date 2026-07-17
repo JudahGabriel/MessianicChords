@@ -7,7 +7,8 @@ import { ChordService } from "../services/chord-service";
 import { browseRandomStyles } from "./browse-random.styles";
 import { sharedStyles } from "../common/shared.styles";
 import "@awesome.me/webawesome/dist/components/button/button.js";
-import WaIcon from "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import type WaIcon from "@awesome.me/webawesome/dist/components/icon/icon.js";
 import { PagedList } from "../models/paged-list";
 import "../components/chord-collection.js";
 
