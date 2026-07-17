@@ -102,7 +102,7 @@ export class AppHome extends LitElement {
             <section class="home-page">
                 <home-jumbotron></home-jumbotron>
                 <div class="search-container">
-                <sl-input
+                <wa-input
                     id="search-box"
                     type="search"
                     placeholder="Type a song, artist, or lyrics"
@@ -112,8 +112,8 @@ export class AppHome extends LitElement {
                     size="large"
                     value="${this.searchText.value}"
                     @input="${this.searchTextChanged}"
-                    @sl-clear="${this.searchTextChanged}">
-                </sl-input>
+                    @wa-clear="${this.searchTextChanged}">
+                </wa-input>
             </div>
 
             <nav class="text-center d-flex flex-column gap-3">
@@ -122,15 +122,15 @@ export class AppHome extends LitElement {
                     <span>Browse</span>
                     <div class="browse-by-container d-flex gap-2 justify-content-center align-items-center">
                         <a class="fw-bold" href="/browse/newest" target="${target}">New</a>
-                        <sl-divider vertical></sl-divider>
+                        <wa-divider vertical></wa-divider>
                         <a class="fw-bold" href="/browse/songs" target="${target}">Songs</a>
-                        <sl-divider vertical></sl-divider>
+                        <wa-divider vertical></wa-divider>
                         <a class="fw-bold" href="/browse/artists" target="${target}">Artists</a>
-                        <sl-divider vertical></sl-divider>
+                        <wa-divider vertical></wa-divider>
                         <a class="fw-bold" href="/browse/tags" target="${target}">Tags</a>
-                        <sl-divider vertical></sl-divider>
+                        <wa-divider vertical></wa-divider>
                         <a class="fw-bold" href="/browse/random" target="${target}">Random</a>
-                        <sl-divider vertical></sl-divider>
+                        <wa-divider vertical></wa-divider>
                         <a class="fw-bold" href="/browse/offline" target="${target}">Offline</a>
                     </div>
                 </div>
@@ -139,9 +139,9 @@ export class AppHome extends LitElement {
                     <div class="d-flex flex-column gap-3">
                         <div class="d-flex justify-content-center">
                             New chord charts 
-                            <sl-tooltip content="Load more recently uploaded chord charts" placement="top">
-                                <sl-icon-button class="load-more-chords-btn" name="arrow-clockwise" label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}></sl-icon-button>
-                            </sl-tooltip>
+                            <wa-tooltip content="Load more recently uploaded chord charts" placement="top">
+                                <wa-icon-button class="load-more-chords-btn" name="arrow-clockwise" label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}></wa-icon-button>
+                            </wa-tooltip>
                         </div>
                         <div class="new-chords d-flex gap-2 justify-content-center align-items-center">
                             ${this.renderNewChords()}
@@ -174,9 +174,9 @@ export class AppHome extends LitElement {
     renderNewChordsPlaceholder(): TemplateResult {
         return html`
             <div class="new-chords-placeholder-container" aria-hidden="true">
-                <div class="new-chord-skeleton"><sl-skeleton effect="pulse"></sl-skeleton></div>
-                <div class="new-chord-skeleton"><sl-skeleton effect="pulse"></sl-skeleton></div>
-                <div class="new-chord-skeleton"><sl-skeleton effect="pulse"></sl-skeleton></div>
+                <div class="new-chord-skeleton"><wa-skeleton effect="pulse"></wa-skeleton></div>
+                <div class="new-chord-skeleton"><wa-skeleton effect="pulse"></wa-skeleton></div>
+                <div class="new-chord-skeleton"><wa-skeleton effect="pulse"></wa-skeleton></div>
             </div>
         `;
     }

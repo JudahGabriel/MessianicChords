@@ -64,18 +64,18 @@ export class ChordCollection extends LitElement {
 
     private renderLoadingCard(): TemplateResult {
         return html`
-            <sl-card class="loading-card" aria-hidden="true">
+            <wa-card class="loading-card" aria-hidden="true">
                 <div class="loading-media">
                     <div class="loading-overlay loading-overlay-top">
-                        <sl-skeleton class="title" effect="pulse"></sl-skeleton>
+                        <wa-skeleton class="title" effect="pulse"></wa-skeleton>
                     </div>
 
                     <div class="loading-overlay loading-overlay-bottom">
-                        <sl-skeleton class="artist" effect="pulse"></sl-skeleton>
-                        <sl-skeleton class="key" effect="pulse"></sl-skeleton>
+                        <wa-skeleton class="artist" effect="pulse"></wa-skeleton>
+                        <wa-skeleton class="key" effect="pulse"></wa-skeleton>
                     </div>
                 </div>
-            </sl-card>
+            </wa-card>
         `;
     }
 

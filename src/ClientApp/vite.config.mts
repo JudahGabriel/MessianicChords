@@ -1,5 +1,4 @@
 
-import { fileURLToPath, URL } from "node:url";
 import { defineConfig, PluginOption } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -12,14 +11,6 @@ export default defineConfig({
         assetsDir: "assets/js",
         emptyOutDir: true,
         outDir: outDir
-    },
-    resolve: {
-        alias: [
-            {
-                find: /^@awesome\.me\/webawesome$/,
-                replacement: fileURLToPath(new URL("./src/webawesome-compat.ts", import.meta.url))
-            }
-        ]
     },
     plugins: [
         VitePWA({

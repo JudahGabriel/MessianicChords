@@ -24,7 +24,7 @@ export class ChordCard extends LitElement {
 
         const chordHref = `/${this.chord.id.toLowerCase()}`;
         return html`
-            <sl-card class="chord-card">
+            <wa-card class="chord-card">
                 <a
                     class="card-media card-media-link card-link"
                     href="${chordHref}"
@@ -48,7 +48,7 @@ export class ChordCard extends LitElement {
                         ${this.renderKey()}
                     </div>
                 </a>
-            </sl-card>
+            </wa-card>
         `;
     }
 
@@ -106,7 +106,7 @@ export class ChordCard extends LitElement {
 
         return html`
             <div class="fallback-art" aria-hidden="true">
-                <sl-icon name="file-text"></sl-icon>
+                <wa-icon name="file-text"></wa-icon>
             </div>
         `;
     }

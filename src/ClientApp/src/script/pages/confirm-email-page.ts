@@ -17,17 +17,17 @@ export class ConfirmEmailPage extends LitElement {
         .page {
             display: grid;
             min-height: 60vh;
-            padding: var(--sl-spacing-2x-large) var(--sl-spacing-medium);
+            padding: var(--wa-spacing-2x-large) var(--wa-spacing-medium);
             place-items: center;
         }
 
         .card {
             background: white;
-            border: 1px solid var(--sl-color-neutral-200);
-            border-radius: var(--sl-border-radius-large);
-            box-shadow: var(--sl-shadow-medium);
+            border: 1px solid var(--wa-color-neutral-200);
+            border-radius: var(--wa-border-radius-large);
+            box-shadow: var(--wa-shadow-medium);
             max-width: 520px;
-            padding: var(--sl-spacing-x-large);
+            padding: var(--wa-spacing-x-large);
             text-align: center;
         }
 
@@ -38,11 +38,11 @@ export class ConfirmEmailPage extends LitElement {
         }
 
         p {
-            color: var(--sl-color-neutral-700);
+            color: var(--wa-color-neutral-700);
             line-height: 1.5;
         }
 
-        sl-spinner {
+        wa-spinner {
             font-size: 2rem;
         }
     `];
@@ -68,7 +68,7 @@ export class ConfirmEmailPage extends LitElement {
     private renderStatus(): TemplateResult {
         if (this.status === "confirming") {
             return html`
-                <sl-spinner></sl-spinner>
+                <wa-spinner></wa-spinner>
                 <h1>Confirming your email</h1>
                 <p>Please wait while we confirm your account.</p>
             `;
@@ -78,14 +78,14 @@ export class ConfirmEmailPage extends LitElement {
             return html`
                 <h1>Email confirmed</h1>
                 <p>Your account is confirmed. You can now sign in.</p>
-                <sl-button variant="primary" pill href="/account?mode=signin">Sign in</sl-button>
+                <wa-button variant="primary" pill href="/account?mode=signin">Sign in</wa-button>
             `;
         }
 
         return html`
             <h1>Unable to confirm email</h1>
             <p>${this.errorMessage}</p>
-            <sl-button variant="primary" pill href="/contact">Contact us</sl-button>
+            <wa-button variant="primary" pill href="/contact">Contact us</wa-button>
         `;
     }
 

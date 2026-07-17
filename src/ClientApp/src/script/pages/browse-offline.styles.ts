@@ -26,7 +26,7 @@ export const browseOfflineStyles = css`
         font-size: 0.95rem;
     }
 
-    sl-progress-bar {
+    wa-progress-bar {
         margin-bottom: 1rem;
     }
 
@@ -62,7 +62,7 @@ export const browseOfflineStyles = css`
             width: 100%;
         }
 
-        .actions sl-button {
+        .actions wa-button {
             flex: 1 0 100%;
             width: 100%;
             margin-left: auto;

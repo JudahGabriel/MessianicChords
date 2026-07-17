@@ -32,27 +32,27 @@ export class ContactPage extends LitElement {
                     ${this.renderAlert()}
 
                     <form @submit="${this.submit}">
-                        <sl-input
+                        <wa-input
                             label="Email"
                             type="email"
                             autocomplete="email"
                             required
                             value="${this.email}"
-                            @sl-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
-                        </sl-input>
+                            @wa-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
+                        </wa-input>
 
-                        <sl-textarea
+                        <wa-textarea
                             label="Message"
                             rows="7"
                             resize="auto"
                             required
                             value="${this.message}"
-                            @sl-input="${(e: Event) => this.message = (e.target as HTMLTextAreaElement).value}">
-                        </sl-textarea>
+                            @wa-input="${(e: Event) => this.message = (e.target as HTMLTextAreaElement).value}">
+                        </wa-textarea>
 
-                        <sl-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
+                        <wa-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
                             Submit
-                        </sl-button>
+                        </wa-button>
                     </form>
                 </div>
             </section>
@@ -62,19 +62,19 @@ export class ContactPage extends LitElement {
     private renderAlert(): TemplateResult {
         if (this.error) {
             return html`
-                <sl-alert variant="danger" open>
-                    <sl-icon slot="icon" name="exclamation-circle-fill"></sl-icon>
+                <wa-alert variant="danger" open>
+                    <wa-icon slot="icon" name="exclamation-circle-fill"></wa-icon>
                     ${this.error}
-                </sl-alert>
+                </wa-alert>
             `;
         }
 
         if (this.success) {
             return html`
-                <sl-alert variant="success" open>
-                    <sl-icon slot="icon" name="check-lg"></sl-icon>
+                <wa-alert variant="success" open>
+                    <wa-icon slot="icon" name="check-lg"></wa-icon>
                     ${this.success}
-                </sl-alert>
+                </wa-alert>
             `;
         }
 

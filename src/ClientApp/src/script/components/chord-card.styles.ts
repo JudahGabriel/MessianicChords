@@ -50,7 +50,7 @@ export const chordCardStyles = css`
         color: #6b7280;
     }
 
-    .fallback-art sl-icon {
+    .fallback-art wa-icon {
         font-size: 4.25rem;
     }
 

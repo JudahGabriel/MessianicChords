@@ -9,17 +9,17 @@ export const profilePageStyles = css`
     .profile-page {
         max-width: 640px;
         margin: 0 auto;
-        padding: var(--sl-spacing-2x-large) var(--sl-spacing-medium);
+        padding: var(--wa-spacing-2x-large) var(--wa-spacing-medium);
     }
 
     .card {
         background: white;
-        border: 1px solid var(--sl-color-neutral-200);
-        border-radius: var(--sl-border-radius-large);
-        box-shadow: var(--sl-shadow-medium);
-        padding: var(--sl-spacing-large);
+        border: 1px solid var(--wa-color-neutral-200);
+        border-radius: var(--wa-border-radius-large);
+        box-shadow: var(--wa-shadow-medium);
+        padding: var(--wa-spacing-large);
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-spacing-medium);
     }
 
     h1 {
@@ -31,47 +31,47 @@ export const profilePageStyles = css`
 
     p {
         margin: 0;
-        color: var(--sl-color-neutral-600);
+        color: var(--wa-color-neutral-600);
     }
 
     form {
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-spacing-medium);
     }
 
-    sl-alert {
-        margin-bottom: var(--sl-spacing-small);
+    wa-alert {
+        margin-bottom: var(--wa-spacing-small);
     }
 
     .label {
-        color: var(--sl-color-neutral-500);
+        color: var(--wa-color-neutral-500);
         font-size: 0.9rem;
-        margin-bottom: var(--sl-spacing-3x-small);
+        margin-bottom: var(--wa-spacing-3x-small);
     }
 
     .value {
-        color: var(--sl-color-neutral-900);
+        color: var(--wa-color-neutral-900);
         font-weight: 600;
     }
 
     .actions {
         display: flex;
-        gap: var(--sl-spacing-small);
+        gap: var(--wa-spacing-small);
         flex-wrap: wrap;
     }
 
     .profile-image-preview {
-        margin-top: var(--sl-spacing-small);
+        margin-top: var(--wa-spacing-small);
         width: 120px;
         height: 120px;
         object-fit: cover;
         border-radius: 999px;
-        border: 2px solid var(--sl-color-neutral-200);
+        border: 2px solid var(--wa-color-neutral-200);
     }
 
     .chart-links {
-        margin: var(--sl-spacing-2x-small) 0 0;
-        padding-left: var(--sl-spacing-large);
+        margin: var(--wa-spacing-2x-small) 0 0;
+        padding-left: var(--wa-spacing-large);
     }
 
     .chart-links a {
@@ -79,7 +79,7 @@ export const profilePageStyles = css`
     }
 
     .empty-value {
-        color: var(--sl-color-neutral-500);
+        color: var(--wa-color-neutral-500);
         font-style: italic;
     }
 `;

@@ -46,19 +46,19 @@ export const chordCollectionStyles = css`
         background: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(255, 0, 0, 0) 100%);
     }
 
-    sl-skeleton.title {
+    wa-skeleton.title {
         width: 75%;
         height: 2.2rem;
         border-radius: 6px;
     }
 
-    sl-skeleton.artist {
+    wa-skeleton.artist {
         width: 62%;
         height: 1.05rem;
         border-radius: 4px;
     }
 
-    sl-skeleton.key {
+    wa-skeleton.key {
         width: 23%;
         height: 0.9rem;
         margin-top: 0.4rem;

@@ -50,23 +50,23 @@ export class ProfilePage extends LitElement {
                     <div class="value">${this.user?.email || this.user?.userName || "Unknown"}</div>
                 </div>
 
-                <sl-input
+                <wa-input
                     label="First name"
                     value="${this.firstName}"
-                    @sl-input="${(e: Event) => this.firstName = (e.target as HTMLInputElement).value}">
-                </sl-input>
+                    @wa-input="${(e: Event) => this.firstName = (e.target as HTMLInputElement).value}">
+                </wa-input>
 
-                <sl-input
+                <wa-input
                     label="Last name"
                     value="${this.lastName}"
-                    @sl-input="${(e: Event) => this.lastName = (e.target as HTMLInputElement).value}">
-                </sl-input>
+                    @wa-input="${(e: Event) => this.lastName = (e.target as HTMLInputElement).value}">
+                </wa-input>
 
-                <sl-input
+                <wa-input
                     label="Registration date"
                     readonly
                     value="${this.formatDate(this.user?.registrationDate)}">
-                </sl-input>
+                </wa-input>
 
                 <div>
                     <div class="label">Profile picture</div>
@@ -79,7 +79,7 @@ export class ProfilePage extends LitElement {
                 ${this.renderChartLinkSection("New chord charts", this.user?.newChordCharts)}
 
                 <div class="actions">
-                    <sl-button variant="primary" type="submit" ?loading="${this.isSaving}">Save</sl-button>
+                    <wa-button variant="primary" type="submit" ?loading="${this.isSaving}">Save</wa-button>
                 </div>
             </form>
         `;
@@ -89,8 +89,8 @@ export class ProfilePage extends LitElement {
         return html`
             <p>You are not signed in.</p>
             <div class="actions">
-                <sl-button variant="primary" href="/account">Sign In</sl-button>
-                <sl-button variant="default" href="/account?mode=register">Register</sl-button>
+                <wa-button variant="primary" href="/account">Sign In</wa-button>
+                <wa-button variant="default" href="/account?mode=register">Register</wa-button>
             </div>
         `;
     }
@@ -98,17 +98,17 @@ export class ProfilePage extends LitElement {
     private renderAlert(): TemplateResult {
         if (this.error) {
             return html`
-                <sl-alert variant="danger" open>
+                <wa-alert variant="danger" open>
                     ${this.error}
-                </sl-alert>
+                </wa-alert>
             `;
         }
 
         if (this.success) {
             return html`
-                <sl-alert variant="success" open>
+                <wa-alert variant="success" open>
                     ${this.success}
-                </sl-alert>
+                </wa-alert>
             `;
         }
 

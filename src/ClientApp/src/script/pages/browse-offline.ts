@@ -43,26 +43,26 @@ export class BrowseOffline extends LitElement {
                 <div class="header-row">
                     <h2 class="highlight">Offline Chord Charts</h2>
                     <div class="actions">
-                        <sl-tooltip content="Downloads all chord charts to this device so they can be viewed while offline">
-                            <sl-button
+                        <wa-tooltip content="Downloads all chord charts to this device so they can be viewed while offline">
+                            <wa-button
                                 variant="default"
                                 ?loading="${this.isCachingAll}"
                                 ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
                                 @click="${this.makeAllChordsOffline}">
-                                <sl-icon slot="prefix" name="download"></sl-icon>
+                                <wa-icon slot="prefix" name="download"></wa-icon>
                                 Make all chords available offline
-                            </sl-button>
-                        </sl-tooltip>
-                        <sl-tooltip content="Removes all chord charts from your local device">
-                            <sl-button
+                            </wa-button>
+                        </wa-tooltip>
+                        <wa-tooltip content="Removes all chord charts from your local device">
+                            <wa-button
                                 variant="danger"
                                 ?loading="${this.isDeletingAll}"
                                 ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
                                 @click="${this.deleteAllOfflineChords}">
-                                <sl-icon slot="prefix" name="trash"></sl-icon>
+                                <wa-icon slot="prefix" name="trash"></wa-icon>
                                 Delete offline chords
-                            </sl-button>
-                        </sl-tooltip>
+                            </wa-button>
+                        </wa-tooltip>
                     </div>
                 </div>
                 <p>Chord charts you load while online are automatically available offline.</p>
@@ -82,7 +82,7 @@ export class BrowseOffline extends LitElement {
         }
 
         return html`
-            <sl-progress-bar value="${this.cachePercent}"></sl-progress-bar>
+            <wa-progress-bar value="${this.cachePercent}"></wa-progress-bar>
         `;
     }
 
