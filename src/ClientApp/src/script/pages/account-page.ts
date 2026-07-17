@@ -178,13 +178,17 @@ export class AccountPage extends LitElement {
 
     private tabChanged(e: CustomEvent): void {
         const mode = e.detail.name as "signin" | "register";
-        this.switchMode(mode);
+        if (mode !== this.mode) {
+            this.switchMode(mode);
+        }
     }
 
-    private switchMode(mode: "signin" | "register"): void {
+    private switchMode(mode: "signin" | "register", clearMessages = true): void {
         this.mode = mode;
-        this.error = null;
-        this.success = null;
+        if (clearMessages) {
+            this.error = null;
+            this.success = null;
+        }
         this.shadowRoot?.querySelector("sl-tab-group")?.show(mode);
     }
 
@@ -252,8 +256,8 @@ export class AccountPage extends LitElement {
             if (result.success) {
                 this.password = "";
                 this.confirmPassword = "";
-                this.success = "Registration successful. Check your email to confirm your account, then sign in.";
-                this.mode = "signin";
+                this.switchMode("signin", false);
+                this.success = "Please check your email and confirm your account before signing in.";
                 return;
             }
 

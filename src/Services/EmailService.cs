@@ -52,9 +52,11 @@ public class EmailService
 
     public Task SendConfirmEmailAsync(string destinationAddress, string token, AppSettings appOptions)
     {
+        var encodedEmail = Uri.EscapeDataString(destinationAddress);
+        var encodedToken = Uri.EscapeDataString(token);
         var body = "<h1>MessianicChords: Confirm your email</h1>" +
             "<p>Thanks for registering on MessianicChords! Click the link below to confirm your email address. This link will expire in 24 hours.</p>" +
-            $"<p><a href='https://messianicchords.com/confirmemail?email={destinationAddress}&token={token}'>Confirm email</a></p>";
+            $"<p><a href='https://messianicchords.com/confirmemail?email={encodedEmail}&token={encodedToken}'>Confirm email</a></p>";
         var email = this.CreateEmail("MessianicChords: Confirm your email", new EmailAddress(destinationAddress), null, body);
         return this.SendEmail(email);
     }

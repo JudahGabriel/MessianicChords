@@ -390,6 +390,7 @@ namespace MessianicChords.Controllers
         /// <param name="email"></param>
         /// <param name="confirmCode"></param>
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ConfirmEmailResult> ConfirmEmail(string email, string confirmCode)
         {
             // Make sure the user exists.

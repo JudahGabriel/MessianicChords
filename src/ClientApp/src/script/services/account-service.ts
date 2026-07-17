@@ -1,4 +1,4 @@
-import { RegisterModel, RegisterResults, SignInModel, SignInResult, SupportMessage, UserViewModel } from "../models/account";
+import { ConfirmEmailResult, RegisterModel, RegisterResults, SignInModel, SignInResult, SupportMessage, UserViewModel } from "../models/account";
 import { BehaviorSubject } from "rxjs";
 import { ApiServiceBase } from "./api-service-base";
 
@@ -24,6 +24,11 @@ class AccountService extends ApiServiceBase {
 
     register(model: RegisterModel): Promise<RegisterResults> {
         return this.post<RegisterResults>("/api/account/register", model);
+    }
+
+    confirmEmail(email: string, confirmCode: string): Promise<ConfirmEmailResult> {
+        const query = new URLSearchParams({ email, confirmCode });
+        return this.post<ConfirmEmailResult>(`/api/account/confirmEmail?${query}`);
     }
 
     async signOut(): Promise<void> {
