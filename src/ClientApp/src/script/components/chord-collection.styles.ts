@@ -11,9 +11,6 @@ export const chordCollectionStyles = css`
 
     .loading-card {
         width: 18.5em;
-    }
-
-    .loading-card::part(base) {
         border: 1px solid #d6d6d6;
         border-radius: 10px;
         overflow: hidden;
