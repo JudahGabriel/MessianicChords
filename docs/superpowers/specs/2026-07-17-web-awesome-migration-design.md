@@ -22,7 +22,7 @@ Migrate Messianic Chords from Shoelace 2.20.1 to Web Awesome while preserving ex
 
 ## Local Icons
 
-Register a Web Awesome custom icon library named `local` and make it the default. Its resolver maps icon names to `/assets/icons/<name>.svg`, preserving existing icon names and keeping icon delivery local.
+Override Web Awesome's `default` icon library with a custom resolver that maps icon names to `/assets/icons/<name>.svg`. This preserves existing icon names, requires no `library` attribute at each call site, and keeps icon delivery local.
 
 Download the two referenced assets missing from the repository:
 
