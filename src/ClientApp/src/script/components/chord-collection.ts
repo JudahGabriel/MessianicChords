@@ -5,7 +5,7 @@ import { PagedList } from "../models/paged-list";
 import { ChordSheet } from "../models/interfaces";
 import { sharedStyles } from "../common/shared.styles";
 import { chordCollectionStyles } from "./chord-collection.styles";
-import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
+import "@awesome.me/webawesome/dist/components/skeleton/skeleton.js";
 import "../components/chord-card";
 
 /**

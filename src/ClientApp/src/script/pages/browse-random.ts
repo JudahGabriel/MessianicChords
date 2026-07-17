@@ -6,9 +6,9 @@ import { ChordSheet, PagedResult } from "../models/interfaces";
 import { ChordService } from "../services/chord-service";
 import { browseRandomStyles } from "./browse-random.styles";
 import { sharedStyles } from "../common/shared.styles";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import { SlIcon } from "@shoelace-style/shoelace";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import { WaIcon as SlIcon } from "@awesome.me/webawesome";
 import { PagedList } from "../models/paged-list";
 import "../components/chord-collection.js";
 

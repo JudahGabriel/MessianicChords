@@ -194,3 +194,4 @@ appsettings.Production.json
 /src/Api/wwwroot/index.html
 /src/API/wwwroot/assets/code/
 /src/ClientApp/stats.html
+.spiderloop/

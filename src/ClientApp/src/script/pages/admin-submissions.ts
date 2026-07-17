@@ -7,10 +7,10 @@ import { ChordSheet } from "../models/interfaces";
 import { adminService } from "../services/admin-service";
 import { accountService } from "../services/account-service";
 
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
 
 @customElement("admin-submissions")
 export class AdminSubmissions extends LitElement {

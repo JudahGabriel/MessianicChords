@@ -4,9 +4,9 @@ import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 import { profilePageStyles } from "./profile-page.styles";
 
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
 
 @customElement("profile-page")
 export class ProfilePage extends LitElement {

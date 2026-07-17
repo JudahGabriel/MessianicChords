@@ -9,10 +9,10 @@ import { ChordBackendOnline } from "../services/chord-backend-online";
 import { ChordsLocalDatabase } from "../services/chords-local-database";
 import { sharedStyles } from "../common/shared.styles";
 import { browseOfflineStyles } from "./browse-offline.styles";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/progress-bar/progress-bar.js";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js";
+import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
 
 @customElement("browse-offline")
 export class BrowseOffline extends LitElement {

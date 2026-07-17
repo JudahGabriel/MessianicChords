@@ -9,12 +9,12 @@ import { BehaviorSubject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { appHomeStyles } from "./app-home.styles";
 import { sharedStyles } from "../common/shared.styles";
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
-import "@shoelace-style/shoelace/dist/components/divider/divider.js";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/skeleton/skeleton.js";
+import "@awesome.me/webawesome/dist/components/divider/divider.js";
+import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
 import "../components/home-jumbotron.js";
 import { PagedList } from "../models/paged-list";
 

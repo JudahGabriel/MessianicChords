@@ -6,7 +6,7 @@ import { ChordSheet } from "../models/interfaces";
 import { PagedList } from "../models/paged-list";
 import { ChordService } from "../services/chord-service";
 import { sharedStyles } from "../common/shared.styles";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
 import { browseSongsStyles } from "./browse-songs.styles";
 
 type SongGroup = {

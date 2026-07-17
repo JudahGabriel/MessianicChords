@@ -3,8 +3,8 @@ import { property, customElement } from "lit/decorators.js";
 import { ChordSheet } from "../models/interfaces";
 import { sharedStyles } from "../common/shared.styles";
 import { chordCardStyles } from "./chord-card.styles";
-import "@shoelace-style/shoelace/dist/components/card/card.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/card/card.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
 
 @customElement("chord-card")
 export class ChordCard extends LitElement {

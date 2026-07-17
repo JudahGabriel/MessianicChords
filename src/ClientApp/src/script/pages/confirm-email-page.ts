@@ -3,8 +3,8 @@ import { customElement, state } from "lit/decorators.js";
 import { sharedStyles } from "../common/shared.styles";
 import { accountService } from "../services/account-service";
 
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
 
 @customElement("confirm-email-page")
 export class ConfirmEmailPage extends LitElement {

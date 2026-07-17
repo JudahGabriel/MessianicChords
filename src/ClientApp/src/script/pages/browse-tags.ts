@@ -7,9 +7,9 @@ import { PagedList } from "../models/paged-list";
 import { sharedStyles } from "../common/shared.styles";
 import "../components/chord-collection";
 import { browseTagsStyles } from "./browse-tags.styles";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
-import "@shoelace-style/shoelace/dist/components/select/select.js";
-import "@shoelace-style/shoelace/dist/components/option/option.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/select/select.js";
+import "@awesome.me/webawesome/dist/components/option/option.js";
 
 type TagGroup = {
     tag: string;

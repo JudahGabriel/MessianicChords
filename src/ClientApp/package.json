@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@shoelace-style/shoelace": "^2.20.1",
+    "@awesome.me/webawesome": "^3.10.0",
     "@types/node": "^20.5.6",
     "lit": "^3.3.3",
     "rxjs": "^7.5.5",

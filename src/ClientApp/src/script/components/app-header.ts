@@ -6,14 +6,12 @@ import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 import { Subscription } from "rxjs";
 
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
-import "@shoelace-style/shoelace/dist/components/dropdown/dropdown.js";
-import "@shoelace-style/shoelace/dist/components/menu/menu.js";
-import "@shoelace-style/shoelace/dist/components/menu-item/menu-item.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
+import "@awesome.me/webawesome/dist/components/dropdown/dropdown.js";
+import "@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js";
 
 @customElement("app-header")
 export class AppHeader extends LitElement {

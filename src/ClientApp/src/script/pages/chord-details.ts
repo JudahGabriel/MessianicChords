@@ -12,19 +12,18 @@ import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 import { Comment, CommentThread } from "../models/comment";
 import { commentService } from "../services/comment-service";
-import "@shoelace-style/shoelace/dist/components/card/card.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/button-group/button-group.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/rating/rating.js";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
-import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
-import "@shoelace-style/shoelace/dist/components/tab/tab.js";
-import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
-import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
-import "@shoelace-style/shoelace/dist/components/animation/animation.js";
+import "@awesome.me/webawesome/dist/components/card/card.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/button-group/button-group.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/rating/rating.js";
+import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js";
+import "@awesome.me/webawesome/dist/components/tab/tab.js";
+import "@awesome.me/webawesome/dist/components/tab-group/tab-group.js";
+import "@awesome.me/webawesome/dist/components/textarea/textarea.js";
+import "@awesome.me/webawesome/dist/components/animation/animation.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {

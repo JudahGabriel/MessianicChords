@@ -4,11 +4,11 @@ import { SupportMessage } from "../models/account";
 import { accountService } from "../services/account-service";
 import { contactPageStyles } from "./contact-page.styles";
 
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/textarea/textarea.js";
 
 @customElement("contact-page")
 export class ContactPage extends LitElement {

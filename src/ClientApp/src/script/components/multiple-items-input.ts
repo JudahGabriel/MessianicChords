@@ -3,10 +3,9 @@ import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { guid } from "../common/utils";
 import { createRef, ref } from "lit/directives/ref.js";
-
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
 
 @customElement("multiple-items-input")
 export class MultipleItemsInput extends LitElement {

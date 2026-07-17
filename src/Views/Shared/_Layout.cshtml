@@ -1,6 +1,6 @@
 ﻿@model MessianicChords.Models.HomeViewModel
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" class="wa-theme-shoelace wa-palette-shoelace wa-light">
 <head>
     <meta charset="utf-8" />
     <base href="/">
@@ -53,9 +53,8 @@
     <meta property="og:description" content="@Model.Description" />
     <meta property="og:image" content="@Model.SocialCardImage" />
 
-    @* Shoelace light mode and dark mode CSS *@
-    <link rel="stylesheet" media="(prefers-color-scheme:light)" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
-    <link rel="stylesheet" media="(prefers-color-scheme:dark)" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css" onload="document.documentElement.classList.add('sl-theme-dark');" />
+    @* Web Awesome base theme *@
+    <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/webawesome.css">
 
 <style>
         :root {

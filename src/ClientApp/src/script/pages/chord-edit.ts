@@ -7,15 +7,14 @@ import { ChordService } from "../services/chord-service";
 import { accountService } from "../services/account-service";
 import "../components/multiple-items-input.js";
 
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/checkbox/checkbox.js";
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/skeleton/skeleton.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/textarea/textarea.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/checkbox/checkbox.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/skeleton/skeleton.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
 import { sharedStyles } from "../common/shared.styles";
 import { chordEditStyles } from "./chord-edit.styles";
 

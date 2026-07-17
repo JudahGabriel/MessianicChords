@@ -4,15 +4,15 @@ import { accountPageStyles } from "./account-page.styles";
 import { SignInStatus, UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/checkbox/checkbox.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/input/input.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
-import "@shoelace-style/shoelace/dist/components/tab/tab.js";
-import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
-import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/checkbox/checkbox.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/tab/tab.js";
+import "@awesome.me/webawesome/dist/components/tab-group/tab-group.js";
+import "@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js";
 
 @customElement("account-page")
 export class AccountPage extends LitElement {
@@ -189,7 +189,7 @@ export class AccountPage extends LitElement {
             this.error = null;
             this.success = null;
         }
-        this.shadowRoot?.querySelector("sl-tab-group")?.show(mode);
+        (this.shadowRoot?.querySelector("sl-tab-group") as (Element & { show(panel: string): void }) | null)?.show(mode);
     }
 
     private async submitSignIn(e: Event): Promise<void> {
