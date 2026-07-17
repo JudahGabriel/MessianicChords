@@ -160,6 +160,7 @@ public class ChordSheet
         ThumbnailUrl = other.ThumbnailUrl;
         PublishUri = other.PublishUri ?? this.PublishUri; 
         PagesCount = other.PagesCount;
+        AlbumArtUrl = other.AlbumArtUrl ?? this.AlbumArtUrl;
         Links = other.Links;
         Authors = other.Authors ?? this.Authors;
         Copyright = other.Copyright ?? this.Copyright;
