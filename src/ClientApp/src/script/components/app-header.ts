@@ -78,12 +78,13 @@ export class AppHeader extends LitElement {
                                 ${this.renderOfflineStatusIndicator()}
                             </div>
 
-                            <wa-icon-button
+                            <wa-button
+                                appearance="plain"
                                 class="menu-toggle"
-                                name="${this.menuOpen ? "x-lg" : "list"}"
-                                label="Toggle menu"
+                                aria-label="Toggle menu"
                                 @click="${this.toggleMenu}">
-                            </wa-icon-button>
+                                <wa-icon name="${this.menuOpen ? "x-lg" : "list"}"></wa-icon>
+                            </wa-button>
                         </div>
                     </div>
 
@@ -107,27 +108,29 @@ export class AppHeader extends LitElement {
                                         type="search"
                                         placeholder="Search chord charts"
                                         size="small"
-                                        clearable
+                                        with-clear
                                         pill
-                                        @wa-change="${this.handleSearch}"
+                                        @change="${this.handleSearch}"
                                         @keydown="${this.handleSearchKeydown}">
-                                        <wa-icon name="search" slot="prefix"></wa-icon>
+                                        <wa-icon name="search" slot="start"></wa-icon>
                                     </wa-input>
 
-                                    <wa-icon-button
+                                    <wa-button
+                                        appearance="plain"
                                         class="search-close-button"
-                                        name="x-lg"
-                                        label="Close search"
+                                        aria-label="Close search"
                                         @click="${this.closeSearch}">
-                                    </wa-icon-button>
+                                        <wa-icon name="x-lg"></wa-icon>
+                                    </wa-button>
                                 </div>
                             ` : html`
-                                <wa-icon-button
+                                <wa-button
+                                    appearance="plain"
                                     class="search-toggle-button"
-                                    name="search"
-                                    label="Open search"
+                                    aria-label="Open search"
                                     @click="${this.openSearch}">
-                                </wa-icon-button>
+                                    <wa-icon name="search"></wa-icon>
+                                </wa-button>
                             `}
                         </div>
                     </div>
@@ -137,10 +140,10 @@ export class AppHeader extends LitElement {
                             type="search"
                             placeholder="Search chord charts"
                             size="small"
-                            clearable
+                            with-clear
                             pill
-                            @wa-change="${this.handleSearch}">
-                            <wa-icon name="search" slot="prefix"></wa-icon>
+                            @change="${this.handleSearch}">
+                            <wa-icon name="search" slot="start"></wa-icon>
                         </wa-input>
                     </div>
 
@@ -162,28 +165,27 @@ export class AppHeader extends LitElement {
 
         return html`
             <wa-tooltip content="You're offline. Any chord charts you viewed while online are available offline." trigger="hover click" placement="bottom-end">
-                <wa-icon-button
-                    class="offline-status-button"
-                    name="wifi-off"
-                    label="Offline status">
-                </wa-icon-button>
+            <wa-button
+                appearance="plain"
+                class="offline-status-button"
+                aria-label="Offline status">
+                <wa-icon name="wifi-off"></wa-icon>
+            </wa-button>
             </wa-tooltip>
         `;
     }
 
     private renderAccountMenu(): TemplateResult {
         return html`
-            <wa-dropdown placement="bottom-end" @wa-hide="${this.closeMenu}">
+            <wa-dropdown placement="bottom-end" @wa-hide="${this.closeMenu}" @wa-select="${this.onAccountMenuSelected}">
                 ${this.renderAccountMenuTrigger()}
 
-                <wa-menu @wa-select="${this.onAccountMenuSelected}">
-                    ${this.user ? html`<wa-menu-item value="/profile">My Profile</wa-menu-item>` : html``}
-                    <wa-menu-item value="/contact">Contact Us</wa-menu-item>
-                    <wa-menu-item value="/about">About</wa-menu-item>
-                    ${this.user ? html`<wa-menu-item value="__signout">Sign Out</wa-menu-item>` : html``}
-                    ${this.user ? html`` : html`<wa-menu-item value="/account">Sign In</wa-menu-item>`}
-                    ${this.user ? html`` : html`<wa-menu-item value="/account?mode=register">Register</wa-menu-item>`}
-                </wa-menu>
+                ${this.user ? html`<wa-dropdown-item value="/profile">My Profile</wa-dropdown-item>` : html``}
+                <wa-dropdown-item value="/contact">Contact Us</wa-dropdown-item>
+                <wa-dropdown-item value="/about">About</wa-dropdown-item>
+                ${this.user ? html`<wa-dropdown-item value="__signout">Sign Out</wa-dropdown-item>` : html``}
+                ${this.user ? html`` : html`<wa-dropdown-item value="/account">Sign In</wa-dropdown-item>`}
+                ${this.user ? html`` : html`<wa-dropdown-item value="/account?mode=register">Register</wa-dropdown-item>`}
             </wa-dropdown>
         `;
     }
@@ -194,7 +196,7 @@ export class AppHeader extends LitElement {
                 <wa-button
                     class="account-menu-trigger-signed-out"
                     slot="trigger"
-                    variant="text">
+                    appearance="plain">
                     <wa-icon name="person-circle" label="Account menu"></wa-icon>
                 </wa-button>
             `;
@@ -206,7 +208,7 @@ export class AppHeader extends LitElement {
                 <wa-button
                     class="account-menu-trigger"
                     slot="trigger"
-                    variant="text">
+                    appearance="plain">
                     <img class="avatar-image" src="${this.user.profilePictureUrl}" alt="Profile picture" />
                 </wa-button>
             `;
@@ -217,7 +219,7 @@ export class AppHeader extends LitElement {
             <wa-button
                 class="account-menu-trigger"
                 slot="trigger"
-                variant="text">
+                appearance="plain">
                 <wa-icon name="person-circle" label="Account menu"></wa-icon>
             </wa-button>
         `;

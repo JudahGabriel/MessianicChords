@@ -53,13 +53,13 @@ export class ProfilePage extends LitElement {
                 <wa-input
                     label="First name"
                     value="${this.firstName}"
-                    @wa-input="${(e: Event) => this.firstName = (e.target as HTMLInputElement).value}">
+                    @input="${(e: Event) => this.firstName = (e.target as HTMLInputElement).value}">
                 </wa-input>
 
                 <wa-input
                     label="Last name"
                     value="${this.lastName}"
-                    @wa-input="${(e: Event) => this.lastName = (e.target as HTMLInputElement).value}">
+                    @input="${(e: Event) => this.lastName = (e.target as HTMLInputElement).value}">
                 </wa-input>
 
                 <wa-input
@@ -79,7 +79,7 @@ export class ProfilePage extends LitElement {
                 ${this.renderChartLinkSection("New chord charts", this.user?.newChordCharts)}
 
                 <div class="actions">
-                    <wa-button variant="primary" type="submit" ?loading="${this.isSaving}">Save</wa-button>
+                    <wa-button variant="brand" type="submit" ?loading="${this.isSaving}">Save</wa-button>
                 </div>
             </form>
         `;
@@ -89,8 +89,8 @@ export class ProfilePage extends LitElement {
         return html`
             <p>You are not signed in.</p>
             <div class="actions">
-                <wa-button variant="primary" href="/account">Sign In</wa-button>
-                <wa-button variant="default" href="/account?mode=register">Register</wa-button>
+                <wa-button variant="brand" href="/account">Sign In</wa-button>
+                <wa-button href="/account?mode=register">Register</wa-button>
             </div>
         `;
     }
@@ -98,17 +98,17 @@ export class ProfilePage extends LitElement {
     private renderAlert(): TemplateResult {
         if (this.error) {
             return html`
-                <wa-alert variant="danger" open>
+                <wa-callout variant="danger">
                     ${this.error}
-                </wa-alert>
+                </wa-callout>
             `;
         }
 
         if (this.success) {
             return html`
-                <wa-alert variant="success" open>
+                <wa-callout variant="success">
                     ${this.success}
-                </wa-alert>
+                </wa-callout>
             `;
         }
 

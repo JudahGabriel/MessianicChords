@@ -38,7 +38,6 @@ export class ChordEdit extends LitElement {
         super();
 
         // When any input event fires, reset the validation field.
-        this.addEventListener("wa-input", () => this.invalidFieldName = "");
         this.addEventListener("input", () => this.invalidFieldName = "");
     }
 
@@ -102,10 +101,10 @@ export class ChordEdit extends LitElement {
                             id="song-name-input"
                             label="Song name"
                             placeholder="Shema Yisrael"
-                            help-text="Required. The name of the song."
+                            hint="Required. The name of the song."
                             value="${chord.song}"
                             ?data-user-invalid="${this.invalidFieldName === "name"}"
-                            @wa-input="${(e: Event) => chord.song = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => chord.song = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         ${this.invalidFieldName === "name" ? html`<small style="color: var(--wa-color-danger-500)">Please type a song name.</small>` : ""}
                     </div>
@@ -115,9 +114,9 @@ export class ChordEdit extends LitElement {
                             label="Hebrew song name"
                             lang="he"
                             placeholder="שמע ישראל"
-                            help-text="Optional. The Hebrew name of the song. If specified, this should use Hebrew characters."
+                            hint="Optional. The Hebrew name of the song. If specified, this should use Hebrew characters."
                             value="${chord.hebrewSongName || ""}"
-                            @wa-input="${(e: Event) => chord.hebrewSongName = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => chord.hebrewSongName = (e.target as HTMLInputElement).value}">
                         </wa-input>
                     </div>
                 </div>
@@ -129,10 +128,10 @@ export class ChordEdit extends LitElement {
                             id="artist-input"
                             label="Artist"
                             placeholder="Lamb"
-                            help-text="Optional. The artist who performed this arrangement of the song."
+                            hint="Optional. The artist who performed this arrangement of the song."
                             value="${chord.artist}"
                             ?data-user-invalid="${this.invalidFieldName === "artist-authors"}"
-                            @wa-input="${(e: Event) => chord.artist = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => chord.artist = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         ${this.invalidFieldName === "artist-authors" ? html`<small style="color: var(--wa-color-danger-500)">You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.</small>` : ""}
                     </div>
@@ -160,12 +159,12 @@ export class ChordEdit extends LitElement {
                         label="Chord chart"
                         class="chord-chart-text"
                         placeholder="${"   Em             D\nSh'ma Yisrael, sh'ma Yisrael"}"
-                        help-text="Optional. The chord chart for the song. If omitted, you can instead attach the chord chart file below."
+                        hint="Optional. The chord chart for the song. If omitted, you can instead attach the chord chart file below."
                         resize="vertical"
                         rows="20"
                         value="${chord.chords || ""}"
                         ?data-user-invalid="${this.invalidFieldName === "chords"}"
-                        @wa-input="${(e: Event) => chord.chords = (e.target as HTMLTextAreaElement).value}"
+                        @input="${(e: Event) => chord.chords = (e.target as HTMLTextAreaElement).value}"
                         @paste="${this.chordsPasted}">
                     </wa-textarea>
                     ${this.invalidFieldName === "chords" ? html`<small style="color: var(--wa-color-danger-500)">You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.</small>` : ""}
@@ -234,9 +233,9 @@ export class ChordEdit extends LitElement {
                             id="key-input"
                             label="Key"
                             placeholder="Em"
-                            help-text="Optional. The musical key in which this song is played."
+                            hint="Optional. The musical key in which this song is played."
                             value="${chord.key || ""}"
-                            @wa-input="${(e: Event) => chord.key = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => chord.key = (e.target as HTMLInputElement).value}">
                         </wa-input>
                     </div>
                     <div class="form-group">
@@ -247,9 +246,9 @@ export class ChordEdit extends LitElement {
                             placeholder="0"
                             min="0"
                             max="20"
-                            help-text="Optional. The ideal guitar capo number used when playing this song."
+                            hint="Optional. The ideal guitar capo number used when playing this song."
                             value="${chord.capo || ""}"
-                            @wa-input="${(e: Event) => chord.capo = parseInt((e.target as HTMLInputElement).value) || 0}">
+                            @input="${(e: Event) => chord.capo = parseInt((e.target as HTMLInputElement).value) || 0}">
                         </wa-input>
                     </div>
                     <div class="form-group">
@@ -257,9 +256,9 @@ export class ChordEdit extends LitElement {
                             id="scripture-input"
                             label="Scripture"
                             placeholder="Deuteronomy 6:4"
-                            help-text="Optional. The segment of Scripture relevant to this song."
+                            hint="Optional. The segment of Scripture relevant to this song."
                             value="${chord.scripture || ""}"
-                            @wa-input="${(e: Event) => chord.scripture = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => chord.scripture = (e.target as HTMLInputElement).value}">
                         </wa-input>
                     </div>
                 </div>
@@ -271,9 +270,9 @@ export class ChordEdit extends LitElement {
                             id="copyright-input"
                             label="Copyright"
                             placeholder="Messianic Publishing Company"
-                            help-text="Optional. The copyright of the song."
+                            hint="Optional. The copyright of the song."
                             value="${chord.copyright || ""}"
-                            @wa-input="${(e: Event) => chord.copyright = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => chord.copyright = (e.target as HTMLInputElement).value}">
                         </wa-input>
                     </div>
                     <div class="form-group">
@@ -282,9 +281,9 @@ export class ChordEdit extends LitElement {
                             label="CCLI"
                             type="number"
                             placeholder="7112570"
-                            help-text="Optional. The Christian Copyright Licensing International (CCLI) number of the song."
+                            hint="Optional. The Christian Copyright Licensing International (CCLI) number of the song."
                             value="${chord.ccliNumber || ""}"
-                            @wa-input="${(e: Event) => chord.ccliNumber = parseInt((e.target as HTMLInputElement).value) || null}">
+                            @input="${(e: Event) => chord.ccliNumber = parseInt((e.target as HTMLInputElement).value) || null}">
                         </wa-input>
                     </div>
                     <div class="form-group">
@@ -293,9 +292,9 @@ export class ChordEdit extends LitElement {
                             label="Year"
                             type="number"
                             placeholder="1978"
-                            help-text="Optional. The year the song was authored."
+                            hint="Optional. The year the song was authored."
                             value="${chord.year || ""}"
-                            @wa-input="${(e: Event) => chord.year = parseInt((e.target as HTMLInputElement).value) || null}">
+                            @input="${(e: Event) => chord.year = parseInt((e.target as HTMLInputElement).value) || null}">
                         </wa-input>
                     </div>
                 </div>
@@ -303,7 +302,7 @@ export class ChordEdit extends LitElement {
                 <div class="form-group">
                     <wa-checkbox
                         id="sheet-music-input"
-                        @wa-change="${(e: Event) => chord.isSheetMusic = (e.target as HTMLInputElement).checked}">
+                        @change="${(e: Event) => chord.isSheetMusic = (e.target as HTMLInputElement).checked}">
                         Contains sheet music
                     </wa-checkbox>
                     <div class="help-text">If the attachments for this song contains musical notation files. <a href="/ChordSheets/4803" target="_blank">Example</a>.</div>
@@ -315,9 +314,9 @@ export class ChordEdit extends LitElement {
                         label="About"
                         rows="3"
                         placeholder="This song is based on..."
-                        help-text="Optional. Additional information about the song, lyrics, or chord chart."
+                        hint="Optional. Additional information about the song, lyrics, or chord chart."
                         value="${chord.about || ""}"
-                        @wa-input="${(e: Event) => chord.about = (e.target as HTMLTextAreaElement).value}">
+                        @input="${(e: Event) => chord.about = (e.target as HTMLTextAreaElement).value}">
                     </wa-textarea>
                 </div>
 
@@ -338,13 +337,13 @@ export class ChordEdit extends LitElement {
 
     renderError(): TemplateResult {
         return html`
-            <wa-alert variant="warning" open>
+            <wa-callout variant="warning">
                 <wa-icon slot="icon" name="exclamation-triangle"></wa-icon>
                 Woops, we hit a problem loading this chord chart.
                 <a href="${window.location.href}">Try again</a>
                 <br><br>
                 Additional error details: ${this.error}
-            </wa-alert>
+            </wa-callout>
         `;
     }
 
@@ -365,14 +364,14 @@ export class ChordEdit extends LitElement {
                     ${sizeTemplate}
                     ${errorMessage}
                 </span>
-                <wa-icon-button name="x-lg" label="Remove" @click="${() => this.removeAttachment(attachment)}"></wa-icon-button>
+                <wa-button appearance="plain" aria-label="Remove" @click="${() => this.removeAttachment(attachment)}"><wa-icon name="x-lg"></wa-icon></wa-button>
             </li>
         `;
     }
 
     renderSubmitButton(): TemplateResult {
         return html`
-            <wa-button variant="primary" ?loading=${this.isSubmitting} ?disabled=${this.isSubmitting} @click="${this.submit}">
+            <wa-button variant="brand" ?loading=${this.isSubmitting} ?disabled=${this.isSubmitting} @click="${this.submit}">
                 Submit
             </wa-button>
         `;
@@ -385,10 +384,10 @@ export class ChordEdit extends LitElement {
 
         return html`
             <br>
-            <wa-alert variant="danger" open>
+            <wa-callout variant="danger">
                 <wa-icon slot="icon" name="exclamation-octagon"></wa-icon>
                 ${this.submitError}
-            </wa-alert>
+            </wa-callout>
         `;
     }
 

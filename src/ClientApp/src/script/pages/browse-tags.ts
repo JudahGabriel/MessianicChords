@@ -151,7 +151,7 @@ export class BrowseTags extends LitElement {
                         size="small"
                         placeholder="Jump to tag"
                         value="${this.selectedTag}"
-                        @wa-change="${this.onTagSelectChanged}">
+                        @change="${this.onTagSelectChanged}">
                         ${repeat(this.tagGroups, g => g.tag, g => html`<wa-option value="${encodeURIComponent(g.tag.toLocaleLowerCase())}">${g.tag}</wa-option>`)}
                     </wa-select>
                 </div>

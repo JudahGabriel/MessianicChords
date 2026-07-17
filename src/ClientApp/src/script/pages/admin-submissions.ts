@@ -61,9 +61,9 @@ export class AdminSubmissions extends LitElement {
                 <h2 class="highlight">Pending Submissions</h2>
 
                 ${this.error ? html`
-                    <wa-alert variant="danger" open class="error-alert">
+                    <wa-callout variant="danger" class="error-alert">
                         ${this.error}
-                    </wa-alert>
+                    </wa-callout>
                 ` : nothing}
 
                 ${this.renderContent()}
@@ -76,7 +76,7 @@ export class AdminSubmissions extends LitElement {
             return html`
                 <div class="empty-state">
                     <p>You must be signed in as an admin to access this page.</p>
-                    <wa-button variant="primary" href="/account">Sign In</wa-button>
+                    <wa-button variant="brand" href="/account">Sign In</wa-button>
                 </div>
             `;
         }

@@ -78,14 +78,14 @@ export class ConfirmEmailPage extends LitElement {
             return html`
                 <h1>Email confirmed</h1>
                 <p>Your account is confirmed. You can now sign in.</p>
-                <wa-button variant="primary" pill href="/account?mode=signin">Sign in</wa-button>
+                <wa-button variant="brand" pill href="/account?mode=signin">Sign in</wa-button>
             `;
         }
 
         return html`
             <h1>Unable to confirm email</h1>
             <p>${this.errorMessage}</p>
-            <wa-button variant="primary" pill href="/contact">Contact us</wa-button>
+            <wa-button variant="brand" pill href="/contact">Contact us</wa-button>
         `;
     }
 

@@ -37,18 +37,18 @@ export const sharedStyles = css`
         font-weight: normal;
     }
 
-    wa-button[variant="text"]::part(label) {
+    wa-button[appearance="plain"]::part(label) {
         font-weight: bold;
         font-family: var(--subtitle-font);
         font-size: 16px;
         color: var(--theme-color);
     }
 
-    a, wa-button[variant="text"] {
+    a, wa-button[appearance="plain"] {
         transition: 0.4s linear color;
     }
 
-    a:hover, wa-button[variant="text"]:hover {
+    a:hover, wa-button[appearance="plain"]:hover {
         color: brown;
     }
 

@@ -1,8 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="wa-theme-shoelace wa-palette-shoelace wa-light">
+<html lang="en" class="wa-theme-shoelace wa-palette-shoelace">
 
 <head>
   <meta charset="utf-8" />
+  <script>
+    document.documentElement.classList.add(
+      window.matchMedia("(prefers-color-scheme: dark)").matches ? "wa-dark" : "wa-light"
+    );
+  </script>
   <title>Messianic Chords</title>
 
   <base href="/" />
@@ -40,6 +45,7 @@
   <link rel="manifest" href="manifest.json" />
 
   <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/webawesome.css">
+  <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/themes/shoelace.css">
   <script type="module" src="/src/app-index.ts"></script>
 </head>
 

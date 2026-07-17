@@ -225,7 +225,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>General</span>
-                                <wa-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></wa-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
 
@@ -250,7 +250,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Media</span>
-                                <wa-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></wa-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
 
@@ -277,7 +277,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Arrangement</span>
-                                <wa-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></wa-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
                         <p>
@@ -299,7 +299,7 @@ export class ChordDetails extends LitElement {
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Copyright</span>
-                                <wa-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></wa-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
                         <p>
@@ -487,7 +487,7 @@ export class ChordDetails extends LitElement {
         }
 
         return html`
-            <wa-button variant="text" class="text-truncate" href="${link}" target="_blank" rel="noopener">
+            <wa-button appearance="plain" class="text-truncate" href="${link}" target="_blank" rel="noopener">
                 ${linkText}
             </wa-button>
         `;
@@ -554,12 +554,12 @@ export class ChordDetails extends LitElement {
                         class="comment-edit-box"
                         rows="3"
                         .value="${this.editCommentContent}"
-                        @wa-input="${(e: Event) => this.editCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
+                        @input="${(e: Event) => this.editCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
                     <div class="comment-actions">
                         <wa-button size="small" ?disabled="${this.commentBusy || this.editCommentContent.trim().length === 0}" @click="${() => this.saveCommentEdit(chord)}">
                             Save
                         </wa-button>
-                        <wa-button size="small" variant="default" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
+                        <wa-button size="small" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
                             Cancel
                         </wa-button>
                     </div>
@@ -573,7 +573,7 @@ export class ChordDetails extends LitElement {
                         </div>
                         <span class="comment-date">${createdText}</span>
                         ${canEdit ? html`
-                            <wa-button class="comment-edit-button" size="small" variant="text" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
+                            <wa-button class="comment-edit-button" size="small" appearance="plain" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
                                 <wa-icon name="pencil"></wa-icon>
                             </wa-button>
                         ` : html``}
@@ -591,7 +591,7 @@ export class ChordDetails extends LitElement {
                     placeholder="Add a comment"
                     rows="3"
                     .value="${this.newCommentContent}"
-                    @wa-input="${(e: Event) => this.newCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
+                    @input="${(e: Event) => this.newCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
                 <div class="comment-actions">
                     <wa-button type="submit" size="small" ?disabled="${this.commentBusy || this.newCommentContent.trim().length === 0}">
                         Post comment

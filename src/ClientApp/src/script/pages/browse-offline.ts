@@ -45,11 +45,10 @@ export class BrowseOffline extends LitElement {
                     <div class="actions">
                         <wa-tooltip content="Downloads all chord charts to this device so they can be viewed while offline">
                             <wa-button
-                                variant="default"
                                 ?loading="${this.isCachingAll}"
                                 ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
                                 @click="${this.makeAllChordsOffline}">
-                                <wa-icon slot="prefix" name="download"></wa-icon>
+                                <wa-icon slot="start" name="download"></wa-icon>
                                 Make all chords available offline
                             </wa-button>
                         </wa-tooltip>
@@ -59,7 +58,7 @@ export class BrowseOffline extends LitElement {
                                 ?loading="${this.isDeletingAll}"
                                 ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
                                 @click="${this.deleteAllOfflineChords}">
-                                <wa-icon slot="prefix" name="trash"></wa-icon>
+                                <wa-icon slot="start" name="trash"></wa-icon>
                                 Delete offline chords
                             </wa-button>
                         </wa-tooltip>

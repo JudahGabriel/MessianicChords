@@ -39,7 +39,7 @@ export const profilePageStyles = css`
         gap: var(--wa-spacing-medium);
     }
 
-    wa-alert {
+    wa-callout {
         margin-bottom: var(--wa-spacing-small);
     }
 

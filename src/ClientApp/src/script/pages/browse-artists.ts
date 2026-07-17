@@ -159,7 +159,7 @@ export class BrowseArtists extends LitElement {
                         class="artist-jump-select"
                         placeholder="Jump to artist"
                         value="${this.selectedArtist}"
-                        @wa-change="${this.onArtistSelectChanged}">
+                        @change="${this.onArtistSelectChanged}">
                         ${repeat(this.artistGroups, g => g.artist, g => html`<wa-option value="${encodeURIComponent(g.artist)}">${g.artist}</wa-option>`) }
                     </wa-select>
                 </div>

@@ -1,8 +1,13 @@
 ﻿@model MessianicChords.Models.HomeViewModel
 <!DOCTYPE html>
-<html lang="en-us" class="wa-theme-shoelace wa-palette-shoelace wa-light">
+<html lang="en-us" class="wa-theme-shoelace wa-palette-shoelace">
 <head>
     <meta charset="utf-8" />
+    <script>
+        document.documentElement.classList.add(
+            window.matchMedia("(prefers-color-scheme: dark)").matches ? "wa-dark" : "wa-light"
+        );
+    </script>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@Model.Title</title>
@@ -55,6 +60,7 @@
 
     @* Web Awesome base theme *@
     <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/webawesome.css">
+    <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/themes/shoelace.css">
 
 <style>
         :root {

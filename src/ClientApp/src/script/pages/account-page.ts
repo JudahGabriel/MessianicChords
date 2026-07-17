@@ -57,8 +57,8 @@ export class AccountPage extends LitElement {
         return html`
             <div class="signed-in">
                 <p class="intro">You're signed in as <strong>${this.user?.email || this.user?.userName}</strong>.</p>
-                <wa-button variant="primary" pill href="/">Return home</wa-button>
-                <wa-button variant="default" pill ?loading="${this.isSubmitting}" @click="${this.signOut}">
+                <wa-button variant="brand" pill href="/">Return home</wa-button>
+                <wa-button pill ?loading="${this.isSubmitting}" @click="${this.signOut}">
                     Sign out
                 </wa-button>
             </div>
@@ -82,7 +82,7 @@ export class AccountPage extends LitElement {
                             autocomplete="email"
                             required
                             value="${this.email}"
-                            @wa-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-input
                             label="Password"
@@ -92,14 +92,14 @@ export class AccountPage extends LitElement {
                             minlength="6"
                             password-toggle
                             value="${this.password}"
-                            @wa-input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-checkbox
                             ?checked="${this.staySignedIn}"
-                            @wa-change="${(e: Event) => this.staySignedIn = (e.target as HTMLInputElement).checked}">
+                            @change="${(e: Event) => this.staySignedIn = (e.target as HTMLInputElement).checked}">
                             Stay signed in
                         </wa-checkbox>
-                        <wa-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
+                        <wa-button variant="brand" type="submit" pill ?loading="${this.isSubmitting}">
                             Sign in
                         </wa-button>
                     </form>
@@ -118,7 +118,7 @@ export class AccountPage extends LitElement {
                             autocomplete="email"
                             required
                             value="${this.email}"
-                            @wa-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-input
                             label="Password"
@@ -126,10 +126,10 @@ export class AccountPage extends LitElement {
                             autocomplete="new-password"
                             required
                             minlength="6"
-                            help-text="Use at least 6 characters."
+                            hint="Use at least 6 characters."
                             password-toggle
                             value="${this.password}"
-                            @wa-input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-input
                             label="Confirm password"
@@ -139,9 +139,9 @@ export class AccountPage extends LitElement {
                             minlength="6"
                             password-toggle
                             value="${this.confirmPassword}"
-                            @wa-input="${(e: Event) => this.confirmPassword = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => this.confirmPassword = (e.target as HTMLInputElement).value}">
                         </wa-input>
-                        <wa-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
+                        <wa-button variant="brand" type="submit" pill ?loading="${this.isSubmitting}">
                             Register
                         </wa-button>
                     </form>
@@ -157,19 +157,19 @@ export class AccountPage extends LitElement {
     private renderAlert(): TemplateResult {
         if (this.error) {
             return html`
-                <wa-alert variant="danger" open>
+                <wa-callout variant="danger">
                     <wa-icon slot="icon" name="exclamation-circle-fill"></wa-icon>
                     ${this.error}
-                </wa-alert>
+                </wa-callout>
             `;
         }
 
         if (this.success) {
             return html`
-                <wa-alert variant="success" open>
+                <wa-callout variant="success">
                     <wa-icon slot="icon" name="check-lg"></wa-icon>
                     ${this.success}
-                </wa-alert>
+                </wa-callout>
             `;
         }
 

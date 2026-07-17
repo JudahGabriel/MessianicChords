@@ -78,12 +78,12 @@ export class MultipleItemsInput extends LitElement {
                     placeholder="${this.items.length === 0 ? this.placeholder : ""}"
                     aria-label="${this.ariaLabel}"
                     ?data-user-invalid="${this.invalid === "true"}"
-                    @wa-input="${(e: Event) => this.value = (e.target as HTMLInputElement).value}"
-                    @wa-change="${this.inputChanged}"
+                    @input="${(e: Event) => this.value = (e.target as HTMLInputElement).value}"
+                    @change="${this.inputChanged}"
                     @keydown="${this.handleKeyDown}"
                     ${ref(this.inputRef)}>
                 </wa-input>
-                <wa-button variant="default" id="add-item-btn-${this.id}" @click="${this.addButtonClicked}" title="${this.addTooltip}">
+                <wa-button id="add-item-btn-${this.id}" @click="${this.addButtonClicked}" title="${this.addTooltip}">
                     ${this.addLabel}
                 </wa-button>
             </div>
@@ -157,7 +157,7 @@ export class MultipleItemsInput extends LitElement {
         return html`
             <li class="item">
                 ${content}
-                <wa-icon-button name="x-lg" label="Remove" @click="${() => this.removeItem(item)}" title="${this.itemTooltip}"></wa-icon-button>
+                <wa-button appearance="plain" aria-label="Remove" @click="${() => this.removeItem(item)}" title="${this.itemTooltip}"><wa-icon name="x-lg"></wa-icon></wa-button>
             </li>
         `;
     }

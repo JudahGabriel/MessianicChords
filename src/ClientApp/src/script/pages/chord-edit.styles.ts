@@ -120,7 +120,7 @@ export const chordEditStyles = css`
         margin: 0 auto;
     }
 
-    wa-button[variant="primary"] {
+    wa-button[variant="brand"] {
         width: 100%;
     }
 `;

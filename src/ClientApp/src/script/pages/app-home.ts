@@ -111,8 +111,7 @@ export class AppHome extends LitElement {
                     pill
                     size="large"
                     value="${this.searchText.value}"
-                    @input="${this.searchTextChanged}"
-                    @wa-clear="${this.searchTextChanged}">
+                    @input="${this.searchTextChanged}">
                 </wa-input>
             </div>
 
@@ -140,7 +139,7 @@ export class AppHome extends LitElement {
                         <div class="d-flex justify-content-center">
                             New chord charts 
                             <wa-tooltip content="Load more recently uploaded chord charts" placement="top">
-                                <wa-icon-button class="load-more-chords-btn" name="arrow-clockwise" label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}></wa-icon-button>
+                                <wa-button class="load-more-chords-btn" appearance="plain" aria-label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}><wa-icon name="arrow-clockwise"></wa-icon></wa-button>
                             </wa-tooltip>
                         </div>
                         <div class="new-chords d-flex gap-2 justify-content-center align-items-center">

@@ -38,7 +38,7 @@ export class ContactPage extends LitElement {
                             autocomplete="email"
                             required
                             value="${this.email}"
-                            @wa-input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
+                            @input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
                         </wa-input>
 
                         <wa-textarea
@@ -47,10 +47,10 @@ export class ContactPage extends LitElement {
                             resize="auto"
                             required
                             value="${this.message}"
-                            @wa-input="${(e: Event) => this.message = (e.target as HTMLTextAreaElement).value}">
+                            @input="${(e: Event) => this.message = (e.target as HTMLTextAreaElement).value}">
                         </wa-textarea>
 
-                        <wa-button variant="primary" type="submit" pill ?loading="${this.isSubmitting}">
+                        <wa-button variant="brand" type="submit" pill ?loading="${this.isSubmitting}">
                             Submit
                         </wa-button>
                     </form>
@@ -62,19 +62,19 @@ export class ContactPage extends LitElement {
     private renderAlert(): TemplateResult {
         if (this.error) {
             return html`
-                <wa-alert variant="danger" open>
+                <wa-callout variant="danger">
                     <wa-icon slot="icon" name="exclamation-circle-fill"></wa-icon>
                     ${this.error}
-                </wa-alert>
+                </wa-callout>
             `;
         }
 
         if (this.success) {
             return html`
-                <wa-alert variant="success" open>
+                <wa-callout variant="success">
                     <wa-icon slot="icon" name="check-lg"></wa-icon>
                     ${this.success}
-                </wa-alert>
+                </wa-callout>
             `;
         }
 

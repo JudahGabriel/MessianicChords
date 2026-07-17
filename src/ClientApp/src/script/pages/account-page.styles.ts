@@ -44,7 +44,7 @@ export const accountPageStyles = css`
         margin-top: var(--wa-spacing-large);
     }
 
-    wa-alert {
+    wa-callout {
         margin-top: var(--wa-spacing-medium);
     }
 
