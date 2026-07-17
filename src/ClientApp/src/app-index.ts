@@ -1,6 +1,5 @@
 import { LitElement, TemplateResult, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import "@awesome.me/webawesome/dist/styles/webawesome.css";
 import "./register-icons";
 import { sharedStyles } from "./script/common/shared.styles";
 import { indexStyles } from "./app-index.styles";
