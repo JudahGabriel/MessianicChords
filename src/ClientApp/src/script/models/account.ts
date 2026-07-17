@@ -47,6 +47,11 @@ export interface RegisterResults {
     isPwned: boolean;
 }
 
+export interface ConfirmEmailResult {
+    success: boolean;
+    errorMessage?: string;
+}
+
 export interface SupportMessage {
     name?: string;
     email: string;

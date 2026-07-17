@@ -121,6 +121,12 @@ export const appRouter = new Router({
             render: () => html`<account-page></account-page>`
         },
         {
+            path: "/confirmemail",
+            title: "Confirm your email - " + appTitle,
+            plugins: [lazy(() => import("../script/pages/confirm-email-page"))],
+            render: () => html`<confirm-email-page></confirm-email-page>`
+        },
+        {
             path: "/contact",
             title: "Contact",
             plugins: [lazy(() => import("../script/pages/contact-page"))],
