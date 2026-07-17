@@ -57,6 +57,15 @@ export class ApiServiceBase {
             return null as T;
         }
 
+        const contentType = postResult.headers.get("content-type") || "";
+        if (!contentType.toLowerCase().includes("application/json")) {
+            const text = await postResult.text();
+            if (!text || !text.trim()) {
+                return null as T;
+            }
+            return JSON.parse(text) as T;
+        }
+
         const json = await postResult.json();
         return json;
     }
