@@ -12,21 +12,17 @@ export class AppIndex extends LitElement {
 
     @state() route: unknown = html``;
 
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        appRouter.removeEventListener("route-changed", this.onRouteChanged);
-        appRouter.uninstall();
+    connectedCallback() {
+        super.connectedCallback();
+        appRouter.install((rendered: TemplateResult, context: RouteContext) => {
+            this.route = rendered;
+            window.dispatchEvent(new CustomEvent("app-route-changed", { detail: { context } }));
+        });
     }
 
-    private onRouteChanged = (e: Event) => {
-        const context = (e as CustomEvent).detail?.context as RouteContext | undefined;
-        this.route = appRouter.render() ?? html``;
-        window.dispatchEvent(new CustomEvent("app-route-changed", { detail: { context } }));
-    };
-
-    firstUpdated() {
-        appRouter.addEventListener("route-changed", this.onRouteChanged);
-        this.route = appRouter.render();
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        appRouter.uninstall();
     }
 
     render(): TemplateResult {
