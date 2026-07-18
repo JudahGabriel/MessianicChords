@@ -183,7 +183,7 @@ export class ChordEdit extends LitElement {
                         </label>
                         <input class="hidden-file-input" type="file" id="attachments-input" multiple @input="${this.addAttachments}" />
                         <div class="attachment-picker-row">
-                            <wa-button type="button" @click="${this.chooseAttachmentFiles}">
+                            <wa-button type="button" appearance="outlined" @click="${this.chooseAttachmentFiles}">
                                 Choose files
                             </wa-button>
                         </div>

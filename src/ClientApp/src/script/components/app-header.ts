@@ -75,7 +75,7 @@ export class AppHeader extends LitElement {
 
                         <div class="nav-left-right-group">
                             <div class="offline-mobile">
-                                ${this.renderOfflineStatusIndicator()}
+                                ${this.renderOfflineStatusIndicator("mobile")}
                             </div>
 
                             <wa-button
@@ -108,7 +108,7 @@ export class AppHeader extends LitElement {
                                         class="search-input"
                                         type="search"
                                         placeholder="Search chord charts"
-                                        size="small"
+                                        size="s"
                                         with-clear
                                         pill
                                         @change="${this.handleSearch}"
@@ -141,7 +141,7 @@ export class AppHeader extends LitElement {
                             name="site-search"
                             type="search"
                             placeholder="Search chord charts"
-                            size="small"
+                            size="s"
                             with-clear
                             pill
                             @change="${this.handleSearch}">
@@ -151,7 +151,7 @@ export class AppHeader extends LitElement {
 
                     <div class="nav-right ${this.menuOpen ? "open" : ""}">
                         <div class="offline-desktop">
-                            ${this.renderOfflineStatusIndicator()}
+                            ${this.renderOfflineStatusIndicator("desktop")}
                         </div>
                         ${this.renderAccountMenu()}
                     </div>
@@ -160,20 +160,21 @@ export class AppHeader extends LitElement {
         `;
     }
 
-    private renderOfflineStatusIndicator(): TemplateResult {
+    private renderOfflineStatusIndicator(variant: string): TemplateResult {
         if (this.isOnline) {
             return html``;
         }
 
+        const buttonId = `offline-status-btn-${variant}`;
         return html`
-            <wa-tooltip content="You're offline. Any chord charts you viewed while online are available offline." trigger="hover click" placement="bottom-end">
             <wa-button
+                id="${buttonId}"
                 appearance="plain"
                 class="offline-status-button"
                 aria-label="Offline status">
                 <wa-icon name="wifi-off"></wa-icon>
             </wa-button>
-            </wa-tooltip>
+            <wa-tooltip for="${buttonId}" trigger="hover click" placement="bottom-end">You're offline. Any chord charts you viewed while online are available offline.</wa-tooltip>
         `;
     }
 

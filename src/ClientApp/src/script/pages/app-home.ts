@@ -110,7 +110,7 @@ export class AppHome extends LitElement {
                     autofocus
                     autocomplete="off"
                     pill
-                    size="large"
+                    size="l"
                     value="${this.searchText.value}"
                     @input="${this.searchTextChanged}">
                 </wa-input>
@@ -122,15 +122,15 @@ export class AppHome extends LitElement {
                     <span>Browse</span>
                     <div class="browse-by-container d-flex gap-2 justify-content-center align-items-center">
                         <a class="fw-bold" href="/browse/newest" target="${target}">New</a>
-                        <wa-divider vertical></wa-divider>
+                        <wa-divider orientation="vertical"></wa-divider>
                         <a class="fw-bold" href="/browse/songs" target="${target}">Songs</a>
-                        <wa-divider vertical></wa-divider>
+                        <wa-divider orientation="vertical"></wa-divider>
                         <a class="fw-bold" href="/browse/artists" target="${target}">Artists</a>
-                        <wa-divider vertical></wa-divider>
+                        <wa-divider orientation="vertical"></wa-divider>
                         <a class="fw-bold" href="/browse/tags" target="${target}">Tags</a>
-                        <wa-divider vertical></wa-divider>
+                        <wa-divider orientation="vertical"></wa-divider>
                         <a class="fw-bold" href="/browse/random" target="${target}">Random</a>
-                        <wa-divider vertical></wa-divider>
+                        <wa-divider orientation="vertical"></wa-divider>
                         <a class="fw-bold" href="/browse/offline" target="${target}">Offline</a>
                     </div>
                 </div>
@@ -139,9 +139,8 @@ export class AppHome extends LitElement {
                     <div class="d-flex flex-column gap-3">
                         <div class="d-flex justify-content-center">
                             New chord charts 
-                            <wa-tooltip content="Load more recently uploaded chord charts" placement="top">
-                                <wa-button class="load-more-chords-btn" appearance="plain" aria-label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}><wa-icon name="arrow-clockwise"></wa-icon></wa-button>
-                            </wa-tooltip>
+                            <wa-button id="load-more-new-chords-btn" class="load-more-chords-btn" appearance="plain" aria-label="Scroll right" @click="${this.fetchNextNewChords}" .disabled=${this.newChords.length === 0}><wa-icon name="arrow-clockwise"></wa-icon></wa-button>
+                            <wa-tooltip for="load-more-new-chords-btn" placement="top">Load more recently uploaded chord charts</wa-tooltip>
                         </div>
                         <div class="new-chords d-flex gap-2 justify-content-center align-items-center">
                             ${this.renderNewChords()}

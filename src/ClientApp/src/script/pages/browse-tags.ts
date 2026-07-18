@@ -149,7 +149,7 @@ export class BrowseTags extends LitElement {
                     <wa-select
                         name="tag-jump"
                         class="tag-jump-select"
-                        size="small"
+                        size="s"
                         placeholder="Jump to tag"
                         value="${this.selectedTag}"
                         @change="${this.onTagSelectChanged}">

@@ -26,7 +26,7 @@ export class LoadMoreButton extends LitElement {
         }
 
         return html`
-            <wa-button type="button" @click="${this.getNextChunk}">
+            <wa-button type="button" appearance="outlined" @click="${this.getNextChunk}">
                 Load more...
             </wa-button>
         `;
@@ -34,7 +34,7 @@ export class LoadMoreButton extends LitElement {
 
     renderLoading(): TemplateResult {
         return html`
-            <wa-button type="button" disabled>
+            <wa-button type="button" appearance="outlined" disabled>
                 <span class="spinner-border" role="status">
                     <span class="visually-hidden"></span>
                 </span>

@@ -43,27 +43,27 @@ export class BrowseOffline extends LitElement {
                 <div class="header-row">
                     <h2 class="highlight">Offline Chord Charts</h2>
                     <div class="actions">
-                        <wa-tooltip content="Downloads all chord charts to this device so they can be viewed while offline">
-                            <wa-button
-                                ?loading="${this.isCachingAll}"
-                                ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
-                                @click="${this.makeAllChordsOffline}">
-                                <wa-icon slot="start" name="download"></wa-icon>
-                                Make all chords available offline
-                            </wa-button>
-                        </wa-tooltip>
-                        <wa-tooltip content="Removes all chord charts from your local device">
-                            <wa-button
-                                variant="danger"
-                                ?loading="${this.isDeletingAll}"
-                                ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
-                                @click="${this.deleteAllOfflineChords}">
-                                <wa-icon slot="start" name="trash"></wa-icon>
-                                Delete offline chords
-                            </wa-button>
-                        </wa-tooltip>
+                        <wa-button
+                            id="offline-download-all-btn"
+                            ?loading="${this.isCachingAll}"
+                            ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
+                            @click="${this.makeAllChordsOffline}">
+                            <wa-icon slot="start" name="download"></wa-icon>
+                            Make all chords available offline
+                        </wa-button>
+                        <wa-button
+                            id="offline-delete-all-btn"
+                            variant="danger"
+                            ?loading="${this.isDeletingAll}"
+                            ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
+                            @click="${this.deleteAllOfflineChords}">
+                            <wa-icon slot="start" name="trash"></wa-icon>
+                            Delete offline chords
+                        </wa-button>
                     </div>
                 </div>
+                <wa-tooltip for="offline-download-all-btn">Downloads all chord charts to this device so they can be viewed while offline</wa-tooltip>
+                <wa-tooltip for="offline-delete-all-btn">Removes all chord charts from your local device</wa-tooltip>
                 <p>Chord charts you load while online are automatically available offline.</p>
 
                 ${this.status ? html`<div class="status">${this.status}</div>` : html``}

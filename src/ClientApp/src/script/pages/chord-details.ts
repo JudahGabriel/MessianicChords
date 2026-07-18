@@ -320,7 +320,7 @@ export class ChordDetails extends LitElement {
     renderSongToolbar(chord: ChordSheet): TemplateResult {
         const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
-        const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
+        const btnSize = matchMedia("(max-width: 575px)").matches ? "s" : "m";
         const hasChords = !!chord.chords;
         const starTitle = this.isCurrentChordStarred() ? "You already have starred this chord chart. Tap to unstar." : "Star this chord chart";
         const hasAudio = this.hasAudioPlayer(chord);
@@ -333,85 +333,67 @@ export class ChordDetails extends LitElement {
                 <div class="col-12">
                     <div class="btn-toolbar">
                         <wa-button-group>
-
-                            <wa-tooltip content="${playPauseTooltip}" hoist>
-                                <wa-button size="${btnSize}" @click="${this.toggleMediaPlayback}" ?disabled="${!hasAudio}">
-                                    <wa-icon name="${playPauseIcon}"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
-
-                            <wa-tooltip content="${starTitle}" hoist>
-                                <wa-button size="${btnSize}" @click="${this.chordChartStarClicked}" ?disabled="${this.starBusy}">
-                                    <wa-animation name="spin" duration="1000" iterations="Infinity" ?play="${this.starBusy}">
-                                        <wa-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}"></wa-icon>
-                                    </wa-animation>
-                                </wa-button>
-                            </wa-tooltip>
-
-                            <wa-tooltip content="Download this chord chart" hoist>
-                                <wa-button size="${btnSize}" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
-                                    <wa-icon name="download"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
-
-                            <wa-tooltip content="View fullscreen" hoist>
-                                <wa-button size="${btnSize}" @click="${this.goFullscreen}">
-                                    <wa-icon name="fullscreen"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
-
+                            <wa-button id="chord-play-btn" appearance="outlined" size="${btnSize}" @click="${this.toggleMediaPlayback}" ?disabled="${!hasAudio}">
+                                <wa-icon name="${playPauseIcon}"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-star-btn" appearance="outlined" size="${btnSize}" @click="${this.chordChartStarClicked}" ?disabled="${this.starBusy}">
+                                <wa-animation name="spin" duration="1000" iterations="Infinity" ?play="${this.starBusy}">
+                                    <wa-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}"></wa-icon>
+                                </wa-animation>
+                            </wa-button>
+                            <wa-button id="chord-download-btn" appearance="outlined" size="${btnSize}" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
+                                <wa-icon name="download"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-fullscreen-btn" appearance="outlined" size="${btnSize}" @click="${this.goFullscreen}">
+                                <wa-icon name="fullscreen"></wa-icon>
+                            </wa-button>
                         </wa-button-group>
+                        <wa-tooltip for="chord-play-btn">${playPauseTooltip}</wa-tooltip>
+                        <wa-tooltip for="chord-star-btn">${starTitle}</wa-tooltip>
+                        <wa-tooltip for="chord-download-btn">Download this chord chart</wa-tooltip>
+                        <wa-tooltip for="chord-fullscreen-btn">View fullscreen</wa-tooltip>
 
                         <wa-button-group>
-                            <wa-tooltip content="Print this chord chart" hoist>
-                                <wa-button size="${btnSize}" @click="${this.print}">
-                                    <wa-icon name="printer"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
-
-                            <wa-tooltip content="Edit this chord chart" hoist>
-                                <wa-button size="${btnSize}" href="/${chord.id.toLowerCase()}/edit" target="_blank">
-                                    <wa-icon name="pencil"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
+                            <wa-button id="chord-print-btn" appearance="outlined" size="${btnSize}" @click="${this.print}">
+                                <wa-icon name="printer"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-edit-btn" appearance="outlined" size="${btnSize}" href="/${chord.id.toLowerCase()}/edit" target="_blank">
+                                <wa-icon name="pencil"></wa-icon>
+                            </wa-button>
                         </wa-button-group>
+                        <wa-tooltip for="chord-print-btn">Print this chord chart</wa-tooltip>
+                        <wa-tooltip for="chord-edit-btn">Edit this chord chart</wa-tooltip>
                         
                         <wa-button-group label="Transpose">
-                            <wa-tooltip content="${transposeUpTooltip}" hoist>
-                                <wa-button size="${btnSize}" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
-                                    <wa-icon name="caret-up-fill"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
-                            <wa-tooltip content="Chord transposition" hoist>
-                                <wa-button class="transpose-value" disabled size="${btnSize}" @click="${() => this.bumpTranspose(-1)}">
-                                    ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
-                                </wa-button>
-                            </wa-tooltip>
-                            <wa-tooltip content="${transposeDownTooltip}" hoist>
-                                <wa-button size="${btnSize}" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
-                                    <wa-icon name="caret-down-fill"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
+                            <wa-button id="chord-transpose-up" appearance="outlined" size="${btnSize}" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
+                                <wa-icon name="caret-up-fill"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-transpose-value" appearance="outlined" class="transpose-value" disabled size="${btnSize}" @click="${() => this.bumpTranspose(-1)}">
+                                ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
+                            </wa-button>
+                            <wa-button id="chord-transpose-down" appearance="outlined" size="${btnSize}" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
+                                <wa-icon name="caret-down-fill"></wa-icon>
+                            </wa-button>
                         </wa-button-group>
+                        <wa-tooltip for="chord-transpose-up">${transposeUpTooltip}</wa-tooltip>
+                        <wa-tooltip for="chord-transpose-value">Chord transposition</wa-tooltip>
+                        <wa-tooltip for="chord-transpose-down">${transposeDownTooltip}</wa-tooltip>
                         
                         ${hasChords ? html`
                         <wa-button-group label="Font Size">
-                            <wa-tooltip content="Increase font size" hoist>
-                                <wa-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
-                                    <strong>A</strong> <wa-icon name="caret-up-fill"></wa-icon>
-                                </wa-button>
-                            </wa-tooltip>
-                            <wa-tooltip content="Current font size" hoist>
-                                <wa-button class="current-font-size" disabled size="${btnSize}">
-                                    ${this.fontSize}px
-                                </wa-button>
-                            </wa-tooltip>
-                            <wa-tooltip content="Decrease font size" hoist>
-                                <wa-button size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
-                                    <small font-size="0.85em">A <wa-icon name="caret-down-fill"></wa-icon></small>
-                                </wa-button>
-                            </wa-tooltip>
+                            <wa-button id="chord-fontsize-up" appearance="outlined" size="${btnSize}" @click="${() => this.changeFontSize(2)}">
+                                <strong>A</strong> <wa-icon name="caret-up-fill"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-fontsize-current" appearance="outlined" class="current-font-size" disabled size="${btnSize}">
+                                ${this.fontSize}px
+                            </wa-button>
+                            <wa-button id="chord-fontsize-down" appearance="outlined" size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
+                                <small font-size="0.85em">A <wa-icon name="caret-down-fill"></wa-icon></small>
+                            </wa-button>
                         </wa-button-group>
+                        <wa-tooltip for="chord-fontsize-up">Increase font size</wa-tooltip>
+                        <wa-tooltip for="chord-fontsize-current">Current font size</wa-tooltip>
+                        <wa-tooltip for="chord-fontsize-down">Decrease font size</wa-tooltip>
                         ` : nothing}
 
                     </div>
@@ -557,10 +539,10 @@ export class ChordDetails extends LitElement {
                         .value="${this.editCommentContent}"
                         @input="${(e: Event) => this.editCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
                     <div class="comment-actions">
-                        <wa-button size="small" ?disabled="${this.commentBusy || this.editCommentContent.trim().length === 0}" @click="${() => this.saveCommentEdit(chord)}">
+                        <wa-button size="s" appearance="outlined" ?disabled="${this.commentBusy || this.editCommentContent.trim().length === 0}" @click="${() => this.saveCommentEdit(chord)}">
                             Save
                         </wa-button>
-                        <wa-button size="small" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
+                        <wa-button size="s" appearance="outlined" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
                             Cancel
                         </wa-button>
                     </div>
@@ -574,7 +556,7 @@ export class ChordDetails extends LitElement {
                         </div>
                         <span class="comment-date">${createdText}</span>
                         ${canEdit ? html`
-                            <wa-button class="comment-edit-button" size="small" appearance="plain" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
+                            <wa-button class="comment-edit-button" size="s" appearance="plain" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
                                 <wa-icon name="pencil"></wa-icon>
                             </wa-button>
                         ` : html``}
@@ -595,7 +577,7 @@ export class ChordDetails extends LitElement {
                     .value="${this.newCommentContent}"
                     @input="${(e: Event) => this.newCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
                 <div class="comment-actions">
-                    <wa-button type="submit" size="small" ?disabled="${this.commentBusy || this.newCommentContent.trim().length === 0}">
+                    <wa-button type="submit" size="s" appearance="outlined" ?disabled="${this.commentBusy || this.newCommentContent.trim().length === 0}">
                         Post comment
                     </wa-button>
                 </div>

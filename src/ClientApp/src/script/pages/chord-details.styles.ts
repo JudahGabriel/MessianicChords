@@ -324,7 +324,7 @@ export const chordDetailStyles = css`
         margin-bottom: 16px;
 
         .album-art-card {
-            --padding: 0;
+            --spacing: 0;
             overflow: hidden;
         }
 
@@ -337,8 +337,8 @@ export const chordDetailStyles = css`
         }
 
         wa-card {
-            --padding: 10px;
-            --border-width: 0;
+            --spacing: 10px;
+            --wa-panel-border-width: 0;
             font-family: var(--subtitle-font);
 
             strong {

@@ -123,6 +123,12 @@ export const appHeaderStyles = css`
         color: white;
     }
 
+    .menu-toggle wa-icon,
+    .search-toggle-button wa-icon,
+    .search-close-button wa-icon {
+        color: white;
+    }
+
     .search-toggle-button::part(base),
     .search-close-button::part(base) {
         border-radius: 999px;

@@ -74,7 +74,7 @@ export class BrowseRandom extends LitElement {
             <div class="container">
                 <div class="random-header">
                     <h3 class="highlight">Random</h3>
-                    <wa-button ?disabled="${this.isLoading}" class="btn btn-light" @click="${this.resetAndFetchChords}">
+                    <wa-button ?disabled="${this.isLoading}" appearance="outlined" class="btn btn-light" @click="${this.resetAndFetchChords}">
                         <div slot="start">
                             <wa-icon class="dice-block-1" name="dice-1"></wa-icon>
                             <wa-icon class="dice-block-2" name="dice-6"></wa-icon>

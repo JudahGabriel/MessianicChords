@@ -84,7 +84,7 @@ export class MultipleItemsInput extends LitElement {
                     @keydown="${this.handleKeyDown}"
                     ${ref(this.inputRef)}>
                 </wa-input>
-                <wa-button id="add-item-btn-${this.id}" @click="${this.addButtonClicked}" title="${this.addTooltip}">
+                <wa-button id="add-item-btn-${this.id}" appearance="outlined" @click="${this.addButtonClicked}" title="${this.addTooltip}">
                     ${this.addLabel}
                 </wa-button>
             </div>

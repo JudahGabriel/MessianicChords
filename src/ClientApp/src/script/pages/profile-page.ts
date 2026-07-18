@@ -93,7 +93,7 @@ export class ProfilePage extends LitElement {
             <p>You are not signed in.</p>
             <div class="actions">
                 <wa-button variant="brand" href="/account">Sign In</wa-button>
-                <wa-button href="/account?mode=register">Register</wa-button>
+                <wa-button appearance="outlined" href="/account?mode=register">Register</wa-button>
             </div>
         `;
     }
