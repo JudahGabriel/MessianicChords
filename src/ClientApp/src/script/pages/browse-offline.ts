@@ -45,6 +45,7 @@ export class BrowseOffline extends LitElement {
                     <div class="actions">
                         <wa-button
                             id="offline-download-all-btn"
+                            appearance="outlined"
                             ?loading="${this.isCachingAll}"
                             ?disabled="${this.isLoading || this.isCachingAll || this.isDeletingAll}"
                             @click="${this.makeAllChordsOffline}">
