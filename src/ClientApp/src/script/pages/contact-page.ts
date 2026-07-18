@@ -33,6 +33,7 @@ export class ContactPage extends LitElement {
 
                     <form @submit="${this.submit}">
                         <wa-input
+                            name="email"
                             label="Email"
                             type="email"
                             autocomplete="email"
@@ -42,6 +43,7 @@ export class ContactPage extends LitElement {
                         </wa-input>
 
                         <wa-textarea
+                            name="message"
                             label="Message"
                             rows="7"
                             resize="auto"

@@ -104,6 +104,7 @@ export class AppHome extends LitElement {
                 <div class="search-container">
                 <wa-input
                     id="search-box"
+                    name="site-search"
                     type="search"
                     placeholder="Type a song, artist, or lyrics"
                     autofocus

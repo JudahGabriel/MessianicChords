@@ -104,6 +104,7 @@ export class AppHeader extends LitElement {
                             ${this.searchOpen ? html`
                                 <div class="search-controls">
                                     <wa-input
+                                        name="site-search"
                                         class="search-input"
                                         type="search"
                                         placeholder="Search chord charts"
@@ -137,6 +138,7 @@ export class AppHeader extends LitElement {
 
                     <div class="nav-search nav-search-mobile ${this.menuOpen ? "open" : ""}">
                         <wa-input
+                            name="site-search"
                             type="search"
                             placeholder="Search chord charts"
                             size="small"

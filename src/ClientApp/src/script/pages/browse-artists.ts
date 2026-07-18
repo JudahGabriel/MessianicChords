@@ -156,6 +156,7 @@ export class BrowseArtists extends LitElement {
                 <div class="artist-header-row mb-3">
                     <h2 class="highlight mb-0">Songs By Artist</h2>
                     <wa-select
+                        name="artist-jump"
                         class="artist-jump-select"
                         placeholder="Jump to artist"
                         value="${this.selectedArtist}"

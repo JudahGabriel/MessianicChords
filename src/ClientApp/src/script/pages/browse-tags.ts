@@ -147,6 +147,7 @@ export class BrowseTags extends LitElement {
                 <div class="title-row mb-3">
                     <h2 class="highlight mb-0">Songs By Tag</h2>
                     <wa-select
+                        name="tag-jump"
                         class="tag-jump-select"
                         size="small"
                         placeholder="Jump to tag"

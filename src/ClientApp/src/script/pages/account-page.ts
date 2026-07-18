@@ -77,6 +77,7 @@ export class AccountPage extends LitElement {
                     ${this.renderAlert()}
                     <form @submit="${this.submitSignIn}">
                         <wa-input
+                            name="email"
                             label="Email"
                             type="email"
                             autocomplete="email"
@@ -85,6 +86,7 @@ export class AccountPage extends LitElement {
                             @input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-input
+                            name="password"
                             label="Password"
                             type="password"
                             autocomplete="current-password"
@@ -95,6 +97,7 @@ export class AccountPage extends LitElement {
                             @input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-checkbox
+                            name="stay-signed-in"
                             ?checked="${this.staySignedIn}"
                             @change="${(e: Event) => this.staySignedIn = (e.target as HTMLInputElement).checked}">
                             Stay signed in
@@ -113,6 +116,7 @@ export class AccountPage extends LitElement {
                     ${this.renderAlert()}
                     <form @submit="${this.submitRegister}">
                         <wa-input
+                            name="email"
                             label="Email"
                             type="email"
                             autocomplete="email"
@@ -121,6 +125,7 @@ export class AccountPage extends LitElement {
                             @input="${(e: Event) => this.email = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-input
+                            name="password"
                             label="Password"
                             type="password"
                             autocomplete="new-password"
@@ -132,6 +137,7 @@ export class AccountPage extends LitElement {
                             @input="${(e: Event) => this.password = (e.target as HTMLInputElement).value}">
                         </wa-input>
                         <wa-input
+                            name="confirm-password"
                             label="Confirm password"
                             type="password"
                             autocomplete="new-password"

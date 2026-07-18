@@ -551,6 +551,7 @@ export class ChordDetails extends LitElement {
             <li class="comment-item">
                 ${isEditing ? html`
                     <wa-textarea
+                        name="comment-edit"
                         class="comment-edit-box"
                         rows="3"
                         .value="${this.editCommentContent}"
@@ -587,6 +588,7 @@ export class ChordDetails extends LitElement {
         return html`
             <form class="comment-form" @submit="${(e: Event) => this.submitComment(e, chord)}">
                 <wa-textarea
+                    name="comment"
                     class="comment-input"
                     placeholder="Add a comment"
                     rows="3"

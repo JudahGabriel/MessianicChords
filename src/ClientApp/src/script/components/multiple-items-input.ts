@@ -74,6 +74,7 @@ export class MultipleItemsInput extends LitElement {
             <div class="input-row">
                 <wa-input
                     id="${this.inputId}"
+                    name="${this.inputId}"
                     value="${this.value}"
                     placeholder="${this.items.length === 0 ? this.placeholder : ""}"
                     aria-label="${this.ariaLabel}"

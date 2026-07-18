@@ -99,6 +99,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="song-name-input"
+                            name="song"
                             label="Song name"
                             placeholder="Shema Yisrael"
                             hint="Required. The name of the song."
@@ -111,6 +112,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="hebrew-song-name-input"
+                            name="hebrewSongName"
                             label="Hebrew song name"
                             lang="he"
                             placeholder="שמע ישראל"
@@ -126,6 +128,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="artist-input"
+                            name="artist"
                             label="Artist"
                             placeholder="Lamb"
                             hint="Optional. The artist who performed this arrangement of the song."
@@ -156,6 +159,7 @@ export class ChordEdit extends LitElement {
                 <div class="form-group">
                     <wa-textarea
                         id="chord-chart-input"
+                        name="chords"
                         label="Chord chart"
                         class="chord-chart-text"
                         placeholder="${"   Em             D\nSh'ma Yisrael, sh'ma Yisrael"}"
@@ -231,6 +235,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="key-input"
+                            name="key"
                             label="Key"
                             placeholder="Em"
                             hint="Optional. The musical key in which this song is played."
@@ -241,6 +246,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="capo-input"
+                            name="capo"
                             label="Capo"
                             type="number"
                             placeholder="0"
@@ -254,6 +260,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="scripture-input"
+                            name="scripture"
                             label="Scripture"
                             placeholder="Deuteronomy 6:4"
                             hint="Optional. The segment of Scripture relevant to this song."
@@ -268,6 +275,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="copyright-input"
+                            name="copyright"
                             label="Copyright"
                             placeholder="Messianic Publishing Company"
                             hint="Optional. The copyright of the song."
@@ -278,6 +286,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="ccli-input"
+                            name="ccliNumber"
                             label="CCLI"
                             type="number"
                             placeholder="7112570"
@@ -289,6 +298,7 @@ export class ChordEdit extends LitElement {
                     <div class="form-group">
                         <wa-input
                             id="year-input"
+                            name="year"
                             label="Year"
                             type="number"
                             placeholder="1978"
@@ -302,6 +312,7 @@ export class ChordEdit extends LitElement {
                 <div class="form-group">
                     <wa-checkbox
                         id="sheet-music-input"
+                        name="isSheetMusic"
                         @change="${(e: Event) => chord.isSheetMusic = (e.target as HTMLInputElement).checked}">
                         Contains sheet music
                     </wa-checkbox>
@@ -311,6 +322,7 @@ export class ChordEdit extends LitElement {
                 <div class="form-group">
                     <wa-textarea
                         id="about-input"
+                        name="about"
                         label="About"
                         rows="3"
                         placeholder="This song is based on..."

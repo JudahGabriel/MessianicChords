@@ -51,18 +51,21 @@ export class ProfilePage extends LitElement {
                 </div>
 
                 <wa-input
+                    name="firstName"
                     label="First name"
                     value="${this.firstName}"
                     @input="${(e: Event) => this.firstName = (e.target as HTMLInputElement).value}">
                 </wa-input>
 
                 <wa-input
+                    name="lastName"
                     label="Last name"
                     value="${this.lastName}"
                     @input="${(e: Event) => this.lastName = (e.target as HTMLInputElement).value}">
                 </wa-input>
 
                 <wa-input
+                    name="registration-date"
                     label="Registration date"
                     readonly
                     value="${this.formatDate(this.user?.registrationDate)}">
