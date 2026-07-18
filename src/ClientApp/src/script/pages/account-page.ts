@@ -58,7 +58,7 @@ export class AccountPage extends LitElement {
             <div class="signed-in">
                 <p class="intro">You're signed in as <strong>${this.user?.email || this.user?.userName}</strong>.</p>
                 <wa-button variant="brand" pill href="/">Return home</wa-button>
-                <wa-button pill ?loading="${this.isSubmitting}" @click="${this.signOut}">
+                <wa-button appearance="outlined" pill ?loading="${this.isSubmitting}" @click="${this.signOut}">
                     Sign out
                 </wa-button>
             </div>
@@ -195,7 +195,10 @@ export class AccountPage extends LitElement {
             this.error = null;
             this.success = null;
         }
-        (this.shadowRoot?.querySelector("wa-tab-group") as (Element & { show(panel: string): void }) | null)?.show(mode);
+        const tabGroup = this.shadowRoot?.querySelector("wa-tab-group") as (Element & { active: string }) | null;
+        if (tabGroup) {
+            tabGroup.active = mode;
+        }
     }
 
     private async submitSignIn(e: Event): Promise<void> {
