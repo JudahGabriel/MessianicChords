@@ -146,7 +146,7 @@ export const chordDetailStyles = css`
         }
 
         .star-icon[name='star-fill'] {
-            color: var(--wa-color-amber-500);
+            color: var(--highlight-orange);
         }
     }
 
@@ -333,7 +333,7 @@ export const chordDetailStyles = css`
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: container;
-            background: var(--wa-color-neutral-100);
+            background: var(--wa-color-neutral-90);
         }
 
         wa-card {
@@ -375,7 +375,7 @@ export const chordDetailStyles = css`
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: var(--wa-color-neutral-100);
+            background: var(--wa-color-neutral-90);
             padding: 4px 10px 4px 14px;
             font-family: var(--title-font);
             font-size: 0.85em;
@@ -390,7 +390,7 @@ export const chordDetailStyles = css`
             content: "";
             position: absolute;
             inset: -1px;
-            background: var(--wa-color-neutral-300);
+            background: var(--wa-color-neutral-70);
             clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
             z-index: -1;
         }
@@ -400,8 +400,8 @@ export const chordDetailStyles = css`
             width: 4px;
             height: 4px;
             border-radius: 50%;
-            background: var(--wa-color-neutral-0);
-            border: 1px solid var(--wa-color-neutral-300);
+            background: var(--wa-color-surface-default);
+            border: 1px solid var(--wa-color-neutral-70);
             position: absolute;
             left: 5px;
             top: 50%;
@@ -414,7 +414,7 @@ export const chordDetailStyles = css`
         }
 
         .tag-chip:hover {
-            background: var(--wa-color-neutral-200);
+            background: var(--wa-color-neutral-80);
         }
 
         .tag-chip:focus-visible {
@@ -428,7 +428,7 @@ export const chordDetailStyles = css`
         }
 
         .comments-scroll {
-            border: 1px solid var(--wa-color-neutral-200);
+            border: 1px solid var(--wa-color-neutral-80);
             border-radius: 4px;
             padding: 8px;
             background-color: #fff;
@@ -450,7 +450,7 @@ export const chordDetailStyles = css`
         }
 
         .comment-item {
-            border-bottom: 1px solid var(--wa-color-neutral-100);
+            border-bottom: 1px solid var(--wa-color-neutral-90);
             padding-bottom: 8px;
             min-width: 0;
         }
@@ -476,7 +476,7 @@ export const chordDetailStyles = css`
             padding-left: 12px;
             font-family: var(--subtitle-font);
             font-size: 0.85em;
-            color: var(--wa-color-neutral-600);
+            color: var(--wa-color-neutral-40);
             min-width: 0;
         }
 
@@ -507,12 +507,12 @@ export const chordDetailStyles = css`
 
         .comment-avatar-icon {
             font-size: 18px;
-            color: var(--wa-color-neutral-500);
+            color: var(--wa-color-neutral-50);
             flex-shrink: 0;
         }
 
         .comment-date {
-            color: var(--wa-color-neutral-500);
+            color: var(--wa-color-neutral-50);
             white-space: nowrap;
             margin-left: auto;
         }
@@ -556,11 +556,11 @@ export const chordDetailStyles = css`
         }
 
         .comments-muted {
-            color: var(--wa-color-neutral-600);
+            color: var(--wa-color-neutral-40);
         }
 
         .comments-error {
-            color: var(--wa-color-danger-600);
+            color: var(--wa-color-danger-40);
         }
 
         audio {

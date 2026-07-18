@@ -7,13 +7,13 @@ export const chordEditStyles = css`
 
     .page-heading-row {
         max-width: 900px;
-        margin: 0 auto var(--wa-spacing-large);
+        margin: 0 auto var(--wa-space-l);
     }
 
     .page-heading {
         display: inline-flex;
         align-items: center;
-        gap: var(--wa-spacing-x-small);
+        gap: var(--wa-space-xs);
         margin: 0;
     }
 
@@ -28,7 +28,7 @@ export const chordEditStyles = css`
 
     .form-row {
         display: grid;
-        gap: var(--wa-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
     .form-row-2 {
@@ -46,22 +46,22 @@ export const chordEditStyles = css`
     }
 
     .form-group {
-        margin-bottom: var(--wa-spacing-medium);
+        margin-bottom: var(--wa-space-m);
     }
 
     .form-group > label {
         display: block;
-        margin-bottom: var(--wa-spacing-x-small);
+        margin-bottom: var(--wa-space-xs);
     }
 
     .help-text {
-        font-size: var(--wa-font-size-small);
-        color: var(--wa-color-neutral-500);
-        margin-top: var(--wa-spacing-x-small);
+        font-size: var(--wa-font-size-s);
+        color: var(--wa-color-neutral-50);
+        margin-top: var(--wa-space-xs);
     }
 
     .attachment-picker-row {
-        margin-top: var(--wa-spacing-2x-small);
+        margin-top: var(--wa-space-2xs);
     }
 
     #chord-chart-input::part(textarea) {
@@ -81,22 +81,22 @@ export const chordEditStyles = css`
     .attachment-list {
         list-style: none;
         padding: 0;
-        margin-top: var(--wa-spacing-small);
+        margin-top: var(--wa-space-s);
     }
 
     .attachment-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: var(--wa-spacing-small) var(--wa-spacing-medium);
-        border: 1px solid var(--wa-color-neutral-200);
-        border-radius: var(--wa-border-radius-medium);
-        margin-bottom: var(--wa-spacing-x-small);
+        padding: var(--wa-space-s) var(--wa-space-m);
+        border: 1px solid var(--wa-color-neutral-80);
+        border-radius: var(--wa-border-radius-m);
+        margin-bottom: var(--wa-space-xs);
     }
 
     .attachment-item-error {
-        border-color: var(--wa-color-danger-500);
-        background: var(--wa-color-danger-50);
+        border-color: var(--wa-color-danger-50);
+        background: var(--wa-color-danger-95);
     }
 
     .text-break {
@@ -104,8 +104,8 @@ export const chordEditStyles = css`
     }
 
     .size-label {
-        color: var(--wa-color-neutral-500);
-        font-size: var(--wa-font-size-small);
+        color: var(--wa-color-neutral-50);
+        font-size: var(--wa-font-size-s);
     }
 
     .hidden-file-input {
@@ -115,7 +115,7 @@ export const chordEditStyles = css`
     .loading-skeleton {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: var(--wa-spacing-medium);
+        gap: var(--wa-space-m);
         max-width: 600px;
         margin: 0 auto;
     }

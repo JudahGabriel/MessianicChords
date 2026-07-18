@@ -9,19 +9,19 @@ export const accountPageStyles = css`
     .account-page {
         max-width: 520px;
         margin: 0 auto;
-        padding: var(--wa-spacing-2x-large) var(--wa-spacing-medium);
+        padding: var(--wa-space-2xl) var(--wa-space-m);
     }
 
     .card {
         background: white;
-        border: 1px solid var(--wa-color-neutral-200);
-        border-radius: var(--wa-border-radius-large);
-        box-shadow: var(--wa-shadow-medium);
-        padding: var(--wa-spacing-large);
+        border: 1px solid var(--wa-color-neutral-80);
+        border-radius: var(--wa-border-radius-l);
+        box-shadow: var(--wa-shadow-m);
+        padding: var(--wa-space-l);
     }
 
     h1 {
-        margin: 0 0 var(--wa-spacing-small);
+        margin: 0 0 var(--wa-space-s);
         color: var(--theme-color);
         font-family: var(--title-font, 'Homemade Apple', cursive);
         font-size: 2rem;
@@ -29,23 +29,23 @@ export const accountPageStyles = css`
     }
 
     .intro {
-        margin: 0 0 var(--wa-spacing-large);
-        color: var(--wa-color-neutral-600);
+        margin: 0 0 var(--wa-space-l);
+        color: var(--wa-color-neutral-40);
         text-align: center;
     }
 
     wa-tab-panel {
-        padding: var(--wa-spacing-small);
+        padding: var(--wa-space-s);
     }
 
     form {
         display: grid;
-        gap: var(--wa-spacing-medium);
-        margin-top: var(--wa-spacing-large);
+        gap: var(--wa-space-m);
+        margin-top: var(--wa-space-l);
     }
 
     wa-callout {
-        margin-top: var(--wa-spacing-medium);
+        margin-top: var(--wa-space-m);
     }
 
     wa-button[type="submit"] {
@@ -53,15 +53,15 @@ export const accountPageStyles = css`
     }
 
     .toggle-copy {
-        margin: var(--wa-spacing-medium) 0 0;
-        color: var(--wa-color-neutral-600);
+        margin: var(--wa-space-m) 0 0;
+        color: var(--wa-color-neutral-40);
         text-align: center;
     }
 
     .link-button {
         background: none;
         border: 0;
-        color: var(--wa-color-primary-600);
+        color: var(--wa-color-brand-40);
         cursor: pointer;
         font: inherit;
         padding: 0;
@@ -70,7 +70,7 @@ export const accountPageStyles = css`
 
     .signed-in {
         display: grid;
-        gap: var(--wa-spacing-medium);
+        gap: var(--wa-space-m);
         text-align: center;
     }
 `;

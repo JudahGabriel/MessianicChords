@@ -106,7 +106,7 @@ export class ChordEdit extends LitElement {
                             ?data-user-invalid="${this.invalidFieldName === "name"}"
                             @input="${(e: Event) => chord.song = (e.target as HTMLInputElement).value}">
                         </wa-input>
-                        ${this.invalidFieldName === "name" ? html`<small style="color: var(--wa-color-danger-500)">Please type a song name.</small>` : ""}
+                        ${this.invalidFieldName === "name" ? html`<small style="color: var(--wa-color-danger-50)">Please type a song name.</small>` : ""}
                     </div>
                     <div class="form-group">
                         <wa-input
@@ -133,7 +133,7 @@ export class ChordEdit extends LitElement {
                             ?data-user-invalid="${this.invalidFieldName === "artist-authors"}"
                             @input="${(e: Event) => chord.artist = (e.target as HTMLInputElement).value}">
                         </wa-input>
-                        ${this.invalidFieldName === "artist-authors" ? html`<small style="color: var(--wa-color-danger-500)">You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.</small>` : ""}
+                        ${this.invalidFieldName === "artist-authors" ? html`<small style="color: var(--wa-color-danger-50)">You must specify either an <strong>artist</strong> or an <strong>author</strong>. If neither is known, use <mark>Unknown</mark> as the author.</small>` : ""}
                     </div>
                     <div class="form-group">
                         <label>Authors</label>
@@ -167,7 +167,7 @@ export class ChordEdit extends LitElement {
                         @input="${(e: Event) => chord.chords = (e.target as HTMLTextAreaElement).value}"
                         @paste="${this.chordsPasted}">
                     </wa-textarea>
-                    ${this.invalidFieldName === "chords" ? html`<small style="color: var(--wa-color-danger-500)">You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.</small>` : ""}
+                    ${this.invalidFieldName === "chords" ? html`<small style="color: var(--wa-color-danger-50)">You must add the chord chart here or attach the chord chart file below. Attached files must be &lt; 10MB.</small>` : ""}
                 </div>
 
                 <!-- Attachments and links -->

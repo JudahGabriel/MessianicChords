@@ -27,7 +27,7 @@ export class MultipleItemsInput extends LitElement {
         return css`
             .input-row {
                 display: flex;
-                gap: var(--wa-spacing-x-small);
+                gap: var(--wa-space-xs);
                 align-items: flex-end;
             }
 
@@ -38,17 +38,17 @@ export class MultipleItemsInput extends LitElement {
             .item-list {
                 list-style: none;
                 padding: 0;
-                margin-top: var(--wa-spacing-small);
+                margin-top: var(--wa-space-s);
             }
 
             .item {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: var(--wa-spacing-small) var(--wa-spacing-medium);
-                border: 1px solid var(--wa-color-neutral-200);
-                border-radius: var(--wa-border-radius-medium);
-                margin-bottom: var(--wa-spacing-x-small);
+                padding: var(--wa-space-s) var(--wa-space-m);
+                border: 1px solid var(--wa-color-neutral-80);
+                border-radius: var(--wa-border-radius-m);
+                margin-bottom: var(--wa-space-xs);
             }
 
             .text-break {
@@ -56,15 +56,15 @@ export class MultipleItemsInput extends LitElement {
             }
 
             .help-text {
-                font-size: var(--wa-font-size-small);
-                color: var(--wa-color-neutral-500);
-                margin-top: var(--wa-spacing-x-small);
+                font-size: var(--wa-font-size-s);
+                color: var(--wa-color-neutral-50);
+                margin-top: var(--wa-space-xs);
             }
 
             .invalid-text {
-                color: var(--wa-color-danger-500);
-                font-size: var(--wa-font-size-small);
-                margin-top: var(--wa-spacing-x-small);
+                color: var(--wa-color-danger-50);
+                font-size: var(--wa-font-size-s);
+                margin-top: var(--wa-space-xs);
             }
         `;
     }

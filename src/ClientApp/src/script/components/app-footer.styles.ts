@@ -7,7 +7,7 @@ export const footerStyles = css`
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: var(--wa-color-neutral-100);
+        background-color: var(--wa-color-neutral-90);
         width: 100%;
         max-width: 100vw;
         box-sizing: border-box;
@@ -27,7 +27,7 @@ export const footerStyles = css`
         flex-wrap: wrap;
         padding: 0.5em;
         font-size: 0.8em;
-        box-shadow: 0 -2px 15px var(--wa-color-neutral-100);
+        box-shadow: 0 -2px 15px var(--wa-color-neutral-90);
 
         @media (max-width: 575px) {
             gap: 1em;

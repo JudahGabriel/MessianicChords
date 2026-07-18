@@ -17,17 +17,17 @@ export class ConfirmEmailPage extends LitElement {
         .page {
             display: grid;
             min-height: 60vh;
-            padding: var(--wa-spacing-2x-large) var(--wa-spacing-medium);
+            padding: var(--wa-space-2xl) var(--wa-space-m);
             place-items: center;
         }
 
         .card {
             background: white;
-            border: 1px solid var(--wa-color-neutral-200);
-            border-radius: var(--wa-border-radius-large);
-            box-shadow: var(--wa-shadow-medium);
+            border: 1px solid var(--wa-color-neutral-80);
+            border-radius: var(--wa-border-radius-l);
+            box-shadow: var(--wa-shadow-m);
             max-width: 520px;
-            padding: var(--wa-spacing-x-large);
+            padding: var(--wa-space-xl);
             text-align: center;
         }
 
@@ -38,7 +38,7 @@ export class ConfirmEmailPage extends LitElement {
         }
 
         p {
-            color: var(--wa-color-neutral-700);
+            color: var(--wa-color-neutral-30);
             line-height: 1.5;
         }
 

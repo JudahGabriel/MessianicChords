@@ -4,7 +4,7 @@ import { mediaQuery, BreakpointMax, phonesOnly } from "../common/breakpoints";
 export const appHeaderStyles = css`
     header {
         background: var(--theme-color, #0b0974);
-        padding: 0 var(--wa-spacing-medium);
+        padding: 0 var(--wa-space-m);
         font-family: var(--subtitle-font);
         position: relative;
     }
@@ -13,7 +13,7 @@ export const appHeaderStyles = css`
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: var(--wa-spacing-medium);
+        gap: var(--wa-space-m);
         max-width: 1200px;
         margin: 0 auto;
         height: 56px;
@@ -27,14 +27,14 @@ export const appHeaderStyles = css`
     .nav-left {
         display: flex;
         align-items: center;
-        gap: var(--wa-spacing-small);
+        gap: var(--wa-space-s);
         flex-shrink: 0;
     }
 
     .logo-link {
         display: flex;
         align-items: self-end;
-        gap: var(--wa-spacing-small);
+        gap: var(--wa-space-s);
         text-decoration: none;
         color: white;
     }
@@ -58,14 +58,14 @@ export const appHeaderStyles = css`
     .nav-links {
         display: flex;
         align-items: center;
-        gap: var(--wa-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
     .nav-center {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: var(--wa-spacing-medium);
+        gap: var(--wa-space-m);
         min-width: 0;
     }
 
@@ -74,7 +74,7 @@ export const appHeaderStyles = css`
         text-decoration: none;
         font-size: 0.95rem;
         font-weight: 600;
-        padding: var(--wa-spacing-x-small) 0;
+        padding: var(--wa-space-xs) 0;
         transition: color 0.2s;
     }
 
@@ -109,7 +109,7 @@ export const appHeaderStyles = css`
     .nav-search-desktop .search-controls {
         display: flex;
         align-items: center;
-        gap: var(--wa-spacing-x-small);
+        gap: var(--wa-space-xs);
         width: 100%;
     }
 
@@ -134,7 +134,7 @@ export const appHeaderStyles = css`
     .nav-right {
         display: flex;
         align-items: center;
-        gap: var(--wa-spacing-x-small);
+        gap: var(--wa-space-xs);
         flex-shrink: 0;
         justify-self: end;
     }
@@ -160,8 +160,8 @@ export const appHeaderStyles = css`
 
     .offline-status-button {
         color: white;
-        --wa-color-neutral-600: white;
-        --wa-color-primary-600: white;
+        --wa-color-neutral-40: white;
+        --wa-color-brand-40: white;
     }
 
     .offline-status-button::part(base) {
@@ -173,23 +173,15 @@ export const appHeaderStyles = css`
     .account-menu-trigger {
         width: 2.25rem;
         height: 2.25rem;
-        --wa-input-border-color: rgba(255, 255, 255, 0.35);
-        --wa-input-border-color-hover: white;
-        --wa-input-border-color-focus: white;
-        --wa-focus-ring-color: rgba(255, 255, 255, 0.45);
-        --wa-color-neutral-300: black;
-        --wa-input-background-color: rgba(255, 255, 255, 0.12);
-        --wa-color-neutral-700: white;
+        --wa-color-focus: rgba(255, 255, 255, 0.45);
+        --wa-color-neutral-70: black;
+        --wa-color-neutral-30: white;
     }
 
     .account-menu-trigger-signed-out {
-        --wa-input-border-color: rgba(255, 255, 255, 0.35);
-        --wa-input-border-color-hover: white;
-        --wa-input-border-color-focus: white;
-        --wa-focus-ring-color: rgba(255, 255, 255, 0.45);
-        --wa-color-neutral-700: white;
-        --wa-input-background-color: rgba(255, 255, 255, 0.12);
-        --wa-color-primary-600: white;
+        --wa-color-focus: rgba(255, 255, 255, 0.45);
+        --wa-color-neutral-30: white;
+        --wa-color-brand-40: white;
     }
 
     .account-menu-trigger::part(base) {
@@ -262,7 +254,7 @@ export const appHeaderStyles = css`
             display: flex;
             flex-wrap: wrap;
             height: auto;
-            padding: var(--wa-spacing-small) 0;
+            padding: var(--wa-space-s) 0;
         }
 
         .nav-center {
@@ -317,7 +309,7 @@ export const appHeaderStyles = css`
 
         .nav-search-mobile.open {
             width: 100%;
-            padding: var(--wa-spacing-small) 0;
+            padding: var(--wa-space-s) 0;
         }
 
         .nav-search-mobile.open wa-input {
@@ -327,12 +319,12 @@ export const appHeaderStyles = css`
         .nav-links.open {
             flex-direction: column;
             align-items: flex-start;
-            gap: var(--wa-spacing-x-small);
-            padding: var(--wa-spacing-small) 0;
+            gap: var(--wa-space-xs);
+            padding: var(--wa-space-s) 0;
         }
 
         .nav-right.open {
-            padding-bottom: var(--wa-spacing-small);
+            padding-bottom: var(--wa-space-s);
         }
     }
 `;

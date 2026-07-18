@@ -18,8 +18,8 @@ export const appHomeStyles = css`
         justify-content: center;
         align-items: center;
         font-family: var(--subtitle-font);
-        margin-top: var(--wa-spacing-large);
-        margin-bottom: var(--wa-spacing-large);
+        margin-top: var(--wa-space-l);
+        margin-bottom: var(--wa-space-l);
     }
 
     /* On phones and tablets, make the search container margin cancel out the parent's padding */

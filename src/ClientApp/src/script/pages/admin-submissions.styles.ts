@@ -20,7 +20,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .submission-card.is-edit {
-        border-left: 4px solid var(--wa-color-primary-600, #7f80b6);
+        border-left: 4px solid var(--wa-color-brand-40, #7f80b6);
     }
 
     .submission-card.is-new {
@@ -67,7 +67,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .editing-info a {
-        color: var(--wa-color-primary-700, #6665a8);
+        color: var(--wa-color-brand-30, #6665a8);
     }
 
     .submission-details {
@@ -223,7 +223,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .attachments-list a {
-        color: var(--wa-color-primary-700, #6665a8);
+        color: var(--wa-color-brand-30, #6665a8);
     }
 
     .submission-actions {
