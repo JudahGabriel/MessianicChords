@@ -46,6 +46,30 @@
 
   <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/webawesome.css">
   <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/themes/shoelace.css">
+  <style>
+    /*
+      App brand palette. Defined at :root (document scope) because Web Awesome's
+      brand semantic tokens (e.g. --wa-color-brand-fill-loud, consumed by
+      wa-button, tabs, etc.) are resolved at document scope; a palette defined
+      only on component :host never reaches them. --wa-color-brand-fill-loud is
+      remapped to brand-40 so solid brand surfaces match the pre-migration
+      Shoelace primary (primary-600 = rgb(128 127 182)).
+    */
+    :root {
+      --wa-color-brand-95: rgb(249 249 252);
+      --wa-color-brand-90: rgb(236 235 244);
+      --wa-color-brand-80: rgb(221 221 236);
+      --wa-color-brand-70: rgb(205 205 227);
+      --wa-color-brand-60: rgb(184 183 214);
+      --wa-color-brand-50: rgb(157 156 199);
+      --wa-color-brand-40: rgb(128 127 182);
+      --wa-color-brand-30: rgb(102 101 168);
+      --wa-color-brand-20: rgb(82 80 156);
+      --wa-color-brand-10: rgb(53 51 140);
+      --wa-color-brand-05: rgb(21 19 121);
+      --wa-color-brand-fill-loud: var(--wa-color-brand-40);
+    }
+  </style>
   <script type="module" src="/src/app-index.ts"></script>
 </head>
 

@@ -10,17 +10,6 @@ export const sharedStyles = css`
         --highlight-background: linear-gradient(rgb(255, 214, 94) 0%, #febf04 100%);
         --highlight-border-radius: 60px 30px 35px 15px / 25px 38px 66px 53px;
         --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
-        --wa-color-brand-95: rgb(249 249 252);
-        --wa-color-brand-90: rgb(236 235 244);
-        --wa-color-brand-80: rgb(221 221 236);
-        --wa-color-brand-70: rgb(205 205 227);
-        --wa-color-brand-60: rgb(184 183 214);
-        --wa-color-brand-50: rgb(157 156 199);
-        --wa-color-brand-40: rgb(128 127 182);
-        --wa-color-brand-30: rgb(102 101 168);
-        --wa-color-brand-20: rgb(82 80 156);
-        --wa-color-brand-10: rgb(53 51 140);
-        --wa-color-brand-05: rgb(21 19 121);
     }
 
     .container {
