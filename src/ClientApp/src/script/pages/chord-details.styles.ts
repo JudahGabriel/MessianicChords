@@ -594,14 +594,14 @@ export const chordDetailStyles = css`
             background: var(--highlight-background);
             border-radius: var(--highlight-border-radius);
             font-family: var(--subtitle-font);
-            color: var(--theme-color);
+            color: var(--app-highlight-text, #0b0974);
             padding-left: 10px;
             padding-right: 10px;
             margin-left: -10px; /** Offset the left padding so that the text beneath aligns */
             margin-right: -10px;
 
             wa-icon {
-                color: var(--theme-color);
+                color: var(--app-highlight-text, #0b0974);
             }
 
             .d-flex {
