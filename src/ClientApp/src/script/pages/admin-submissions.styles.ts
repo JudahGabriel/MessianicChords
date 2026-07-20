@@ -142,7 +142,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .empty-val {
-        color: #aaa;
+        color: var(--app-text-muted);
         font-style: italic;
     }
 
@@ -212,7 +212,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .unchanged-details summary:hover {
-        color: #555;
+        color: var(--app-text);
     }
 
     .attachments-list {
