@@ -118,21 +118,17 @@ export const chordDetailStyles = css`
         wa-button {
             --wa-form-control-height: 40px;
             --wa-form-control-padding-inline: 16px;
+            --wa-color-border-loud: color-mix(in srgb, var(--wa-color-neutral-80) 60%, var(--wa-color-neutral-90));
             font-size: 14px;
         }
 
-        wa-button:state(icon-button),
-        #chord-star-btn {
+        wa-button:state(icon-button)::part(base),
+        #chord-star-btn::part(base) {
             width: 55px;
         }
 
         wa-icon {
             font-size: 1.5em;
-            transform: translateY(4px);
-
-            @media (max-width: ${SizeMax.Xs}px) {
-                transform: translateY(2px);
-            }
         }
 
         wa-button-group {
@@ -150,10 +146,6 @@ export const chordDetailStyles = css`
 
         .star-icon {
             transition: color 0.2s;
-            
-            ${phonesOnly()} {
-                transform: translateY(4px);
-            }
         }
 
         .star-icon[name='star-fill'] {
