@@ -5,11 +5,18 @@ export const sharedStyles = css`
     :host {
         --title-font: 'Homemade Apple', cursive;
         --subtitle-font: 'Lora', serif;
-        --theme-color: #0b0974;
         --highlight-orange: #febf04;
         --highlight-background: linear-gradient(rgb(255, 214, 94) 0%, #febf04 100%);
         --highlight-border-radius: 60px 30px 35px 15px / 25px 38px 66px 53px;
         --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
+    }
+
+    :host(app-header) header {
+        --theme-color: #0b0974;
+    }
+
+    :host(home-jumbotron) h2 {
+        --theme-color: #0b0974;
     }
 
     .container {
@@ -60,7 +67,7 @@ export const sharedStyles = css`
 
     input::placeholder,
     textarea::placeholder {
-        color: rgba(33, 37, 41, 0.4) !important;
+        color: var(--app-text-muted) !important;
     }
 
     ${mediaQuery(BreakpointMax.xs)} {
