@@ -26,6 +26,6 @@ export const myStarredPageStyles = css`
     }
 
     .empty {
-        color: var(--wa-color-neutral-40);
+        color: var(--app-text-muted);
     }
 `;

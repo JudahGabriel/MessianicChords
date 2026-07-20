@@ -66,7 +66,7 @@ export class BrowseRandom extends LitElement {
         }
 
         audio.playbackRate = 0.8 + Math.random();
-        audio.play();
+        void audio.play().catch(() => undefined);
     }
 
     render(): TemplateResult {

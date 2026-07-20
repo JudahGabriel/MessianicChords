@@ -52,6 +52,7 @@ export const chordDetailStyles = css`
             /** On tablets and smaller, make the chord chart take up the full width */
             ${tabletsAndSmaller()} {
                 width: 100%;
+                overflow-x: hidden;
             }
         }
     }
@@ -363,8 +364,25 @@ export const chordDetailStyles = css`
         }
 
         .media-links {
+            width: 100%;
+
             wa-button {
-                width: fit-content;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            wa-button::part(base) {
+                width: 100%;
+                max-width: 100%;
+                justify-content: flex-start;
+                text-align: left;
+                white-space: normal;
+            }
+
+            wa-button::part(label) {
+                white-space: normal;
+                overflow-wrap: anywhere;
+                text-align: left;
             }
         }
 
@@ -561,7 +579,7 @@ export const chordDetailStyles = css`
         }
 
         .comments-muted {
-            color: var(--wa-color-neutral-40);
+            color: var(--app-text-muted);
         }
 
         .comments-error {
