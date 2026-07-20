@@ -11,14 +11,6 @@ export const sharedStyles = css`
         --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
     }
 
-    :host(app-header) header {
-        --theme-color: #0b0974;
-    }
-
-    :host(home-jumbotron) h2 {
-        --theme-color: #0b0974;
-    }
-
     .container {
         max-width: 1200px;
         margin-left: auto;

@@ -3,7 +3,7 @@ import { mediaQuery, BreakpointMax, phonesOnly } from "../common/breakpoints";
 
 export const appHeaderStyles = css`
     header {
-        background: var(--theme-color, #0b0974);
+        background: var(--app-header-background, #0b0974);
         padding: 0 var(--wa-space-m);
         font-family: var(--subtitle-font);
         position: relative;
