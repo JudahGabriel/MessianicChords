@@ -200,7 +200,18 @@ export const appHeaderStyles = css`
     }
 
     .account-menu-trigger-signed-out::part(base) {
+        border-radius: 999px;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .account-menu-trigger-signed-out:hover::part(base),
+    .account-menu-trigger-signed-out:focus-within::part(base) {
+        color: white;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .account-menu-trigger-signed-out:active::part(base) {
+        background: rgba(255, 255, 255, 0.2);
     }
 
     .account-menu-trigger {
