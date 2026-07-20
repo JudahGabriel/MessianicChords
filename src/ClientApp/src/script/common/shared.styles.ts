@@ -43,7 +43,7 @@ export const sharedStyles = css`
     .highlight {
         display: inline-block;
         font-family: var(--title-font);
-        color: var(--theme-color);
+        color: var(--app-highlight-text, #0b0974);
         border-radius: var(--highlight-border-radius);
         background: var(--highlight-background);
         box-shadow: var(--highlight-box-shadow);
