@@ -115,6 +115,17 @@ export const chordDetailStyles = css`
     }
 
     .btn-toolbar {
+        wa-button {
+            --wa-form-control-height: 40px;
+            --wa-form-control-padding-inline: 16px;
+            font-size: 14px;
+        }
+
+        wa-button:state(icon-button),
+        #chord-star-btn {
+            width: 55px;
+        }
+
         wa-icon {
             font-size: 1.5em;
             transform: translateY(4px);
