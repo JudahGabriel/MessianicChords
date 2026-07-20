@@ -191,6 +191,8 @@ export const appHeaderStyles = css`
     }
 
     .account-menu-trigger::part(base) {
+        width: 2.25rem;
+        height: 2.25rem;
         padding: 0;
         border-radius: 999px;
         overflow: hidden;
