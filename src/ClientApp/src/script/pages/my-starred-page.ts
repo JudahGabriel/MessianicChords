@@ -14,6 +14,7 @@ export class MyStarredPage extends LitElement {
     @state() chords: ChordSheet[] = [];
     @state() isLoading = true;
     @state() error: string | null = null;
+    @state() requiresSignIn = false;
 
     private readonly chordService = new ChordService();
 
@@ -36,6 +37,10 @@ export class MyStarredPage extends LitElement {
             return html`<p>Loading starred chord charts...</p>`;
         }
 
+        if (this.requiresSignIn) {
+            return html`<p class="empty"><a href="/account">Sign in</a> to view your starred chord charts.</p>`;
+        }
+
         if (this.error) {
             return html`<p class="empty">${this.error}</p>`;
         }
@@ -54,11 +59,12 @@ export class MyStarredPage extends LitElement {
     private async load(): Promise<void> {
         this.isLoading = true;
         this.error = null;
+        this.requiresSignIn = false;
 
         try {
             const user = await accountService.getUser();
             if (!user) {
-                this.error = "Sign in to view your starred chord charts.";
+                this.requiresSignIn = true;
                 this.chords = [];
                 return;
             }
