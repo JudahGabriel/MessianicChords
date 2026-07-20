@@ -103,6 +103,15 @@ export const chordDetailStyles = css`
         color: var(--theme-color);
     }
 
+    @media (prefers-color-scheme: dark) {
+        .song-name,
+        .hebrew-song-name,
+        .artist-author-name a,
+        span.artist-author-name {
+            color: var(--wa-color-text-link);
+        }
+    }
+
     @media (max-width: ${SizeMax.Md}px) {
         .artist-author-name a,
         .artist-author-name span {
