@@ -13,8 +13,8 @@ export const contactPageStyles = css`
     }
 
     .card {
-        background: white;
-        border: 1px solid var(--wa-color-neutral-80);
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
         border-radius: var(--wa-border-radius-l);
         box-shadow: var(--wa-shadow-m);
         padding: var(--wa-space-l);
@@ -30,7 +30,7 @@ export const contactPageStyles = css`
 
     .intro {
         margin: 0 0 var(--wa-space-l);
-        color: var(--wa-color-neutral-40);
+        color: var(--app-text-muted);
         text-align: center;
     }
 

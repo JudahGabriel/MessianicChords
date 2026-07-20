@@ -47,7 +47,7 @@ export const appHomeStyles = css`
         width: 100%;
         flex: 1 1 auto;
         min-width: 0;
-        color: #0b0974;
+        color: var(--theme-color);
         text-align: center;
     }
 

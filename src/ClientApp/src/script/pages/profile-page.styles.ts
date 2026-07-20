@@ -13,8 +13,8 @@ export const profilePageStyles = css`
     }
 
     .card {
-        background: white;
-        border: 1px solid var(--wa-color-neutral-80);
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
         border-radius: var(--wa-border-radius-l);
         box-shadow: var(--wa-shadow-m);
         padding: var(--wa-space-l);
@@ -31,7 +31,7 @@ export const profilePageStyles = css`
 
     p {
         margin: 0;
-        color: var(--wa-color-neutral-40);
+        color: var(--app-text-muted);
     }
 
     form {
@@ -44,13 +44,13 @@ export const profilePageStyles = css`
     }
 
     .label {
-        color: var(--wa-color-neutral-50);
+        color: var(--app-text-muted);
         font-size: 0.9rem;
         margin-bottom: var(--wa-space-3xs);
     }
 
     .value {
-        color: var(--wa-color-neutral-10);
+        color: var(--app-text);
         font-weight: 600;
     }
 
@@ -79,7 +79,7 @@ export const profilePageStyles = css`
     }
 
     .empty-value {
-        color: var(--wa-color-neutral-50);
+        color: var(--app-text-muted);
         font-style: italic;
     }
 `;
