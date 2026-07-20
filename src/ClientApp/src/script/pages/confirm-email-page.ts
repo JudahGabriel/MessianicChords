@@ -22,8 +22,8 @@ export class ConfirmEmailPage extends LitElement {
         }
 
         .card {
-            background: white;
-            border: 1px solid var(--wa-color-neutral-80);
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
             border-radius: var(--wa-border-radius-l);
             box-shadow: var(--wa-shadow-m);
             max-width: 520px;
@@ -38,7 +38,7 @@ export class ConfirmEmailPage extends LitElement {
         }
 
         p {
-            color: var(--wa-color-neutral-30);
+            color: var(--app-text-muted);
             line-height: 1.5;
         }
 
