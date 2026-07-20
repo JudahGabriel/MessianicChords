@@ -215,7 +215,6 @@ export const appHeaderStyles = css`
         wa-icon {
             color: white;
             font-size: 1.5em;
-            margin-top: 5px;
         }
     }
 
@@ -227,7 +226,6 @@ export const appHeaderStyles = css`
         wa-icon {
             color: white;
             font-size: 1.5em;
-            margin-top: 10px;
         }
     }
 
