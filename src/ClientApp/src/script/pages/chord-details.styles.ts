@@ -499,7 +499,7 @@ export const chordDetailStyles = css`
             padding-left: 12px;
             font-family: var(--subtitle-font);
             font-size: 0.85em;
-            color: var(--wa-color-neutral-40);
+            color: var(--app-text-muted);
             min-width: 0;
         }
 
@@ -530,12 +530,12 @@ export const chordDetailStyles = css`
 
         .comment-avatar-icon {
             font-size: 18px;
-            color: var(--wa-color-neutral-50);
+            color: var(--app-text-muted);
             flex-shrink: 0;
         }
 
         .comment-date {
-            color: var(--wa-color-neutral-50);
+            color: var(--app-text-muted);
             white-space: nowrap;
             margin-left: auto;
         }

@@ -935,7 +935,10 @@ export class ChordDetails extends LitElement {
         const audio = this.shadowRoot?.querySelector("audio");
         if (audio) {
             if (audio.paused) {
-                audio.play();
+                void audio.play().catch((error: unknown) => {
+                    this.isAudioPlaying = false;
+                    console.error("Unable to play chord audio.", error);
+                });
             } else {
                 audio.pause();
             }

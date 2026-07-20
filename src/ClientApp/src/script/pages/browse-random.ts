@@ -66,7 +66,13 @@ export class BrowseRandom extends LitElement {
         }
 
         audio.playbackRate = 0.8 + Math.random();
-        void audio.play().catch(() => undefined);
+        void audio.play().catch((error: unknown) => {
+            if (error instanceof DOMException && (error.name === "NotAllowedError" || error.name === "AbortError")) {
+                return;
+            }
+
+            console.error("Unable to play dice sound.", error);
+        });
     }
 
     render(): TemplateResult {
