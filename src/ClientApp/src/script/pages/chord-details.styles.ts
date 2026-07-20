@@ -136,8 +136,18 @@ export const chordDetailStyles = css`
             margin-top: 16px;
         }
 
+        .transpose-value,
+        .current-font-size {
+            opacity: 1;
+        }
+
         .transpose-value {
             min-width: 50px; /** So that changing the transpose value won't change the width of the button */
+        }
+
+        .transpose-value::part(base),
+        .current-font-size::part(base) {
+            color: var(--app-text, var(--wa-color-text-normal));
         }
 
         .transpose-value::part(label) {
@@ -277,8 +287,8 @@ export const chordDetailStyles = css`
         font-size: 16px;
         font-family: monospace;
         overflow: auto;
-        background-color: var(--app-paper-background);
-        color: var(--app-paper-text);
+        background-color: var(--app-paper-background, #ffffff);
+        color: var(--app-paper-text, #212529);
 
         /** On small screens, reduce padding for better readability in the smaller space */
         @media (max-width: ${SizeMax.Xs}px) {
@@ -288,6 +298,7 @@ export const chordDetailStyles = css`
 
     .plain-text-preview .chord {
         background-color: #e9ecef;
+        color: var(--app-paper-text, #212529);
         font-weight: bold;
         box-shadow: #e9ecef 0px 0px 15px 2px;
     }
