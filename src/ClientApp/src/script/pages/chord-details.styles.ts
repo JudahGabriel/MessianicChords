@@ -276,7 +276,8 @@ export const chordDetailStyles = css`
         font-size: 16px;
         font-family: monospace;
         overflow: auto;
-        background-color: white;
+        background-color: var(--app-paper-background);
+        color: var(--app-paper-text);
 
         /** On small screens, reduce padding for better readability in the smaller space */
         @media (max-width: ${SizeMax.Xs}px) {
@@ -385,7 +386,7 @@ export const chordDetailStyles = css`
             position: relative;
             isolation: isolate;
             clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
-            color: inherit;
+            color: var(--app-paper-text);
             text-decoration: none;
         }
 
@@ -431,10 +432,11 @@ export const chordDetailStyles = css`
         }
 
         .comments-scroll {
-            border: 1px solid var(--wa-color-neutral-80);
+            border: 1px solid var(--app-border);
             border-radius: 4px;
             padding: 8px;
-            background-color: #fff;
+            background: var(--app-surface);
+            color: var(--app-text);
             max-width: 100%;
             box-sizing: border-box;
             overflow-x: hidden;
