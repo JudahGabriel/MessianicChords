@@ -23,8 +23,8 @@ export class ChordEditSuccessful extends LitElement {
         .success-card {
             width: min(680px, 100%);
             border-radius: 18px;
-            border: 1px solid var(--wa-color-brand-80);
-            background: linear-gradient(160deg, #ffffff 0%, var(--wa-color-brand-95) 100%);
+            border: 1px solid var(--wa-color-brand-border-normal);
+            background: linear-gradient(160deg, var(--app-surface) 0%, var(--wa-color-brand-fill-quiet) 100%);
             box-shadow: 0 18px 40px rgb(21 19 121 / 12%);
             padding: 2rem;
             text-align: center;
@@ -42,9 +42,9 @@ export class ChordEditSuccessful extends LitElement {
             display: grid;
             place-items: center;
             font-size: 1.5rem;
-            color: var(--wa-color-brand-10);
-            background: var(--wa-color-brand-90);
-            border: 1px solid var(--wa-color-brand-70);
+            color: var(--wa-color-brand-on-quiet);
+            background: var(--wa-color-brand-fill-quiet);
+            border: 1px solid var(--wa-color-brand-border-normal);
             box-shadow: 0 4px 10px rgb(21 19 121 / 12%);
         }
 
@@ -60,7 +60,7 @@ export class ChordEditSuccessful extends LitElement {
             margin: 0 0 1.5rem;
             font-family: var(--subtitle-font);
             font-size: 1.1rem;
-            color: var(--wa-color-brand-20);
+            color: var(--app-text-muted);
         }
 
         .cta-link {
