@@ -3,12 +3,13 @@
 <html lang="en-us" class="wa-theme-shoelace wa-palette-shoelace">
 <head>
     <meta charset="utf-8" />
-    @* Commented out: Dark mode is commented out for now. More work needs to be done to support it. *@
-    @* <script>
-        document.documentElement.classList.add(
+    <script>
+        @* Commented out: Dark mode is commented out for now. More work needs to be done to support it. *@
+        @* document.documentElement.classList.add(
             window.matchMedia("(prefers-color-scheme: dark)").matches ? "wa-dark" : "wa-light"
-        );
-    </script> *@
+        ); *@
+        document.documentElement.classList.add("wa-light");
+    </script>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@Model.Title</title>
