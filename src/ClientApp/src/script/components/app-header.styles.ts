@@ -261,8 +261,31 @@ export const appHeaderStyles = css`
     .menu-toggle {
         display: none;
         color: white;
-        font-size: 1.4rem;
         margin-left: auto;
+    }
+
+    .menu-toggle::part(base) {
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border-radius: 999px;
+        background: transparent;
+    }
+
+    .menu-toggle::part(base):hover,
+    .menu-toggle:focus-within::part(base) {
+        color: white;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .menu-toggle:active::part(base) {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-toggle wa-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 1.75rem;
     }
 
     /* Mobile layout */
