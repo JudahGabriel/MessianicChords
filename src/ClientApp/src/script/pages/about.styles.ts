@@ -12,8 +12,8 @@ export const aboutStyles = css`
     .about-card {
         max-width: 900px;
         margin: 0 auto;
-        background: #fff;
-        border: 1px solid #e6e6ef;
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 6px 20px rgba(11, 9, 116, 0.08);
@@ -24,7 +24,7 @@ export const aboutStyles = css`
     }
 
     .about-copy {
-        color: #25253a;
+        color: var(--app-text);
         line-height: 1.55;
         font-size: 1.15rem;
     }

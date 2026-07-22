@@ -26,20 +26,20 @@ export class LoadMoreButton extends LitElement {
         }
 
         return html`
-            <sl-button type="button" @click="${this.getNextChunk}">
+            <wa-button type="button" appearance="outlined" @click="${this.getNextChunk}">
                 Load more...
-            </sl-button>
+            </wa-button>
         `;
     }
 
     renderLoading(): TemplateResult {
         return html`
-            <sl-button type="button" disabled>
+            <wa-button type="button" appearance="outlined" disabled>
                 <span class="spinner-border" role="status">
                     <span class="visually-hidden"></span>
                 </span>
                 <span>Loading...</span>
-            </sl-button>
+            </wa-button>
         `;
     }
 

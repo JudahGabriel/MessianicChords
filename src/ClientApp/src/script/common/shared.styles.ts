@@ -5,22 +5,10 @@ export const sharedStyles = css`
     :host {
         --title-font: 'Homemade Apple', cursive;
         --subtitle-font: 'Lora', serif;
-        --theme-color: #0b0974;
         --highlight-orange: #febf04;
         --highlight-background: linear-gradient(rgb(255, 214, 94) 0%, #febf04 100%);
         --highlight-border-radius: 60px 30px 35px 15px / 25px 38px 66px 53px;
         --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
-        --sl-color-primary-50: rgb(249 249 252);
-        --sl-color-primary-100: rgb(236 235 244);
-        --sl-color-primary-200: rgb(221 221 236);
-        --sl-color-primary-300: rgb(205 205 227);
-        --sl-color-primary-400: rgb(184 183 214);
-        --sl-color-primary-500: rgb(157 156 199);
-        --sl-color-primary-600: rgb(128 127 182);
-        --sl-color-primary-700: rgb(102 101 168);
-        --sl-color-primary-800: rgb(82 80 156);
-        --sl-color-primary-900: rgb(53 51 140);
-        --sl-color-primary-950: rgb(21 19 121);
     }
 
     .container {
@@ -37,25 +25,26 @@ export const sharedStyles = css`
         font-weight: normal;
     }
 
-    sl-button[variant="text"]::part(label) {
+    wa-button[appearance="plain"]::part(label) {
         font-weight: bold;
         font-family: var(--subtitle-font);
         font-size: 16px;
         color: var(--theme-color);
     }
 
-    a, sl-button[variant="text"] {
+    a, wa-button[appearance="plain"] {
+        color: var(--app-link-color, var(--theme-color));
         transition: 0.4s linear color;
     }
 
-    a:hover, sl-button[variant="text"]:hover {
-        color: brown;
+    a:hover, wa-button[appearance="plain"]:hover {
+        color: var(--app-link-hover-color, var(--wa-color-brand-20));
     }
 
     .highlight {
         display: inline-block;
         font-family: var(--title-font);
-        color: var(--theme-color);
+        color: var(--app-highlight-text, #0b0974);
         border-radius: var(--highlight-border-radius);
         background: var(--highlight-background);
         box-shadow: var(--highlight-box-shadow);
@@ -71,7 +60,7 @@ export const sharedStyles = css`
 
     input::placeholder,
     textarea::placeholder {
-        color: rgba(33, 37, 41, 0.4) !important;
+        color: var(--app-text-muted) !important;
     }
 
     ${mediaQuery(BreakpointMax.xs)} {

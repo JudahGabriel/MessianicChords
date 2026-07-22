@@ -12,19 +12,18 @@ import { UserViewModel } from "../models/account";
 import { accountService } from "../services/account-service";
 import { Comment, CommentThread } from "../models/comment";
 import { commentService } from "../services/comment-service";
-import "@shoelace-style/shoelace/dist/components/card/card.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/button-group/button-group.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button.js";
-import "@shoelace-style/shoelace/dist/components/rating/rating.js";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
-import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
-import "@shoelace-style/shoelace/dist/components/tab/tab.js";
-import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
-import "@shoelace-style/shoelace/dist/components/textarea/textarea.js";
-import "@shoelace-style/shoelace/dist/components/animation/animation.js";
+import "@awesome.me/webawesome/dist/components/card/card.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/button-group/button-group.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/rating/rating.js";
+import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js";
+import "@awesome.me/webawesome/dist/components/tab/tab.js";
+import "@awesome.me/webawesome/dist/components/tab-group/tab-group.js";
+import "@awesome.me/webawesome/dist/components/textarea/textarea.js";
+import "@awesome.me/webawesome/dist/components/animation/animation.js";
 
 @customElement("chord-details")
 export class ChordDetails extends LitElement {
@@ -217,16 +216,16 @@ export class ChordDetails extends LitElement {
                 <!-- Sidebar -->
                 <div class="sidebar d-flex flex-column gap-5 d-print-none">
                     ${shouldShowAlbumArt ? html`
-                        <sl-card class="card-header w-100 album-art-card">
+                        <wa-card class="card-header w-100 album-art-card">
                             <img class="album-art-image" src="${albumArtUrl}" alt="Album art for ${chord.song}" loading="lazy" />
-                        </sl-card>
+                        </wa-card>
                     ` : html``}
 
-                    <sl-card class="card-header w-100">
+                    <wa-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>General</span>
-                                <sl-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></sl-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
 
@@ -245,13 +244,13 @@ export class ChordDetails extends LitElement {
                         <p>
                             Tags: <span class="tag-list">${this.renderTags(chord.tags)}</span>
                         </p>
-                    </sl-card>
+                    </wa-card>
 
-                    <sl-card class="card-header w-100">
+                    <wa-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Media</span>
-                                <sl-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></sl-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
 
@@ -262,9 +261,9 @@ export class ChordDetails extends LitElement {
                             </div>
                         ` : html``}
                         ${!hasAnyMedia ? html`<p class="comments-muted">No media attachments.</p>` : html``}
-                    </sl-card>
+                    </wa-card>
 
-                    <sl-card class="card-header w-100">
+                    <wa-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Comments</span>
@@ -272,13 +271,13 @@ export class ChordDetails extends LitElement {
                         </div>
 
                         ${this.renderComments(chord)}
-                    </sl-card>
+                    </wa-card>
 
-                    <sl-card class="card-header w-100">
+                    <wa-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Arrangement</span>
-                                <sl-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></sl-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
                         <p>
@@ -294,13 +293,13 @@ export class ChordDetails extends LitElement {
                             About:
                         </p>
                         <blockquote>${chord.about}</blockquote>
-                    </sl-card>
+                    </wa-card>
 
-                    <sl-card class="card-header w-100">
+                    <wa-card class="card-header w-100">
                         <div slot="header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Copyright</span>
-                                <sl-icon-button name="pencil" label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"></sl-icon-button>
+                                <wa-button appearance="plain" aria-label="Edit" href="/${chord.id.toLowerCase()}/edit" title="Edit this chord chart"><wa-icon name="pencil"></wa-icon></wa-button>
                             </div>
                         </div>
                         <p>
@@ -309,7 +308,7 @@ export class ChordDetails extends LitElement {
                         <p>
                             CCLI: <strong>${chord.ccliNumber}</strong>
                         </p>
-                    </sl-card>
+                    </wa-card>
                 </div>
             </div>
             <p style="display: none">
@@ -321,7 +320,7 @@ export class ChordDetails extends LitElement {
     renderSongToolbar(chord: ChordSheet): TemplateResult {
         const transposeUpTooltip = chord.chords ? "Transpose the chords up a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
         const transposeDownTooltip = chord.chords ? "Transpose the chords down a half-step" : "Transposing is disabled for this chord chart because it's in an unsupported format.";
-        const btnSize = matchMedia("(max-width: 575px)").matches ? "small" : "medium";
+        const btnSize = matchMedia("(max-width: 575px)").matches ? "s" : "m";
         const hasChords = !!chord.chords;
         const starTitle = this.isCurrentChordStarred() ? "You already have starred this chord chart. Tap to unstar." : "Star this chord chart";
         const hasAudio = this.hasAudioPlayer(chord);
@@ -333,86 +332,68 @@ export class ChordDetails extends LitElement {
             <div class="row d-print-none">
                 <div class="col-12">
                     <div class="btn-toolbar">
-                        <sl-button-group>
+                        <wa-button-group>
+                            <wa-button id="chord-play-btn" appearance="outlined" size="${btnSize}" @click="${this.toggleMediaPlayback}" ?disabled="${!hasAudio}">
+                                <wa-icon name="${playPauseIcon}" canvas="auto"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-star-btn" appearance="outlined" size="${btnSize}" @click="${this.chordChartStarClicked}" ?disabled="${this.starBusy}">
+                                <wa-animation name="spin" duration="1000" iterations="Infinity" ?play="${this.starBusy}">
+                                    <wa-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}" canvas="auto"></wa-icon>
+                                </wa-animation>
+                            </wa-button>
+                            <wa-button id="chord-download-btn" appearance="outlined" size="${btnSize}" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
+                                <wa-icon name="download" canvas="auto"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-fullscreen-btn" appearance="outlined" size="${btnSize}" @click="${this.goFullscreen}">
+                                <wa-icon name="fullscreen" canvas="auto"></wa-icon>
+                            </wa-button>
+                        </wa-button-group>
+                        <wa-tooltip for="chord-play-btn">${playPauseTooltip}</wa-tooltip>
+                        <wa-tooltip for="chord-star-btn">${starTitle}</wa-tooltip>
+                        <wa-tooltip for="chord-download-btn">Download this chord chart</wa-tooltip>
+                        <wa-tooltip for="chord-fullscreen-btn">View fullscreen</wa-tooltip>
 
-                            <sl-tooltip content="${playPauseTooltip}" hoist>
-                                <sl-button size="${btnSize}" @click="${this.toggleMediaPlayback}" ?disabled="${!hasAudio}">
-                                    <sl-icon name="${playPauseIcon}"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="${starTitle}" hoist>
-                                <sl-button size="${btnSize}" @click="${this.chordChartStarClicked}" ?disabled="${this.starBusy}">
-                                    <sl-animation name="spin" duration="1000" iterations="Infinity" ?play="${this.starBusy}">
-                                        <sl-icon class="star-icon" name="${this.isCurrentChordStarred() ? "star-fill" : "star"}"></sl-icon>
-                                    </sl-animation>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="Download this chord chart" hoist>
-                                <sl-button size="${btnSize}" href="${this.downloadUrl(chord)}" download="${chord.artist} - ${chord.song}.html">
-                                    <sl-icon name="download"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="View fullscreen" hoist>
-                                <sl-button size="${btnSize}" @click="${this.goFullscreen}">
-                                    <sl-icon name="fullscreen"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                        </sl-button-group>
-
-                        <sl-button-group>
-                            <sl-tooltip content="Print this chord chart" hoist>
-                                <sl-button size="${btnSize}" @click="${this.print}">
-                                    <sl-icon name="printer"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-
-                            <sl-tooltip content="Edit this chord chart" hoist>
-                                <sl-button size="${btnSize}" href="/${chord.id.toLowerCase()}/edit" target="_blank">
-                                    <sl-icon name="pencil"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                        </sl-button-group>
+                        <wa-button-group>
+                            <wa-button id="chord-print-btn" appearance="outlined" size="${btnSize}" @click="${this.print}">
+                                <wa-icon name="printer" canvas="auto"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-edit-btn" appearance="outlined" size="${btnSize}" href="/${chord.id.toLowerCase()}/edit" target="_blank">
+                                <wa-icon name="pencil" canvas="auto"></wa-icon>
+                            </wa-button>
+                        </wa-button-group>
+                        <wa-tooltip for="chord-print-btn">Print this chord chart</wa-tooltip>
+                        <wa-tooltip for="chord-edit-btn">Edit this chord chart</wa-tooltip>
                         
-                        <sl-button-group label="Transpose">
-                            <sl-tooltip content="${transposeUpTooltip}" hoist>
-                                <sl-button size="${btnSize}" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
-                                    <sl-icon name="caret-up-fill"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                            <sl-tooltip content="Chord transposition" hoist>
-                                <sl-button class="transpose-value" disabled size="${btnSize}" @click="${() => this.bumpTranspose(-1)}">
-                                    ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
-                                </sl-button>
-                            </sl-tooltip>
-                            <sl-tooltip content="${transposeDownTooltip}" hoist>
-                                <sl-button size="${btnSize}" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
-                                    <sl-icon name="caret-down-fill"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                        </sl-button-group>
+                        <wa-button-group label="Transpose">
+                            <wa-button id="chord-transpose-up" appearance="outlined" size="${btnSize}" @click="${() => this.bumpTranspose(1)}" ?disabled="${!this.chord?.chords}">
+                                <wa-icon name="caret-up-fill" canvas="auto"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-transpose-value" appearance="outlined" class="transpose-value" disabled size="${btnSize}" @click="${() => this.bumpTranspose(-1)}">
+                                ${this.transpose > 0 ? "+" + this.transpose : this.transpose}
+                            </wa-button>
+                            <wa-button id="chord-transpose-down" appearance="outlined" size="${btnSize}" @click="${() => this.bumpTranspose(-1)}" ?disabled="${!this.chord?.chords}">
+                                <wa-icon name="caret-down-fill" canvas="auto"></wa-icon>
+                            </wa-button>
+                        </wa-button-group>
+                        <wa-tooltip for="chord-transpose-up">${transposeUpTooltip}</wa-tooltip>
+                        <wa-tooltip for="chord-transpose-value">Chord transposition</wa-tooltip>
+                        <wa-tooltip for="chord-transpose-down">${transposeDownTooltip}</wa-tooltip>
                         
                         ${hasChords ? html`
-                        <sl-button-group label="Font Size">
-                            <sl-tooltip content="Increase font size" hoist>
-                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(2)}">
-                                    <strong>A</strong> <sl-icon name="caret-up-fill"></sl-icon>
-                                </sl-button>
-                            </sl-tooltip>
-                            <sl-tooltip content="Current font size" hoist>
-                                <sl-button class="current-font-size" disabled size="${btnSize}">
-                                    ${this.fontSize}px
-                                </sl-button>
-                            </sl-tooltip>
-                            <sl-tooltip content="Decrease font size" hoist>
-                                <sl-button size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
-                                    <small font-size="0.85em">A <sl-icon name="caret-down-fill"></sl-icon></small> 
-                                </sl-button>
-                            </sl-tooltip>
-                        </sl-button-group>
+                        <wa-button-group label="Font Size">
+                            <wa-button id="chord-fontsize-up" appearance="outlined" size="${btnSize}" @click="${() => this.changeFontSize(2)}">
+                                <strong>A</strong> <wa-icon name="caret-up-fill" canvas="auto"></wa-icon>
+                            </wa-button>
+                            <wa-button id="chord-fontsize-current" appearance="outlined" class="current-font-size" disabled size="${btnSize}">
+                                ${this.fontSize}px
+                            </wa-button>
+                            <wa-button id="chord-fontsize-down" appearance="outlined" size="${btnSize}" @click="${() => this.changeFontSize(-2)}">
+                                <small font-size="0.85em">A <wa-icon name="caret-down-fill" canvas="auto"></wa-icon></small>
+                            </wa-button>
+                        </wa-button-group>
+                        <wa-tooltip for="chord-fontsize-up">Increase font size</wa-tooltip>
+                        <wa-tooltip for="chord-fontsize-current">Current font size</wa-tooltip>
+                        <wa-tooltip for="chord-fontsize-down">Decrease font size</wa-tooltip>
                         ` : nothing}
 
                     </div>
@@ -488,9 +469,9 @@ export class ChordDetails extends LitElement {
         }
 
         return html`
-            <sl-button variant="text" class="text-truncate" href="${link}" target="_blank" rel="noopener">
+            <wa-button appearance="plain" class="text-truncate" href="${link}" target="_blank" rel="noopener">
                 ${linkText}
-            </sl-button>
+            </wa-button>
         `;
     }
 
@@ -506,7 +487,7 @@ export class ChordDetails extends LitElement {
         const tagUrl = `/browse/tags?tag=${encodeURIComponent(tag)}`;
         return html`
             <a class="tag-chip" href="${tagUrl}">
-                <sl-icon name="tag" label="Tag"></sl-icon>
+                <wa-icon name="tag" label="Tag"></wa-icon>
                 <span>${tag}</span>
             </a>
         `;
@@ -546,23 +527,24 @@ export class ChordDetails extends LitElement {
         const createdText = isNaN(created.getTime()) ? "" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(created);
         const avatarTemplate = comment.userProfilePictureUrl
             ? html`<img class="comment-avatar" src="${comment.userProfilePictureUrl}" alt="${comment.userDisplayName}" loading="lazy" />`
-            : html`<sl-icon class="comment-avatar-icon" name="person-circle" label="No profile picture"></sl-icon>`;
+            : html`<wa-icon class="comment-avatar-icon" name="person-circle" label="No profile picture"></wa-icon>`;
 
         return html`
             <li class="comment-item">
                 ${isEditing ? html`
-                    <sl-textarea
+                    <wa-textarea
+                        name="comment-edit"
                         class="comment-edit-box"
                         rows="3"
                         .value="${this.editCommentContent}"
-                        @sl-input="${(e: Event) => this.editCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></sl-textarea>
+                        @input="${(e: Event) => this.editCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
                     <div class="comment-actions">
-                        <sl-button size="small" ?disabled="${this.commentBusy || this.editCommentContent.trim().length === 0}" @click="${() => this.saveCommentEdit(chord)}">
+                        <wa-button size="s" appearance="outlined" ?disabled="${this.commentBusy || this.editCommentContent.trim().length === 0}" @click="${() => this.saveCommentEdit(chord)}">
                             Save
-                        </sl-button>
-                        <sl-button size="small" variant="default" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
+                        </wa-button>
+                        <wa-button size="s" appearance="outlined" ?disabled="${this.commentBusy}" @click="${this.cancelCommentEdit}">
                             Cancel
-                        </sl-button>
+                        </wa-button>
                     </div>
                 ` : html`
                     <p class="comment-content">${comment.content}</p>
@@ -574,9 +556,9 @@ export class ChordDetails extends LitElement {
                         </div>
                         <span class="comment-date">${createdText}</span>
                         ${canEdit ? html`
-                            <sl-button class="comment-edit-button" size="small" variant="text" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
-                                <sl-icon name="pencil"></sl-icon>
-                            </sl-button>
+                            <wa-button class="comment-edit-button" size="s" appearance="plain" @click="${() => this.startCommentEdit(comment)}" title="Edit comment" aria-label="Edit comment">
+                                <wa-icon name="pencil"></wa-icon>
+                            </wa-button>
                         ` : html``}
                     </div>
                 `}
@@ -587,16 +569,17 @@ export class ChordDetails extends LitElement {
     renderAddCommentForm(chord: ChordSheet): TemplateResult {
         return html`
             <form class="comment-form" @submit="${(e: Event) => this.submitComment(e, chord)}">
-                <sl-textarea
+                <wa-textarea
+                    name="comment"
                     class="comment-input"
                     placeholder="Add a comment"
                     rows="3"
                     .value="${this.newCommentContent}"
-                    @sl-input="${(e: Event) => this.newCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></sl-textarea>
+                    @input="${(e: Event) => this.newCommentContent = (e.target as HTMLTextAreaElement & { value: string }).value}"></wa-textarea>
                 <div class="comment-actions">
-                    <sl-button type="submit" size="small" ?disabled="${this.commentBusy || this.newCommentContent.trim().length === 0}">
+                    <wa-button type="submit" size="s" appearance="outlined" ?disabled="${this.commentBusy || this.newCommentContent.trim().length === 0}">
                         Post comment
-                    </sl-button>
+                    </wa-button>
                 </div>
             </form>
         `;
@@ -952,7 +935,10 @@ export class ChordDetails extends LitElement {
         const audio = this.shadowRoot?.querySelector("audio");
         if (audio) {
             if (audio.paused) {
-                audio.play();
+                void audio.play().catch((error: unknown) => {
+                    this.isAudioPlaying = false;
+                    console.error("Unable to play chord audio.", error);
+                });
             } else {
                 audio.pause();
             }

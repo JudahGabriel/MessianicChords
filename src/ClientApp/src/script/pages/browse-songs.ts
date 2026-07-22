@@ -6,7 +6,7 @@ import { ChordSheet } from "../models/interfaces";
 import { PagedList } from "../models/paged-list";
 import { ChordService } from "../services/chord-service";
 import { sharedStyles } from "../common/shared.styles";
-import "@shoelace-style/shoelace/dist/components/details/details.js";
+import "@awesome.me/webawesome/dist/components/details/details.js";
 import { browseSongsStyles } from "./browse-songs.styles";
 
 type SongGroup = {
@@ -60,7 +60,7 @@ export class BrowseSongs extends LitElement {
         const chordList = group.chordList;
 
         return html`
-            <sl-details class="songs-group-details mb-3" @sl-show="${() => this.onGroupShow(index)}">
+            <wa-details class="songs-group-details mb-3" @wa-show="${() => this.onGroupShow(index)}">
                 <div slot="summary" class="songs-group-summary">${group.key}</div>
                 <div class="songs-group-content">
                     ${chordList ? html`
@@ -70,7 +70,7 @@ export class BrowseSongs extends LitElement {
                         </div>
                     ` : html`<p>Expand to load songs.</p>`}
                 </div>
-            </sl-details>
+            </wa-details>
         `;
     }
 

@@ -6,9 +6,6 @@ export const chordCardStyles = css`
         float: left;
         width: 18.5em;
         transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .chord-card::part(base) {
         border: 1px solid #d6d6d6;
         border-radius: 10px;
         overflow: hidden;
@@ -50,7 +47,7 @@ export const chordCardStyles = css`
         color: #6b7280;
     }
 
-    .fallback-art sl-icon {
+    .fallback-art wa-icon {
         font-size: 4.25rem;
     }
 
@@ -63,9 +60,6 @@ export const chordCardStyles = css`
 
     .chord-card:hover {
         transform: translateY(-2px);
-    }
-
-    .chord-card:hover::part(base) {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
     }
 

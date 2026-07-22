@@ -1,8 +1,13 @@
 ﻿@model MessianicChords.Models.HomeViewModel
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" class="wa-theme-shoelace wa-palette-shoelace">
 <head>
     <meta charset="utf-8" />
+    <script>
+        document.documentElement.classList.add(
+            window.matchMedia("(prefers-color-scheme: dark)").matches ? "wa-dark" : "wa-light"
+        );
+    </script>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@Model.Title</title>
@@ -53,19 +58,65 @@
     <meta property="og:description" content="@Model.Description" />
     <meta property="og:image" content="@Model.SocialCardImage" />
 
-    @* Shoelace light mode and dark mode CSS *@
-    <link rel="stylesheet" media="(prefers-color-scheme:light)" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
-    <link rel="stylesheet" media="(prefers-color-scheme:dark)" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css" onload="document.documentElement.classList.add('sl-theme-dark');" />
+    @* Web Awesome base theme *@
+    <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/webawesome.css">
+    <link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@3.10.0/styles/themes/shoelace.css">
 
 <style>
         :root {
             --title-font: 'Homemade Apple', cursive;
             --subtitle-font: 'Lora', serif;
             --theme-color: #0b0974;
+            --app-link-color: var(--theme-color);
+            --app-link-hover-color: var(--wa-color-brand-20);
+            --app-header-background: #0b0974;
+            --app-highlight-text: #0b0974;
+            --app-surface: var(--wa-color-surface-raised);
+            --app-surface-default: var(--wa-color-surface-default);
+            --app-border: var(--wa-color-surface-border);
+            --app-text: var(--wa-color-text-normal);
+            --app-text-muted: var(--wa-color-text-quiet);
+            --app-paper-background: #ffffff;
+            --app-paper-text: #212529;
             --highlight-orange: #febf04;
             --highlight-background: linear-gradient(rgb(255, 214, 94) 0%, #febf04 100%);
             --highlight-border-radius: 60px 30px 35px 15px / 25px 38px 66px 53px;
             --highlight-box-shadow: rgb(255 214 94 / 90%) 2px 2px 10px;
+
+            /*
+              App brand palette. Defined at :root (document scope) because Web Awesome's
+              brand semantic tokens (e.g. --wa-color-brand-fill-loud, consumed by
+              wa-button, tabs, etc.) are resolved at document scope; a palette defined
+              only on component :host never reaches them. --wa-color-brand-fill-loud is
+              remapped to brand-40 so solid brand surfaces match the pre-migration
+              Shoelace primary (primary-600 = rgb(128 127 182)).
+            */
+            --wa-color-brand-95: rgb(249 249 252);
+            --wa-color-brand-90: rgb(236 235 244);
+            --wa-color-brand-80: rgb(221 221 236);
+            --wa-color-brand-70: rgb(205 205 227);
+            --wa-color-brand-60: rgb(184 183 214);
+            --wa-color-brand-50: rgb(157 156 199);
+            --wa-color-brand-40: rgb(128 127 182);
+            --wa-color-brand-30: rgb(102 101 168);
+            --wa-color-brand-20: rgb(82 80 156);
+            --wa-color-brand-10: rgb(53 51 140);
+            --wa-color-brand-05: rgb(21 19 121);
+            --wa-color-brand-fill-loud: var(--wa-color-brand-40);
+        }
+
+        :root.wa-dark {
+            --theme-color: var(--wa-color-text-link);
+            --app-link-color: var(--wa-color-text-link);
+            --app-link-hover-color: var(--wa-color-brand-80);
+        }
+
+        @@media (prefers-color-scheme: dark) {
+            :root:not(.wa-light) {
+                --theme-color: var(--wa-color-text-link);
+                --app-link-color: var(--wa-color-text-link);
+                --app-link-hover-color: var(--wa-color-brand-80);
+            }
         }
 
         body {

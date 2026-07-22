@@ -9,19 +9,19 @@ export const contactPageStyles = css`
     .contact-page {
         max-width: 640px;
         margin: 0 auto;
-        padding: var(--sl-spacing-2x-large) var(--sl-spacing-medium);
+        padding: var(--wa-space-2xl) var(--wa-space-m);
     }
 
     .card {
-        background: white;
-        border: 1px solid var(--sl-color-neutral-200);
-        border-radius: var(--sl-border-radius-large);
-        box-shadow: var(--sl-shadow-medium);
-        padding: var(--sl-spacing-large);
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        border-radius: var(--wa-border-radius-l);
+        box-shadow: var(--wa-shadow-m);
+        padding: var(--wa-space-l);
     }
 
     h1 {
-        margin: 0 0 var(--sl-spacing-small);
+        margin: 0 0 var(--wa-space-s);
         color: var(--theme-color);
         font-family: var(--title-font, 'Homemade Apple', cursive);
         font-size: 2rem;
@@ -29,21 +29,21 @@ export const contactPageStyles = css`
     }
 
     .intro {
-        margin: 0 0 var(--sl-spacing-large);
-        color: var(--sl-color-neutral-600);
+        margin: 0 0 var(--wa-space-l);
+        color: var(--app-text-muted);
         text-align: center;
     }
 
     form {
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
-    sl-alert {
-        margin-bottom: var(--sl-spacing-medium);
+    wa-callout {
+        margin-bottom: var(--wa-space-m);
     }
 
-    sl-button[type="submit"] {
+    wa-button[type="submit"] {
         width: 100%;
     }
 `;

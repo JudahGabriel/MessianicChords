@@ -9,11 +9,11 @@ export const myStarredPageStyles = css`
     .page {
         max-width: 1200px;
         margin: 0 auto;
-        padding: var(--sl-spacing-large) var(--sl-spacing-medium);
+        padding: var(--wa-space-l) var(--wa-space-m);
     }
 
     h1 {
-        margin: 0 0 var(--sl-spacing-medium);
+        margin: 0 0 var(--wa-space-m);
         color: var(--theme-color);
         font-family: var(--title-font, 'Homemade Apple', cursive);
         font-size: 2rem;
@@ -22,10 +22,10 @@ export const myStarredPageStyles = css`
     .cards {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
     .empty {
-        color: var(--sl-color-neutral-600);
+        color: var(--app-text-muted);
     }
 `;

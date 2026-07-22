@@ -19,7 +19,9 @@ export const indexStyles = css`
     }
 
     app-footer {
-        z-index: var(--sl-z-index-drawer);
+        /* Web Awesome removed its z-index design tokens in favor of cascade
+           layers / stacking contexts. app-footer is position: fixed (see footer
+           styles), which already stacks it above the in-flow page content. */
     }
 
     ${tabletsAndSmaller()} {

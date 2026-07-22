@@ -52,6 +52,7 @@ export const chordDetailStyles = css`
             /** On tablets and smaller, make the chord chart take up the full width */
             ${tabletsAndSmaller()} {
                 width: 100%;
+                overflow-x: hidden;
             }
         }
     }
@@ -102,6 +103,15 @@ export const chordDetailStyles = css`
         color: var(--theme-color);
     }
 
+    @media (prefers-color-scheme: dark) {
+        .song-name,
+        .hebrew-song-name,
+        .artist-author-name a,
+        span.artist-author-name {
+            color: var(--wa-color-text-link);
+        }
+    }
+
     @media (max-width: ${SizeMax.Md}px) {
         .artist-author-name a,
         .artist-author-name span {
@@ -111,25 +121,42 @@ export const chordDetailStyles = css`
     }
 
     .artist-author-name a:hover {
-        color: brown;
+        color: var(--app-link-hover-color, var(--wa-color-brand-20));
     }
 
     .btn-toolbar {
-        sl-icon {
-            font-size: 1.5em;
-            transform: translateY(4px);
-
-            @media (max-width: ${SizeMax.Xs}px) {
-                transform: translateY(2px);
-            }
+        wa-button {
+            --wa-form-control-height: 40px;
+            --wa-form-control-padding-inline: 16px;
+            --wa-color-border-loud: color-mix(in srgb, var(--wa-color-neutral-80) 60%, var(--wa-color-neutral-90));
+            font-size: 14px;
         }
 
-        sl-button-group {
+        wa-button:state(icon-button)::part(base),
+        #chord-star-btn::part(base) {
+            width: 55px;
+        }
+
+        wa-icon {
+            font-size: 1.5em;
+        }
+
+        wa-button-group {
             margin-top: 16px;
+        }
+
+        .transpose-value,
+        .current-font-size {
+            opacity: 1;
         }
 
         .transpose-value {
             min-width: 50px; /** So that changing the transpose value won't change the width of the button */
+        }
+
+        .transpose-value::part(base),
+        .current-font-size::part(base) {
+            color: var(--app-text, var(--wa-color-text-normal));
         }
 
         .transpose-value::part(label) {
@@ -139,14 +166,10 @@ export const chordDetailStyles = css`
 
         .star-icon {
             transition: color 0.2s;
-            
-            ${phonesOnly()} {
-                transform: translateY(4px);
-            }
         }
 
         .star-icon[name='star-fill'] {
-            color: var(--sl-color-amber-500);
+            color: var(--highlight-orange);
         }
     }
 
@@ -273,7 +296,8 @@ export const chordDetailStyles = css`
         font-size: 16px;
         font-family: monospace;
         overflow: auto;
-        background-color: white;
+        background-color: var(--app-paper-background, #ffffff);
+        color: var(--app-paper-text, #212529);
 
         /** On small screens, reduce padding for better readability in the smaller space */
         @media (max-width: ${SizeMax.Xs}px) {
@@ -283,6 +307,7 @@ export const chordDetailStyles = css`
 
     .plain-text-preview .chord {
         background-color: #e9ecef;
+        color: var(--app-paper-text, #212529);
         font-weight: bold;
         box-shadow: #e9ecef 0px 0px 15px 2px;
     }
@@ -324,7 +349,7 @@ export const chordDetailStyles = css`
         margin-bottom: 16px;
 
         .album-art-card {
-            --padding: 0;
+            --spacing: 0;
             overflow: hidden;
         }
 
@@ -333,12 +358,12 @@ export const chordDetailStyles = css`
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: container;
-            background: var(--sl-color-neutral-100);
+            background: var(--wa-color-neutral-90);
         }
 
-        sl-card {
-            --padding: 10px;
-            --border-width: 0;
+        wa-card {
+            --spacing: 10px;
+            --wa-panel-border-width: 0;
             font-family: var(--subtitle-font);
 
             strong {
@@ -359,8 +384,25 @@ export const chordDetailStyles = css`
         }
 
         .media-links {
-            sl-button {
-                width: fit-content;
+            width: 100%;
+
+            wa-button {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            wa-button::part(base) {
+                width: 100%;
+                max-width: 100%;
+                justify-content: flex-start;
+                text-align: left;
+                white-space: normal;
+            }
+
+            wa-button::part(label) {
+                white-space: normal;
+                overflow-wrap: anywhere;
+                text-align: left;
             }
         }
 
@@ -375,14 +417,14 @@ export const chordDetailStyles = css`
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: var(--sl-color-neutral-100);
+            background: var(--wa-color-neutral-90);
             padding: 4px 10px 4px 14px;
             font-family: var(--title-font);
             font-size: 0.85em;
             position: relative;
             isolation: isolate;
             clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
-            color: inherit;
+            color: var(--app-paper-text);
             text-decoration: none;
         }
 
@@ -390,7 +432,7 @@ export const chordDetailStyles = css`
             content: "";
             position: absolute;
             inset: -1px;
-            background: var(--sl-color-neutral-300);
+            background: var(--wa-color-neutral-70);
             clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
             z-index: -1;
         }
@@ -400,21 +442,21 @@ export const chordDetailStyles = css`
             width: 4px;
             height: 4px;
             border-radius: 50%;
-            background: var(--sl-color-neutral-0);
-            border: 1px solid var(--sl-color-neutral-300);
+            background: var(--wa-color-surface-default);
+            border: 1px solid var(--wa-color-neutral-70);
             position: absolute;
             left: 5px;
             top: 50%;
             transform: translateY(-50%);
         }
 
-        .tag-chip sl-icon {
+        .tag-chip wa-icon {
             font-size: 0.95em;
             color: var(--theme-color);
         }
 
         .tag-chip:hover {
-            background: var(--sl-color-neutral-200);
+            background: var(--wa-color-neutral-80);
         }
 
         .tag-chip:focus-visible {
@@ -428,10 +470,11 @@ export const chordDetailStyles = css`
         }
 
         .comments-scroll {
-            border: 1px solid var(--sl-color-neutral-200);
+            border: 1px solid var(--app-border);
             border-radius: 4px;
             padding: 8px;
-            background-color: #fff;
+            background: var(--app-surface);
+            color: var(--app-text);
             max-width: 100%;
             box-sizing: border-box;
             overflow-x: hidden;
@@ -450,7 +493,7 @@ export const chordDetailStyles = css`
         }
 
         .comment-item {
-            border-bottom: 1px solid var(--sl-color-neutral-100);
+            border-bottom: 1px solid var(--wa-color-neutral-90);
             padding-bottom: 8px;
             min-width: 0;
         }
@@ -476,7 +519,7 @@ export const chordDetailStyles = css`
             padding-left: 12px;
             font-family: var(--subtitle-font);
             font-size: 0.85em;
-            color: var(--sl-color-neutral-600);
+            color: var(--app-text-muted);
             min-width: 0;
         }
 
@@ -507,12 +550,12 @@ export const chordDetailStyles = css`
 
         .comment-avatar-icon {
             font-size: 18px;
-            color: var(--sl-color-neutral-500);
+            color: var(--app-text-muted);
             flex-shrink: 0;
         }
 
         .comment-date {
-            color: var(--sl-color-neutral-500);
+            color: var(--app-text-muted);
             white-space: nowrap;
             margin-left: auto;
         }
@@ -543,7 +586,7 @@ export const chordDetailStyles = css`
             justify-content: flex-end;
         }
 
-        .comment-edit-button sl-icon {
+        .comment-edit-button wa-icon {
             font-size: 1rem;
         }
 
@@ -556,11 +599,11 @@ export const chordDetailStyles = css`
         }
 
         .comments-muted {
-            color: var(--sl-color-neutral-600);
+            color: var(--app-text-muted);
         }
 
         .comments-error {
-            color: var(--sl-color-danger-600);
+            color: var(--wa-color-danger-40);
         }
 
         audio {
@@ -571,14 +614,14 @@ export const chordDetailStyles = css`
             background: var(--highlight-background);
             border-radius: var(--highlight-border-radius);
             font-family: var(--subtitle-font);
-            color: var(--theme-color);
+            color: var(--app-highlight-text, #0b0974);
             padding-left: 10px;
             padding-right: 10px;
             margin-left: -10px; /** Offset the left padding so that the text beneath aligns */
             margin-right: -10px;
 
-            sl-icon {
-                color: var(--theme-color);
+            wa-icon {
+                color: var(--app-highlight-text, #0b0974);
             }
 
             .d-flex {

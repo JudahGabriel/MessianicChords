@@ -9,17 +9,17 @@ export const profilePageStyles = css`
     .profile-page {
         max-width: 640px;
         margin: 0 auto;
-        padding: var(--sl-spacing-2x-large) var(--sl-spacing-medium);
+        padding: var(--wa-space-2xl) var(--wa-space-m);
     }
 
     .card {
-        background: white;
-        border: 1px solid var(--sl-color-neutral-200);
-        border-radius: var(--sl-border-radius-large);
-        box-shadow: var(--sl-shadow-medium);
-        padding: var(--sl-spacing-large);
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        border-radius: var(--wa-border-radius-l);
+        box-shadow: var(--wa-shadow-m);
+        padding: var(--wa-space-l);
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
     h1 {
@@ -31,47 +31,47 @@ export const profilePageStyles = css`
 
     p {
         margin: 0;
-        color: var(--sl-color-neutral-600);
+        color: var(--app-text-muted);
     }
 
     form {
         display: grid;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
-    sl-alert {
-        margin-bottom: var(--sl-spacing-small);
+    wa-callout {
+        margin-bottom: var(--wa-space-s);
     }
 
     .label {
-        color: var(--sl-color-neutral-500);
+        color: var(--app-text-muted);
         font-size: 0.9rem;
-        margin-bottom: var(--sl-spacing-3x-small);
+        margin-bottom: var(--wa-space-3xs);
     }
 
     .value {
-        color: var(--sl-color-neutral-900);
+        color: var(--app-text);
         font-weight: 600;
     }
 
     .actions {
         display: flex;
-        gap: var(--sl-spacing-small);
+        gap: var(--wa-space-s);
         flex-wrap: wrap;
     }
 
     .profile-image-preview {
-        margin-top: var(--sl-spacing-small);
+        margin-top: var(--wa-space-s);
         width: 120px;
         height: 120px;
         object-fit: cover;
         border-radius: 999px;
-        border: 2px solid var(--sl-color-neutral-200);
+        border: 2px solid var(--wa-color-neutral-80);
     }
 
     .chart-links {
-        margin: var(--sl-spacing-2x-small) 0 0;
-        padding-left: var(--sl-spacing-large);
+        margin: var(--wa-space-2xs) 0 0;
+        padding-left: var(--wa-space-l);
     }
 
     .chart-links a {
@@ -79,7 +79,7 @@ export const profilePageStyles = css`
     }
 
     .empty-value {
-        color: var(--sl-color-neutral-500);
+        color: var(--app-text-muted);
         font-style: italic;
     }
 `;

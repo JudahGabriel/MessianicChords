@@ -13,6 +13,9 @@
       "noImplicitReturns": true,
       "noFallthroughCasesInSwitch": true,
       "moduleResolution": "bundler",
+      "paths": {
+          "*": ["./*"]
+      },
       "allowSyntheticDefaultImports": true,
       "experimentalDecorators": true,
       "forceConsistentCasingInFileNames": true,

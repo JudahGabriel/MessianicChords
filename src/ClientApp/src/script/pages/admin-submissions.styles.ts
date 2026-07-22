@@ -12,15 +12,15 @@ export const adminSubmissionsStyles = css`
     }
 
     .submission-card {
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--app-border);
         border-radius: 8px;
         padding: 20px;
         margin-bottom: 16px;
-        background: #fafafa;
+        background: var(--app-surface);
     }
 
     .submission-card.is-edit {
-        border-left: 4px solid var(--sl-color-primary-600, #7f80b6);
+        border-left: 4px solid var(--wa-color-brand-40, #7f80b6);
     }
 
     .submission-card.is-new {
@@ -62,12 +62,12 @@ export const adminSubmissionsStyles = css`
 
     .editing-info {
         font-size: 0.9rem;
-        color: #555;
+        color: var(--app-text-muted);
         margin: 0 0 12px 0;
     }
 
     .editing-info a {
-        color: var(--sl-color-primary-700, #6665a8);
+        color: var(--wa-color-brand-30, #6665a8);
     }
 
     .submission-details {
@@ -84,7 +84,7 @@ export const adminSubmissionsStyles = css`
 
     .detail-label {
         font-size: 0.8rem;
-        color: #666;
+        color: var(--app-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
@@ -98,7 +98,7 @@ export const adminSubmissionsStyles = css`
         font-size: 0.95rem;
         font-weight: 600;
         margin: 16px 0 8px 0;
-        color: #333;
+        color: var(--app-text);
     }
 
     .diff-table {
@@ -111,17 +111,17 @@ export const adminSubmissionsStyles = css`
     .diff-table th {
         text-align: left;
         padding: 8px 12px;
-        background: #eee;
-        border-bottom: 2px solid #ddd;
+        background: var(--wa-color-neutral-fill-normal);
+        border-bottom: 2px solid var(--wa-color-neutral-border-normal);
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #555;
+        color: var(--wa-color-neutral-on-normal);
     }
 
     .diff-table td {
         padding: 8px 12px;
-        border-bottom: 1px solid #e8e8e8;
+        border-bottom: 1px solid var(--app-border);
         vertical-align: top;
     }
 
@@ -132,16 +132,17 @@ export const adminSubmissionsStyles = css`
     }
 
     .diff-new {
-        background: #e6ffec;
+        background: var(--wa-color-success-fill-quiet);
+        color: var(--wa-color-success-on-quiet);
     }
 
     .diff-old {
-        background: #fff1e5;
-        color: #7a5a3a;
+        background: var(--wa-color-warning-fill-quiet);
+        color: var(--wa-color-warning-on-quiet);
     }
 
     .empty-val {
-        color: #aaa;
+        color: var(--app-text-muted);
         font-style: italic;
     }
 
@@ -162,26 +163,28 @@ export const adminSubmissionsStyles = css`
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #555;
+        color: var(--app-text-muted);
         margin-bottom: 4px;
     }
 
     .chords-preview {
         max-height: 200px;
         overflow-y: auto;
-        background: #e6ffec;
-        border: 1px solid #b7d9b7;
+        background: var(--wa-color-success-fill-quiet);
+        border: 1px solid var(--wa-color-success-border-normal);
         border-radius: 4px;
         padding: 12px;
         font-family: monospace;
         font-size: 0.85rem;
         white-space: pre-wrap;
         flex: 1;
+        color: var(--wa-color-success-on-quiet);
     }
 
     .chords-old {
-        background: #fff1e5;
-        border-color: #e0c9a8;
+        background: var(--wa-color-warning-fill-quiet);
+        border-color: var(--wa-color-warning-border-normal);
+        color: var(--wa-color-warning-on-quiet);
     }
 
     .links-diff {
@@ -192,7 +195,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .no-changes {
-        color: #888;
+        color: var(--app-text-muted);
         font-style: italic;
         margin: 8px 0 16px 0;
     }
@@ -203,13 +206,13 @@ export const adminSubmissionsStyles = css`
 
     .unchanged-details summary {
         cursor: pointer;
-        color: #888;
+        color: var(--app-text-muted);
         font-size: 0.85rem;
         margin-bottom: 8px;
     }
 
     .unchanged-details summary:hover {
-        color: #555;
+        color: var(--app-text);
     }
 
     .attachments-list {
@@ -223,7 +226,7 @@ export const adminSubmissionsStyles = css`
     }
 
     .attachments-list a {
-        color: var(--sl-color-primary-700, #6665a8);
+        color: var(--wa-color-brand-30, #6665a8);
     }
 
     .submission-actions {
@@ -235,10 +238,10 @@ export const adminSubmissionsStyles = css`
     .empty-state {
         text-align: center;
         padding: 40px;
-        color: #666;
+        color: var(--app-text-muted);
     }
 
-    .empty-state sl-icon {
+    .empty-state wa-icon {
         font-size: 3rem;
         margin-bottom: 16px;
         display: block;
@@ -250,7 +253,7 @@ export const adminSubmissionsStyles = css`
 
     .submitted-date {
         font-size: 0.85rem;
-        color: #888;
+        color: var(--app-text-muted);
     }
 
     @media (max-width: 600px) {

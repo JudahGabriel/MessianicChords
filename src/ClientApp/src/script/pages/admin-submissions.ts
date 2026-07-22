@@ -7,10 +7,10 @@ import { ChordSheet } from "../models/interfaces";
 import { adminService } from "../services/admin-service";
 import { accountService } from "../services/account-service";
 
-import "@shoelace-style/shoelace/dist/components/alert/alert.js";
-import "@shoelace-style/shoelace/dist/components/button/button.js";
-import "@shoelace-style/shoelace/dist/components/icon/icon.js";
-import "@shoelace-style/shoelace/dist/components/spinner/spinner.js";
+import "@awesome.me/webawesome/dist/components/callout/callout.js";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/icon/icon.js";
+import "@awesome.me/webawesome/dist/components/spinner/spinner.js";
 
 @customElement("admin-submissions")
 export class AdminSubmissions extends LitElement {
@@ -61,9 +61,9 @@ export class AdminSubmissions extends LitElement {
                 <h2 class="highlight">Pending Submissions</h2>
 
                 ${this.error ? html`
-                    <sl-alert variant="danger" open class="error-alert">
+                    <wa-callout variant="danger" class="error-alert">
                         ${this.error}
-                    </sl-alert>
+                    </wa-callout>
                 ` : nothing}
 
                 ${this.renderContent()}
@@ -76,7 +76,7 @@ export class AdminSubmissions extends LitElement {
             return html`
                 <div class="empty-state">
                     <p>You must be signed in as an admin to access this page.</p>
-                    <sl-button variant="primary" href="/account">Sign In</sl-button>
+                    <wa-button variant="brand" href="/account">Sign In</wa-button>
                 </div>
             `;
         }
@@ -84,7 +84,7 @@ export class AdminSubmissions extends LitElement {
         if (this.isLoading) {
             return html`
                 <div class="empty-state">
-                    <sl-spinner style="font-size: 2rem;"></sl-spinner>
+                    <wa-spinner style="font-size: 2rem;"></wa-spinner>
                     <p>Loading submissions...</p>
                 </div>
             `;
@@ -132,26 +132,26 @@ export class AdminSubmissions extends LitElement {
                 ${submission.savedAttachments.length > 0 ? html`
                     <ul class="attachments-list">
                         ${submission.savedAttachments.map(a => html`
-                            <li><sl-icon name="paperclip"></sl-icon> <a href="${a.cdnUri}" target="_blank">${a.untrustedFileName}</a></li>
+                            <li><wa-icon name="paperclip"></wa-icon> <a href="${a.cdnUri}" target="_blank">${a.untrustedFileName}</a></li>
                         `)}
                     </ul>
                 ` : nothing}
 
                 <div class="submission-actions">
-                    <sl-button
+                    <wa-button
                         variant="success"
                         ?loading="${isProcessing}"
                         ?disabled="${isProcessing}"
                         @click="${() => this.approve(submission)}">
                         ✅ Approve
-                    </sl-button>
-                    <sl-button
+                    </wa-button>
+                    <wa-button
                         variant="danger"
                         ?loading="${isProcessing}"
                         ?disabled="${isProcessing}"
                         @click="${() => this.reject(submission)}">
                         ❌ Reject
-                    </sl-button>
+                    </wa-button>
                 </div>
             </div>
         `;

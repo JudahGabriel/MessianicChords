@@ -3,8 +3,8 @@ import { mediaQuery, BreakpointMax, phonesOnly } from "../common/breakpoints";
 
 export const appHeaderStyles = css`
     header {
-        background: var(--theme-color, #0b0974);
-        padding: 0 var(--sl-spacing-medium);
+        background: var(--app-header-background, #0b0974);
+        padding: 0 var(--wa-space-m);
         font-family: var(--subtitle-font);
         position: relative;
     }
@@ -13,7 +13,7 @@ export const appHeaderStyles = css`
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
         max-width: 1200px;
         margin: 0 auto;
         height: 56px;
@@ -27,14 +27,14 @@ export const appHeaderStyles = css`
     .nav-left {
         display: flex;
         align-items: center;
-        gap: var(--sl-spacing-small);
+        gap: var(--wa-space-s);
         flex-shrink: 0;
     }
 
     .logo-link {
         display: flex;
         align-items: self-end;
-        gap: var(--sl-spacing-small);
+        gap: var(--wa-space-s);
         text-decoration: none;
         color: white;
     }
@@ -58,14 +58,14 @@ export const appHeaderStyles = css`
     .nav-links {
         display: flex;
         align-items: center;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
     }
 
     .nav-center {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: var(--sl-spacing-medium);
+        gap: var(--wa-space-m);
         min-width: 0;
     }
 
@@ -74,7 +74,7 @@ export const appHeaderStyles = css`
         text-decoration: none;
         font-size: 0.95rem;
         font-weight: 600;
-        padding: var(--sl-spacing-x-small) 0;
+        padding: var(--wa-space-xs) 0;
         transition: color 0.2s;
     }
 
@@ -109,7 +109,7 @@ export const appHeaderStyles = css`
     .nav-search-desktop .search-controls {
         display: flex;
         align-items: center;
-        gap: var(--sl-spacing-x-small);
+        gap: var(--wa-space-xs);
         width: 100%;
     }
 
@@ -120,6 +120,12 @@ export const appHeaderStyles = css`
 
     .search-toggle-button,
     .search-close-button {
+        color: white;
+    }
+
+    .menu-toggle wa-icon,
+    .search-toggle-button wa-icon,
+    .search-close-button wa-icon {
         color: white;
     }
 
@@ -134,7 +140,7 @@ export const appHeaderStyles = css`
     .nav-right {
         display: flex;
         align-items: center;
-        gap: var(--sl-spacing-x-small);
+        gap: var(--wa-space-xs);
         flex-shrink: 0;
         justify-self: end;
     }
@@ -160,8 +166,8 @@ export const appHeaderStyles = css`
 
     .offline-status-button {
         color: white;
-        --sl-color-neutral-600: white;
-        --sl-color-primary-600: white;
+        --wa-color-neutral-40: white;
+        --wa-color-brand-40: white;
     }
 
     .offline-status-button::part(base) {
@@ -173,26 +179,20 @@ export const appHeaderStyles = css`
     .account-menu-trigger {
         width: 2.25rem;
         height: 2.25rem;
-        --sl-input-border-color: rgba(255, 255, 255, 0.35);
-        --sl-input-border-color-hover: white;
-        --sl-input-border-color-focus: white;
-        --sl-focus-ring-color: rgba(255, 255, 255, 0.45);
-        --sl-color-neutral-300: black;
-        --sl-input-background-color: rgba(255, 255, 255, 0.12);
-        --sl-color-neutral-700: white;
+        --wa-color-focus: rgba(255, 255, 255, 0.45);
+        --wa-color-neutral-70: black;
+        --wa-color-neutral-30: white;
     }
 
     .account-menu-trigger-signed-out {
-        --sl-input-border-color: rgba(255, 255, 255, 0.35);
-        --sl-input-border-color-hover: white;
-        --sl-input-border-color-focus: white;
-        --sl-focus-ring-color: rgba(255, 255, 255, 0.45);
-        --sl-color-neutral-700: white;
-        --sl-input-background-color: rgba(255, 255, 255, 0.12);
-        --sl-color-primary-600: white;
+        --wa-color-focus: rgba(255, 255, 255, 0.45);
+        --wa-color-neutral-30: white;
+        --wa-color-brand-40: white;
     }
 
     .account-menu-trigger::part(base) {
+        width: 2.25rem;
+        height: 2.25rem;
         padding: 0;
         border-radius: 999px;
         overflow: hidden;
@@ -200,7 +200,18 @@ export const appHeaderStyles = css`
     }
 
     .account-menu-trigger-signed-out::part(base) {
+        border-radius: 999px;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .account-menu-trigger-signed-out:hover::part(base),
+    .account-menu-trigger-signed-out:focus-within::part(base) {
+        color: white;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .account-menu-trigger-signed-out:active::part(base) {
+        background: rgba(255, 255, 255, 0.2);
     }
 
     .account-menu-trigger {
@@ -214,10 +225,9 @@ export const appHeaderStyles = css`
             padding: 0;
         }
 
-        sl-icon {
+        wa-icon {
             color: white;
             font-size: 1.5em;
-            margin-top: 5px;
         }
     }
 
@@ -226,10 +236,9 @@ export const appHeaderStyles = css`
         align-items: center;
         justify-content: center;
 
-        sl-icon {
+        wa-icon {
             color: white;
             font-size: 1.5em;
-            margin-top: 10px;
         }
     }
 
@@ -252,8 +261,31 @@ export const appHeaderStyles = css`
     .menu-toggle {
         display: none;
         color: white;
-        font-size: 1.4rem;
         margin-left: auto;
+    }
+
+    .menu-toggle::part(base) {
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border-radius: 999px;
+        background: transparent;
+    }
+
+    .menu-toggle::part(base):hover,
+    .menu-toggle:focus-within::part(base) {
+        color: white;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .menu-toggle:active::part(base) {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-toggle wa-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 1.75rem;
     }
 
     /* Mobile layout */
@@ -262,7 +294,7 @@ export const appHeaderStyles = css`
             display: flex;
             flex-wrap: wrap;
             height: auto;
-            padding: var(--sl-spacing-small) 0;
+            padding: var(--wa-space-s) 0;
         }
 
         .nav-center {
@@ -317,22 +349,22 @@ export const appHeaderStyles = css`
 
         .nav-search-mobile.open {
             width: 100%;
-            padding: var(--sl-spacing-small) 0;
+            padding: var(--wa-space-s) 0;
         }
 
-        .nav-search-mobile.open sl-input {
+        .nav-search-mobile.open wa-input {
             width: 100%;
         }
 
         .nav-links.open {
             flex-direction: column;
             align-items: flex-start;
-            gap: var(--sl-spacing-x-small);
-            padding: var(--sl-spacing-small) 0;
+            gap: var(--wa-space-xs);
+            padding: var(--wa-space-s) 0;
         }
 
         .nav-right.open {
-            padding-bottom: var(--sl-spacing-small);
+            padding-bottom: var(--wa-space-s);
         }
     }
 `;

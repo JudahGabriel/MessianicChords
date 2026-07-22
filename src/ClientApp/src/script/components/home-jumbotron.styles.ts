@@ -61,7 +61,7 @@ export const homeJumbotronStyles = css`
 
       h2 {
         font-family: var(--subtitle-font);
-        color: var(--theme-color);
+        color: var(--app-highlight-text, #0b0974);
         margin-top: -5px;
         font-size: 1em;
         background: var(--highlight-background);

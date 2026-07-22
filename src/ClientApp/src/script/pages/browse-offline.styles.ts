@@ -22,16 +22,16 @@ export const browseOfflineStyles = css`
     }
 
     .status {
-        color: #6c757d;
+        color: var(--app-text-muted);
         font-size: 0.95rem;
     }
 
-    sl-progress-bar {
+    wa-progress-bar {
         margin-bottom: 1rem;
     }
 
     .empty-state {
-        color: #6c757d;
+        color: var(--app-text-muted);
     }
 
     .error {
@@ -62,7 +62,7 @@ export const browseOfflineStyles = css`
             width: 100%;
         }
 
-        .actions sl-button {
+        .actions wa-button {
             flex: 1 0 100%;
             width: 100%;
             margin-left: auto;
