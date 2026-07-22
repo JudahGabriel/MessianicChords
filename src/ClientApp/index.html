@@ -69,6 +69,8 @@
       --wa-color-brand-05: rgb(21 19 121);
       --wa-color-brand-fill-loud: var(--wa-color-brand-40);
       --theme-color: #0b0974;
+      --app-link-color: var(--theme-color);
+      --app-link-hover-color: var(--wa-color-brand-20);
       --app-header-background: #0b0974;
       --app-highlight-text: #0b0974;
       --app-surface: var(--wa-color-surface-raised);
@@ -82,6 +84,16 @@
 
     :root.wa-dark {
       --theme-color: var(--wa-color-text-link);
+      --app-link-color: var(--wa-color-text-link);
+      --app-link-hover-color: var(--wa-color-brand-80);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not(.wa-light) {
+        --theme-color: var(--wa-color-text-link);
+        --app-link-color: var(--wa-color-text-link);
+        --app-link-hover-color: var(--wa-color-brand-80);
+      }
     }
   </style>
   <script type="module" src="/src/app-index.ts"></script>

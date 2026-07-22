@@ -33,11 +33,12 @@ export const sharedStyles = css`
     }
 
     a, wa-button[appearance="plain"] {
+        color: var(--app-link-color, var(--theme-color));
         transition: 0.4s linear color;
     }
 
     a:hover, wa-button[appearance="plain"]:hover {
-        color: brown;
+        color: var(--app-link-hover-color, var(--wa-color-brand-20));
     }
 
     .highlight {

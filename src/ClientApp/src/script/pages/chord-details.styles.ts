@@ -121,7 +121,7 @@ export const chordDetailStyles = css`
     }
 
     .artist-author-name a:hover {
-        color: brown;
+        color: var(--app-link-hover-color, var(--wa-color-brand-20));
     }
 
     .btn-toolbar {

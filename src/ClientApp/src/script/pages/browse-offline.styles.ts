@@ -22,7 +22,7 @@ export const browseOfflineStyles = css`
     }
 
     .status {
-        color: #6c757d;
+        color: var(--app-text-muted);
         font-size: 0.95rem;
     }
 
@@ -31,7 +31,7 @@ export const browseOfflineStyles = css`
     }
 
     .empty-state {
-        color: #6c757d;
+        color: var(--app-text-muted);
     }
 
     .error {
