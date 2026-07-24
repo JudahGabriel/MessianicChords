@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04B949
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessianicChords", "src\MessianicChords.csproj", "{88D1B075-BDA1-460F-B0FA-794DBCBF5331}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessianicChords.Tests", "tests\MessianicChords.Tests\MessianicChords.Tests.csproj", "{902F56B1-265C-4671-90EE-C73D6C61A4FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{88D1B075-BDA1-460F-B0FA-794DBCBF5331}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88D1B075-BDA1-460F-B0FA-794DBCBF5331}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88D1B075-BDA1-460F-B0FA-794DBCBF5331}.Release|Any CPU.Build.0 = Release|Any CPU
+		{902F56B1-265C-4671-90EE-C73D6C61A4FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{902F56B1-265C-4671-90EE-C73D6C61A4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{902F56B1-265C-4671-90EE-C73D6C61A4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{902F56B1-265C-4671-90EE-C73D6C61A4FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
