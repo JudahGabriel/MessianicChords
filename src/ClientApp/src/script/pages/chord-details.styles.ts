@@ -348,6 +348,10 @@ export const chordDetailStyles = css`
         margin-top: 13px;
         margin-bottom: 16px;
 
+        @media print {
+            display: none !important;
+        }
+
         .album-art-card {
             --spacing: 0;
             overflow: hidden;
