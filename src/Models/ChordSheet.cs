@@ -171,7 +171,7 @@ public class ChordSheet
         About = other.About ?? this.About;
         Chords = other.Chords ?? this.Chords;
         CcliNumber = other.CcliNumber ?? this.CcliNumber;
-        
+        Tags = other.Tags;
     }
 
     public void UpdateGoogleDrivePropsFrom(ChordSheet other)
