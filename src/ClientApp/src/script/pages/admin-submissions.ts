@@ -166,6 +166,7 @@ export class AdminSubmissions extends LitElement {
                 ${this.renderDetailIfPresent("Key", submission.key)}
                 ${submission.capo ? this.renderDetailIfPresent("Capo", String(submission.capo)) : nothing}
                 ${submission.authors.length > 0 ? this.renderDetailIfPresent("Authors", submission.authors.join(", ")) : nothing}
+                ${submission.tags.length > 0 ? this.renderDetailIfPresent("Tags", submission.tags.join(", ")) : nothing}
                 ${this.renderDetailIfPresent("Copyright", submission.copyright)}
                 ${this.renderDetailIfPresent("Scripture", submission.scripture)}
                 ${submission.year ? this.renderDetailIfPresent("Year", String(submission.year)) : nothing}
@@ -198,6 +199,7 @@ export class AdminSubmissions extends LitElement {
             { label: "Key", newVal: submission.key ?? "", oldVal: original.key ?? "" },
             { label: "Capo", newVal: submission.capo ? String(submission.capo) : "", oldVal: original.capo ? String(original.capo) : "" },
             { label: "Authors", newVal: (submission.authors ?? []).join(", "), oldVal: (original.authors ?? []).join(", ") },
+            { label: "Tags", newVal: (submission.tags ?? []).join(", "), oldVal: (original.tags ?? []).join(", ") },
             { label: "Copyright", newVal: submission.copyright ?? "", oldVal: original.copyright ?? "" },
             { label: "Scripture", newVal: submission.scripture ?? "", oldVal: original.scripture ?? "" },
             { label: "Year", newVal: submission.year ? String(submission.year) : "", oldVal: original.year ? String(original.year) : "" },

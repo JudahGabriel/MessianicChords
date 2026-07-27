@@ -87,6 +87,21 @@
                     }
                 </td>
             </tr>
+            <tr class="@GetUnchangedClass(Model.Updated.Tags, Model.Original.Tags)">
+                <td>Tags</td>
+                <td>
+                    @foreach(var tag in Model.Updated.Tags)
+                    {
+                        <p>@tag</p>
+                    }
+                </td>
+                <td>
+                    @foreach (var tag in Model.Original.Tags)
+                    {
+                        <p>@tag</p>
+                    }
+                </td>
+            </tr>
             <tr class="@GetUnchangedClass(Model.Updated.Chords, Model.Original.Chords)">
                 <td>Chords</td>
                 <td>
