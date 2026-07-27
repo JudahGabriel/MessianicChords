@@ -205,6 +205,16 @@ export class AccountPage extends LitElement {
         e.preventDefault();
         this.error = null;
         this.success = null;
+
+        // Read values directly from the inputs at submit time. Password managers
+        // and browser autofill often set the input value without firing an `input`
+        // event, which would otherwise leave our reactive state empty and cause the
+        // server to reject the request with a 400.
+        const form = e.currentTarget as HTMLFormElement;
+        this.email = this.readInputValue(form, "email");
+        this.password = this.readInputValue(form, "password");
+        this.staySignedIn = this.readCheckboxValue(form, "stay-signed-in", this.staySignedIn);
+
         this.isSubmitting = true;
 
         try {
@@ -249,6 +259,13 @@ export class AccountPage extends LitElement {
         this.error = null;
         this.success = null;
 
+        // Read values directly from the inputs so autofilled values (which may not
+        // fire an `input` event) are captured reliably.
+        const form = e.currentTarget as HTMLFormElement;
+        this.email = this.readInputValue(form, "email");
+        this.password = this.readInputValue(form, "password");
+        this.confirmPassword = this.readInputValue(form, "confirm-password");
+
         if (this.password !== this.confirmPassword) {
             this.error = "The password and confirmation password do not match.";
             return;
@@ -287,8 +304,23 @@ export class AccountPage extends LitElement {
         }
     }
 
-    private getRedirectUrl(): string | null {
-        const redirect = new URLSearchParams(window.location.search).get("redirect");
+    /**
+     * Reads the current value of a named <wa-input> within the given form.
+     * Reading directly from the element (instead of relying on cached `@input`
+     * state) ensures autofilled/password-manager values are captured even when
+     * no `input` event was dispatched.
+     */
+    private readInputValue(form: HTMLFormElement, name: string): string {
+        const input = form.querySelector(`wa-input[name="${name}"]`) as (HTMLElement & { value?: string }) | null;
+        return (input?.value ?? "").toString();
+    }
+
+    private readCheckboxValue(form: HTMLFormElement, name: string, fallback: boolean): boolean {
+        const checkbox = form.querySelector(`wa-checkbox[name="${name}"]`) as (HTMLElement & { checked?: boolean }) | null;
+        return checkbox ? !!checkbox.checked : fallback;
+    }
+
+    private getRedirectUrl(): string | null {        const redirect = new URLSearchParams(window.location.search).get("redirect");
         if (!redirect) {
             return null;
         }
