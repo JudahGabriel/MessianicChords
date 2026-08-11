@@ -17,4 +17,18 @@ public class ChordSheetTests
 
         Assert.Equal(editedChordSheet.Tags, chordSheet.Tags);
     }
+
+    [Fact]
+    public void UpdateFromCopiesSubmittedBy()
+    {
+        var chordSheet = new ChordSheet();
+        var editedChordSheet = new ChordSheet
+        {
+            SubmittedBy = "submitter@example.com"
+        };
+
+        chordSheet.UpdateFrom(editedChordSheet);
+
+        Assert.Equal(editedChordSheet.SubmittedBy, chordSheet.SubmittedBy);
+    }
 }

@@ -151,6 +151,12 @@ namespace MessianicChords.Controllers
         [Authorize]
         public async Task SubmitEdit(ChordSubmissionRequest request)
         {
+            request.SubmittedBy = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(request.SubmittedBy))
+            {
+                throw new UnauthorizedAccessException("The authenticated user does not have a name.");
+            }
+
             var (submission, approvalToken) = await chordSubmissionService.Create(request);
 
             // If the user is an admin, automatically approve their submission

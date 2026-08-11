@@ -2,6 +2,7 @@ export interface ChordSheet {
     song: string;
     hebrewSongName: string | null;
     artist: string;
+    submittedBy: string | null;
     chords: string | null;
     key: string | null;
     address: string;
