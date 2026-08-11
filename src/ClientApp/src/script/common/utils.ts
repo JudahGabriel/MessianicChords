@@ -5,6 +5,7 @@ export function emptyChordSheet(): ChordSheet {
         song: "",
         hebrewSongName: "",
         artist: "",
+        submittedBy: null,
         chords: null,
         key: null,
         address: "",

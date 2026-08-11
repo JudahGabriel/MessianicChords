@@ -18,6 +18,11 @@ public class ChordSheet
     public string Artist { get; set; } = string.Empty;
 
     /// <summary>
+    /// The authenticated user who submitted the chord chart.
+    /// </summary>
+    public string? SubmittedBy { get; set; }
+
+    /// <summary>
     /// The plain text chord chart for the song. This will be null if the chord chart is in docx, PDF, or other format besides plain text.
     /// </summary>
     public string? Chords { get; set; }
@@ -167,6 +172,7 @@ public class ChordSheet
         IsSheetMusic = other.IsSheetMusic;
         Capo = other.Capo ?? this.Capo;
         Scripture = other.Scripture ?? this.Scripture;
+        SubmittedBy = other.SubmittedBy ?? this.SubmittedBy;
         Year = other.Year ?? this.Year;
         About = other.About ?? this.About;
         Chords = other.Chords ?? this.Chords;
