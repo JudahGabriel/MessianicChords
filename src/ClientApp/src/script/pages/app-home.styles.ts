@@ -91,15 +91,22 @@ export const appHomeStyles = css`
 
     .new-chord-skeleton {
         width: 18.5em;
-        aspect-ratio: 4 / 5;
-        --border-radius: 0;
+        box-sizing: border-box;
+        padding: 1.5em;
+        background: var(--app-surface);
+        border: 1px solid #d6d6d6;
+        border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .new-chord-skeleton wa-skeleton {
         width: 100%;
-        height: 100%;
+        aspect-ratio: 4 / 5;
+    }
+
+    .new-chord-skeleton wa-skeleton::part(indicator) {
+        border-radius: 0;
     }
 
     ${phonesOnly()} {
