@@ -88,6 +88,12 @@ export const sharedStyles = css`
         display: block !important;
     }
 
+    @media print {
+        .d-print-none {
+            display: none !important;
+        }
+    }
+
     .flex-column {
         flex-direction: column !important;
     }
