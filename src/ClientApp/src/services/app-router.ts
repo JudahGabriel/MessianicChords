@@ -180,8 +180,14 @@ const routes: RouteDefinition[] = [
 ];
 
 function shouldNotIntercept(event: NavigateEvent): boolean {
+    // Same-page History API updates (such as live search) must not reset focus or rerender the route.
+    const isSamePageHistoryUpdate = event.destination.sameDocument &&
+        (event.navigationType === "push" || event.navigationType === "replace") &&
+        new URL(event.destination.url).pathname === location.pathname;
+
     return (
         !event.canIntercept ||
+        isSamePageHistoryUpdate ||
         event.hashChange ||
         event.downloadRequest !== null ||
         event.formData !== null
