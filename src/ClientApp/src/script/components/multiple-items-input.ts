@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { guid } from "../common/utils";
 import { createRef, ref } from "lit/directives/ref.js";
+import { textInputFocusStyles } from "../common/shared.styles";
 import "@awesome.me/webawesome/dist/components/input/input.js";
 import "@awesome.me/webawesome/dist/components/button/button.js";
 import "@awesome.me/webawesome/dist/components/icon/icon.js";
@@ -25,6 +26,8 @@ export class MultipleItemsInput extends LitElement {
 
     static get styles() {
         return css`
+            ${textInputFocusStyles}
+
             .input-row {
                 display: flex;
                 gap: var(--wa-space-xs);

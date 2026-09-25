@@ -1,7 +1,16 @@
 import { css } from "lit";
 import { BreakpointMax, mediaQuery, phonesOnly } from "./breakpoints";
 
+export const textInputFocusStyles = css`
+    wa-input::part(base) {
+        /* Avoid animating a newly visible focus ring from the inherited text color. */
+        outline-color: var(--wa-color-focus);
+    }
+`;
+
 export const sharedStyles = css`
+    ${textInputFocusStyles}
+
     :host {
         --title-font: 'Homemade Apple', cursive;
         --subtitle-font: 'Lora', serif;
