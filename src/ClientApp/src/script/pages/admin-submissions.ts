@@ -20,6 +20,7 @@ export class AdminSubmissions extends LitElement {
     @state() isLoading = true;
     @state() error: string | null = null;
     @state() processingIds: Set<string> = new Set();
+    @state() editedChords: Map<string, string> = new Map();
     @state() isAdmin = false;
 
     connectedCallback(): void {
@@ -115,6 +116,7 @@ export class AdminSubmissions extends LitElement {
                     <div>
                         <h3 class="submission-title">${submission.artist} - ${submission.song}${submission.hebrewSongName ? ` ${submission.hebrewSongName}` : ""}</h3>
                         <span class="submitted-date">Submitted ${this.formatDate(submission.created)}</span>
+                        <div class="submitted-date">Submitted by ${submission.submittedBy || "Unknown"}</div>
                     </div>
                     <span class="submission-badge ${isNew ? "badge-new" : "badge-edit"}">
                         ${isNew ? "🆕 New Chart" : "✏️ Edit"}
@@ -175,7 +177,7 @@ export class AdminSubmissions extends LitElement {
             </div>
 
             ${submission.chords ? html`
-                <div class="chords-preview">${submission.chords}</div>
+                ${this.renderChordsEditor(submission)}
             ` : nothing}
 
             ${submission.links.length > 0 ? html`
@@ -241,7 +243,7 @@ export class AdminSubmissions extends LitElement {
                 <div class="chords-diff">
                     <div class="chords-diff-panel">
                         <div class="chords-diff-label">New</div>
-                        <div class="chords-preview">${submission.chords || "(empty)"}</div>
+                        ${this.renderChordsEditor(submission)}
                     </div>
                     <div class="chords-diff-panel">
                         <div class="chords-diff-label">Old</div>
@@ -289,9 +291,27 @@ export class AdminSubmissions extends LitElement {
         `;
     }
 
+    private renderChordsEditor(submission: ChordSubmission): TemplateResult {
+        return html`
+            <textarea
+                class="chords-preview"
+                aria-label="Submitted chords for ${submission.artist} - ${submission.song}"
+                rows="10"
+                spellcheck="false"
+                .value="${this.editedChords.get(submission.id) ?? submission.chords ?? ""}"
+                ?disabled="${this.processingIds.has(submission.id)}"
+                @input="${(event: Event) => {
+                    const input = event.currentTarget;
+                    if (input instanceof HTMLTextAreaElement) {
+                        this.editedChords = new Map(this.editedChords).set(submission.id, input.value);
+                    }
+                }}"></textarea>
+        `;
+    }
+
     private async approve(submission: ChordSubmission): Promise<void> {
         if (!submission.id) return;
-        await this.processSubmission(submission.id, () => adminService.approveSubmission(submission.id));
+        await this.processSubmission(submission.id, () => adminService.approveSubmission(submission.id, this.editedChords.get(submission.id)));
     }
 
     private async reject(submission: ChordSubmission): Promise<void> {
@@ -305,6 +325,9 @@ export class AdminSubmissions extends LitElement {
         try {
             await action();
             this.pendingSubmissions = this.pendingSubmissions.filter(p => p.submission.id !== submissionId);
+            const editedChords = new Map(this.editedChords);
+            editedChords.delete(submissionId);
+            this.editedChords = editedChords;
         } catch {
             this.error = `Failed to process submission ${submissionId}.`;
         } finally {

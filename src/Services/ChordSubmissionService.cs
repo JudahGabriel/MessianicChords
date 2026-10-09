@@ -231,6 +231,7 @@ public class ChordSubmissionService
     {
         // Fill the submission with data from the approval.
         // Then copy the submission to the real chord sheet.
+        submission.Chords = approval.Chords ?? submission.Chords;
         submission.Address = approval.GoogleDocAddress?.ToString() ?? chordSheet.Address;
         submission.GoogleDocId = approval.GoogleDocId ?? chordSheet.GoogleDocId;
         submission.PublishUri = approval.GoogleDocPublishUri ?? chordSheet.PublishUri;

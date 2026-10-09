@@ -156,6 +156,7 @@ export const adminSubmissionsStyles = css`
     .chords-diff-panel {
         display: flex;
         flex-direction: column;
+        min-width: 0;
     }
 
     .chords-diff-label {
@@ -185,6 +186,19 @@ export const adminSubmissionsStyles = css`
         background: var(--wa-color-warning-fill-quiet);
         border-color: var(--wa-color-warning-border-normal);
         color: var(--wa-color-warning-on-quiet);
+    }
+
+    textarea.chords-preview {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 160px;
+        resize: vertical;
+    }
+
+    textarea.chords-preview:focus-visible {
+        outline: 2px solid var(--wa-color-brand-40, #7f80b6);
+        outline-offset: 2px;
     }
 
     .links-diff {
