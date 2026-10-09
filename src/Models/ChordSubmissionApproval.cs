@@ -17,6 +17,11 @@ public class ChordSubmissionApproval
     public bool Approved { get; set; }
 
     /// <summary>
+    /// Admin-edited chords to apply on approval. Null keeps the submitted chords; an empty string clears them.
+    /// </summary>
+    public string? Chords { get; set; }
+
+    /// <summary>
     /// The ID of the Google Doc if the chord submission generated a document in Google Drive.
     /// </summary>
     public string? GoogleDocId { get; set; }

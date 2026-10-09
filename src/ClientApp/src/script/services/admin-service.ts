@@ -6,8 +6,8 @@ class AdminService extends ApiServiceBase {
         return this.getJson<PendingChordSubmission[]>("/api/chordsubmissions/pending");
     }
 
-    approveSubmission(submissionId: string): Promise<{ message: string }> {
-        return this.post<{ message: string }>("/api/chordsubmissions/approve", { submissionId, approved: true });
+    approveSubmission(submissionId: string, chords?: string): Promise<{ message: string }> {
+        return this.post<{ message: string }>("/api/chordsubmissions/approve", { submissionId, approved: true, chords });
     }
 
     rejectSubmission(submissionId: string): Promise<{ message: string }> {
