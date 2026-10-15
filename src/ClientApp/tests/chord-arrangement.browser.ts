@@ -46,7 +46,7 @@ export async function runTests(): Promise<string[]> {
         await customElements.whenDefined("wa-input");
         const bpm = input("beats-per-minute-input");
         const timing = input("timing-signature-input");
-        assert(bpm.getAttribute("label") === "Beats per minute" && bpm.getAttribute("placeholder") === "110bmp", "BPM label and placeholder must match");
+        assert(bpm.getAttribute("label") === "Beats per minute" && bpm.getAttribute("placeholder") === "110bpm", "BPM label and placeholder must match");
         assert(timing.getAttribute("label") === "Timing signature" && timing.getAttribute("placeholder") === "4/4", "Timing label and placeholder must match");
         assert(bpm.type === "text" && timing.type === "text", "Both fields must accept free text");
         assert(bpm.value === "60/90" && timing.value === "6/8", "Existing values must load");
