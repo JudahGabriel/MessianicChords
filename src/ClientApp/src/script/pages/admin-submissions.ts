@@ -166,6 +166,8 @@ export class AdminSubmissions extends LitElement {
                 ${this.renderDetailIfPresent("Hebrew Name", submission.hebrewSongName)}
                 ${this.renderDetailIfPresent("Artist", submission.artist)}
                 ${this.renderDetailIfPresent("Key", submission.key)}
+                ${this.renderDetailIfPresent("Beats per minute", submission.beatsPerMinute)}
+                ${this.renderDetailIfPresent("Timing signature", submission.timingSignature)}
                 ${submission.capo ? this.renderDetailIfPresent("Capo", String(submission.capo)) : nothing}
                 ${submission.authors.length > 0 ? this.renderDetailIfPresent("Authors", submission.authors.join(", ")) : nothing}
                 ${submission.tags.length > 0 ? this.renderDetailIfPresent("Tags", submission.tags.join(", ")) : nothing}
@@ -199,6 +201,8 @@ export class AdminSubmissions extends LitElement {
             { label: "Hebrew Name", newVal: submission.hebrewSongName ?? "", oldVal: original.hebrewSongName ?? "" },
             { label: "Artist", newVal: submission.artist ?? "", oldVal: original.artist ?? "" },
             { label: "Key", newVal: submission.key ?? "", oldVal: original.key ?? "" },
+            { label: "Beats per minute", newVal: submission.beatsPerMinute ?? "", oldVal: original.beatsPerMinute ?? "" },
+            { label: "Timing signature", newVal: submission.timingSignature ?? "", oldVal: original.timingSignature ?? "" },
             { label: "Capo", newVal: submission.capo ? String(submission.capo) : "", oldVal: original.capo ? String(original.capo) : "" },
             { label: "Authors", newVal: (submission.authors ?? []).join(", "), oldVal: (original.authors ?? []).join(", ") },
             { label: "Tags", newVal: (submission.tags ?? []).join(", "), oldVal: (original.tags ?? []).join(", ") },

@@ -284,6 +284,12 @@ export class ChordDetails extends LitElement {
                             Key: <strong>${chord.key}</strong>
                         </p>
                         <p>
+                            Beats per minute: <strong>${chord.beatsPerMinute}</strong>
+                        </p>
+                        <p>
+                            Timing signature: <strong>${chord.timingSignature}</strong>
+                        </p>
+                        <p>
                             Capo: <strong>${chord.capo}</strong>
                         </p>
                         <p>

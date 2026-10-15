@@ -5,6 +5,8 @@ export interface ChordSheet {
     submittedBy: string | null;
     chords: string | null;
     key: string | null;
+    beatsPerMinute: string | null;
+    timingSignature: string | null;
     address: string;
     thumbnailUrl: string | null;
     downloadUrl: string | null;
