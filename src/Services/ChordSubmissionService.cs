@@ -237,8 +237,7 @@ public class ChordSubmissionService
         submission.PublishUri = approval.GoogleDocPublishUri ?? chordSheet.PublishUri;
         submission.Extension = approval.GoogleDocExtension ?? chordSheet.Extension ?? "mc";
 
-        var allLinks = chordSheet.Links
-            .Concat(submission.Links)
+        var allLinks = submission.Links
             .Concat(new[] // Also include the GoogleDocAddress and GoogleDoc publish URI
                 {
                     approval.GoogleDocAddress,
