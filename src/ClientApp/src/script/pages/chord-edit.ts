@@ -249,7 +249,7 @@ export class ChordEdit extends LitElement {
                             name="beatsPerMinute"
                             label="Beats per minute"
                             type="text"
-                            placeholder="110bmp"
+                            placeholder="110bpm"
                             hint="Optional. The tempo of the song in beats per minute."
                             value="${chord.beatsPerMinute || ""}"
                             @input="${(e: Event) => chord.beatsPerMinute = (e.target as HTMLInputElement).value}">
