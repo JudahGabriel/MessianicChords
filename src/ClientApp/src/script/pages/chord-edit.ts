@@ -230,7 +230,7 @@ export class ChordEdit extends LitElement {
                     </multiple-items-input>
                 </div>
 
-                <!-- Key, capo, and scripture row -->
+                <!-- Key, tempo, and timing row -->
                 <div class="form-row form-row-3">
                     <div class="form-group">
                         <wa-input
@@ -243,6 +243,34 @@ export class ChordEdit extends LitElement {
                             @input="${(e: Event) => chord.key = (e.target as HTMLInputElement).value}">
                         </wa-input>
                     </div>
+                    <div class="form-group">
+                        <wa-input
+                            id="beats-per-minute-input"
+                            name="beatsPerMinute"
+                            label="Beats per minute"
+                            type="text"
+                            placeholder="110bmp"
+                            hint="Optional. The tempo of the song in beats per minute."
+                            value="${chord.beatsPerMinute || ""}"
+                            @input="${(e: Event) => chord.beatsPerMinute = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                    </div>
+                    <div class="form-group">
+                        <wa-input
+                            id="timing-signature-input"
+                            name="timingSignature"
+                            label="Timing signature"
+                            type="text"
+                            placeholder="4/4"
+                            hint="Optional. The timing signature of the song."
+                            value="${chord.timingSignature || ""}"
+                            @input="${(e: Event) => chord.timingSignature = (e.target as HTMLInputElement).value}">
+                        </wa-input>
+                    </div>
+                </div>
+
+                <!-- Capo and scripture row -->
+                <div class="form-row form-row-2">
                     <div class="form-group">
                         <wa-input
                             id="capo-input"

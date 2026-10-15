@@ -8,6 +8,8 @@ export function emptyChordSheet(): ChordSheet {
         submittedBy: null,
         chords: null,
         key: null,
+        beatsPerMinute: null,
+        timingSignature: null,
         address: "",
         thumbnailUrl: "",
         downloadUrl: "",

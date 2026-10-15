@@ -135,11 +135,13 @@ public class ChordSheet
     /// <summary>
     /// The song timing signature, e.g. "4/4", "3/4", etc.
     /// </summary>
+    [System.ComponentModel.DataAnnotations.DisplayFormat(ConvertEmptyStringToNull = false)]
     public string? TimingSignature { get; set; }
 
     /// <summary>
     /// Gets the beats per minute (BPM) of the song, if known. This can be a number ("80") or it may contain a range ("60/90").
     /// </summary>
+    [System.ComponentModel.DataAnnotations.DisplayFormat(ConvertEmptyStringToNull = false)]
     public string? BeatsPerMinute { get; set; }
 
     /// <summary>
@@ -158,6 +160,8 @@ public class ChordSheet
         HasFetchedPlainTextContents = other.HasFetchedPlainTextContents;
         HasFetchedThumbnail = other.HasFetchedThumbnail;
         Key = other.Key;
+        BeatsPerMinute = other.BeatsPerMinute ?? this.BeatsPerMinute;
+        TimingSignature = other.TimingSignature ?? this.TimingSignature;
         LastUpdated = other.LastUpdated;
         PlainTextContents = other.PlainTextContents;
         HebrewSongName = other.HebrewSongName;
